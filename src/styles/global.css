@@ -61,6 +61,36 @@
   --tone-ring: #315fa9;
 }
 
+:root[data-theme='dark'] {
+  --tone-bg: #0d1117;
+  --tone-bg-accent: #1a2332;
+  --tone-surface: #131920;
+  --tone-surface-strong: #1c2333;
+  --tone-text: #e6edf3;
+  --tone-text-muted: #8b949e;
+  --tone-border: #30363d;
+  --tone-primary: #58a6ff;
+  --tone-primary-hover: #79b8ff;
+  --tone-primary-contrast: #0d1117;
+  --tone-ring: #58a6ff;
+}
+
+/* Dark mode: mix gradient with transparent instead of white to avoid bright blobs */
+:root[data-theme='dark'] body {
+  background:
+    radial-gradient(
+      circle at 15% 0%,
+      color-mix(in srgb, var(--tone-bg-accent) 60%, transparent) 0,
+      transparent 38%
+    ),
+    radial-gradient(
+      circle at 85% 100%,
+      color-mix(in srgb, var(--tone-bg-accent) 40%, transparent) 0,
+      transparent 30%
+    ),
+    var(--tone-bg);
+}
+
 *,
 *::before,
 *::after {
@@ -80,6 +110,8 @@ html {
 body {
   margin: 0;
   min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   background:
     radial-gradient(
       circle at 15% 0%,
@@ -151,6 +183,7 @@ a {
 
 .page-main {
   display: block;
+  flex: 1;
 }
 
 .container {

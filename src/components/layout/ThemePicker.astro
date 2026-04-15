@@ -25,7 +25,14 @@ const themeOptions = THEMES.map((themeName) => ({
   if (picker instanceof HTMLSelectElement) {
     const saved = localStorage.getItem(key);
     const options = Array.from(picker.options).map((option) => option.value);
-    const initial = saved && options.includes(saved) ? saved : picker.value;
+    // Prefer saved value; otherwise keep the server-rendered data-theme default.
+    const current = document.documentElement.dataset.theme ?? '';
+    const initial =
+      saved && options.includes(saved)
+        ? saved
+        : options.includes(current)
+          ? current
+          : picker.value;
 
     document.documentElement.dataset.theme = initial;
     picker.value = initial;

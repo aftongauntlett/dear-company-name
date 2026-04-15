@@ -13,7 +13,7 @@ const { title, description = '', hideChrome = false } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="en" class="no-js" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,9 +21,13 @@ const { title, description = '', hideChrome = false } = Astro.props;
     <script is:inline>
       document.documentElement.classList.remove('no-js');
       document.documentElement.classList.add('js');
+      // Restore saved theme before first paint to prevent FOUC.
+      // Falls back to the server-rendered data-theme="dark" default.
+      const _saved = localStorage.getItem('site-theme');
+      if (_saved) document.documentElement.dataset.theme = _saved;
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="theme-color" content="#f4f3ea" />
+    <meta name="theme-color" content="#0d1117" />
     <title>{title}</title>
   </head>
   <body>
