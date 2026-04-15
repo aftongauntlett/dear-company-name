@@ -1,24 +1,29 @@
 ---
-import { SITE } from '../../config/site';
+import { APPLICANT } from '../../config/site';
 import ThemePicker from './ThemePicker.astro';
+
+const nav = [
+  { href: '#start', label: 'How I Start' },
+  { href: '#stack', label: 'Tech Stack' },
+  { href: '#work', label: 'Recent Work' },
+  { href: '#teams', label: 'What I\'ve Done' },
+  { href: '#looking-for', label: 'Looking For' },
+];
 ---
 
 <header class="site-header">
   <div class="site-header-inner container">
-    <a href="/" class="brand" aria-label={`Go to ${SITE.name} homepage`}>
-      <span class="brand-kicker">Template</span>
-      <span class="brand-name">{SITE.shortName}</span>
+    <a href="#top" class="brand" aria-label="Back to top">
+      <span class="brand-name">{APPLICANT.name}</span>
     </a>
 
     <nav aria-label="Primary" class="site-nav">
       <ul>
-        {
-          SITE.nav.map((item) => (
-            <li>
-              <a href={item.href}>{item.label}</a>
-            </li>
-          ))
-        }
+        {nav.map((item) => (
+          <li>
+            <a href={item.href}>{item.label}</a>
+          </li>
+        ))}
       </ul>
     </nav>
 

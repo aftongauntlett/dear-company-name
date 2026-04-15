@@ -2,43 +2,21 @@
 
 If you are an AI coding agent working in this repository, read these files in order:
 
-1. PROJECT_BRIEF.md (if present)
-2. docs/PROJECT_BRIEF_TEMPLATE.md
-3. docs/DYNAMIC_SCOPE_DECISION_GUIDE.md
-4. README.md
-5. docs/STANDARDS.md
-6. docs/WCAG_2.2_CHECKLIST.md
-7. docs/DEVELOPER_HANDOFF.md
-8. .env.example
-
-When applicable to project scope, also read:
-
+1. docs/PROJECT_BRIEF.md
+2. docs/STANDARDS.md
+3. docs/WCAG_2.2_CHECKLIST.md
+4. docs/prd/ (read all current PRDs before implementing)
 
 ## Project Intent
 
-1. Confirm the mission, audience, and core pages from PROJECT_BRIEF.md when available.
+This is a fully static personal application microsite for Afton Gauntlett — no backend, no forms, no auth, no CMS. See docs/PROJECT_BRIEF.md for full scope.
 
-Default build style:
+Build style:
 
-- Static-first Astro sites
-- Token-based CSS themes
+- Static Astro site
+- Token-based CSS themes (dark theme as default)
 - Reusable components
 - Accessibility-first UI
-
-Optional advanced integrations:
-
-- Resend email delivery
-- Cloudflare Turnstile
-- Upstash Redis rate limiting
-- Server/API routes for auth or data workflows
-
-Template starter artifacts already included:
-
-- Health endpoint: `src/pages/api/health.json.ts`
-- Auth skeleton endpoint: `src/pages/api/auth/status.json.ts`
-- Health utility: `src/utils/health.ts`
-- Auth utility: `src/utils/auth.ts`
-- Daily heartbeat workflow: `.github/workflows/heartbeat.yml` (uses `HEARTBEAT_URL` secret)
 
 ## Required Workflow for Agents
 

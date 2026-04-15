@@ -1,22 +1,17 @@
-export const SITE = {
-  name: 'Community Web Template',
-  shortName: 'Template',
-  description: 'A reusable Astro starter for accessible, maintainable, mission-driven websites.',
-  nav: [
-    { href: '#services', label: 'Services' },
-    { href: '#standards', label: 'Standards' },
-    { href: '#themes', label: 'Themes' },
-    { href: '#kickoff', label: 'Kickoff' },
-  ],
-  footerLinks: [
-    { href: '/#services', label: 'Services' },
-    { href: '/#standards', label: 'Standards' },
-    { href: '/#themes', label: 'Themes' },
-    { href: '/#kickoff', label: 'Kickoff' },
-  ],
-  contactEmail: 'hello@example.org',
-  yearStarted: 2026,
+export const APPLICANT = {
+  name: 'Afton Gauntlett',
+  title: 'Senior Frontend Developer',
+  email: 'hello@aftongauntlett.com',
+  website: 'https://www.aftongauntlett.com/',
+  github: 'https://github.com/aftongauntlett',
+  linkedin: 'https://www.linkedin.com/in/afton-gauntlett/',
+  resume: 'https://aftongauntlett.github.io/resume/',
 } as const;
 
-export const THEMES = ['sprout', 'ocean', 'earth'] as const;
+export const COMPANY = {
+  // ← Change this one value to target a new company
+  targetName: 'Your Company',
+} as const;
+
+export const THEMES = ['sprout', 'ocean', 'earth', 'dark'] as const;
 export type ThemeName = (typeof THEMES)[number];

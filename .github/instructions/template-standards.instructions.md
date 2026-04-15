@@ -5,7 +5,7 @@ applyTo: 'src/**/*.astro,src/**/*.ts,src/**/*.css,README.md,docs/**/*.md,.env.ex
 
 Follow these standards when generating or editing code:
 
-- If `PROJECT_BRIEF.md` exists, treat it as the primary source of project scope and priorities.
+- If `docs/PROJECT_BRIEF.md` exists, treat it as the primary source of project scope and priorities.
 
 - Accessibility first: semantic HTML, keyboard support, visible focus, ARIA only when needed.
 - Meet WCAG 2.2 AA baseline.
@@ -22,8 +22,6 @@ Follow these standards when generating or editing code:
 - Add tests for new logic modules.
 - Update docs when behavior or setup changes.
 - Keep commit-time checks passing with `npm run precommit:check`.
-- Keep keepalive endpoint behavior aligned with `src/pages/api/health.json.ts` unless intentionally replaced.
-- Keep auth scaffolding aligned with `src/utils/auth.ts` and `src/pages/api/auth/status.json.ts` unless intentionally replaced.
 
 Before completion, run full validation:
 

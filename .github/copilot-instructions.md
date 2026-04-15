@@ -1,6 +1,6 @@
 # Copilot Workspace Instructions
 
-Always treat this repository as a reusable Astro project template.
+This is a personal application microsite for Afton Gauntlett — a static Astro site with no backend services, no forms, no auth, and no CMS. See docs/PROJECT_BRIEF.md for full scope.
 
 ## Required Standards
 
@@ -35,23 +35,7 @@ Run and pass:
 
 ## Required Docs To Read First
 
-1. PROJECT_BRIEF.md (if present)
-2. README.md
-3. docs/STANDARDS.md
-4. docs/WCAG_2.2_CHECKLIST.md
-5. docs/DEVELOPER_HANDOFF.md
-6. docs/AUTH_SUPABASE_PLAYBOOK.md
-7. docs/ECOMMERCE_PLAYBOOK.md
-8. docs/SCHEDULING_CALENDARS_PLAYBOOK.md
-9. docs/FREE_TIER_OPS_KEEPALIVE.md
-10. docs/DYNAMIC_SCOPE_DECISION_GUIDE.md
-11. docs/PROJECT_BRIEF_TEMPLATE.md
-
-## Contact Stack Notes
-
-When implementing contact forms or email delivery, follow docs/DEVELOPER_HANDOFF.md exactly, including env names and anti-abuse controls.
-
-## Starter Endpoint Notes
-
-- Health heartbeat endpoint: `src/pages/api/health.json.ts`
-- Auth status endpoint skeleton: `src/pages/api/auth/status.json.ts`
+1. docs/PROJECT_BRIEF.md
+2. docs/STANDARDS.md
+3. docs/WCAG_2.2_CHECKLIST.md
+4. docs/prd/ (current PRDs)
