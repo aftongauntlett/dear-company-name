@@ -1,0 +1,39 @@
+---
+import { THEMES } from '../../config/site';
+import StyledDropdown from '../ui/StyledDropdown.astro';
+
+const themeOptions = THEMES.map((themeName) => ({
+  value: themeName,
+  label: themeName.charAt(0).toUpperCase() + themeName.slice(1),
+}));
+---
+
+<StyledDropdown
+  id="theme-picker"
+  name="theme-picker"
+  label="Theme"
+  labelPosition="left"
+  className="theme-picker-dropdown"
+  ariaLabel="Choose color theme"
+  options={themeOptions}
+/>
+
+<script is:inline>
+  const key = 'site-theme';
+  const picker = document.getElementById('theme-picker');
+
+  if (picker instanceof HTMLSelectElement) {
+    const saved = localStorage.getItem(key);
+    const options = Array.from(picker.options).map((option) => option.value);
+    const initial = saved && options.includes(saved) ? saved : picker.value;
+
+    document.documentElement.dataset.theme = initial;
+    picker.value = initial;
+
+    picker.addEventListener('change', () => {
+      const value = picker.value;
+      document.documentElement.dataset.theme = value;
+      localStorage.setItem(key, value);
+    });
+  }
+</script>

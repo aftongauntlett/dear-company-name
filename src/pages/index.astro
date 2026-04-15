@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ThemeShowcase from '../components/sections/ThemeShowcase.astro';
+import Button from '../components/ui/Button.astro';
+import Card from '../components/ui/Card.astro';
+---
+
+<BaseLayout
+  title="Astro Project Template"
+  description="Reusable Astro starter for accessible, mission-first websites with strong defaults."
+>
+  <section class="section hero stack">
+    <p class="kicker">Mission-First Web Template</p>
+    <h1>Launch sites faster without losing quality standards.</h1>
+    <p class="hero-copy">
+      This starter is built for static websites first, with a path for advanced builds that include
+      auth, APIs, databases, and reliable contact workflows.
+    </p>
+    <div class="hero-actions">
+      <Button type="button">Start a new project</Button>
+      <Button type="button" variant="outline">Review engineering standards</Button>
+    </div>
+  </section>
+
+  <section id="services" class="section stack">
+    <div>
+      <p class="kicker">Core Stack</p>
+      <h2>Optimized for static sites, ready for heavier builds.</h2>
+    </div>
+    <div class="grid-3 grid">
+      <Card title="Static by default" eyebrow="Astro + CSS tokens">
+        Fast, maintainable pages with semantic HTML and reusable component patterns.
+      </Card>
+      <Card title="Advanced integrations" eyebrow="Optional backend path">
+        Add auth, API routes, data stores, and richer app behavior when the project needs it.
+      </Card>
+      <Card title="Contact pipeline" eyebrow="Resend + Turnstile + Upstash">
+        Follow the included playbook for production-safe forms and anti-spam protections.
+      </Card>
+    </div>
+  </section>
+
+  <section id="standards" class="section stack">
+    <div>
+      <p class="kicker">Non-Negotiables</p>
+      <h2>Every project ships with accessibility and quality gates.</h2>
+    </div>
+    <div class="grid-2 grid">
+      <Card title="Accessibility baseline" eyebrow="WCAG 2.2 AA">
+        Keyboard navigation, visible focus styles, ARIA usage where needed, semantic landmarks, and
+        color contrast checks.
+      </Card>
+      <Card title="Engineering checks" eyebrow="Automated validation">
+        Typecheck, lint, tests, and production build run before handoff or deploy.
+      </Card>
+    </div>
+  </section>
+
+  <ThemeShowcase />
+
+  <section id="kickoff" class="section stack">
+    <div>
+      <p class="kicker">Kickoff Workflow</p>
+      <h2>For a new client site, define mission, content, and audience then build.</h2>
+      <p>
+        Agent docs in this repo cover the rest: structure, standards, checks, and contact setup.
+      </p>
+    </div>
+    <div class="hero-actions">
+      <Button type="button" variant="ghost">Read template README</Button>
+      <Button type="button" variant="outline">Open setup playbook</Button>
+    </div>
+  </section>
+</BaseLayout>

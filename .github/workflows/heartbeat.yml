@@ -1,0 +1,22 @@
+name: Daily Heartbeat
+
+on:
+  schedule:
+    - cron: '17 9 * * *'
+  workflow_dispatch:
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Ping health endpoint (optional)
+        env:
+          HEARTBEAT_URL: ${{ secrets.HEARTBEAT_URL }}
+        run: |
+          if [ -z "$HEARTBEAT_URL" ]; then
+            echo "HEARTBEAT_URL is not set; skipping heartbeat."
+            exit 0
+          fi
+
+          curl --fail --show-error --silent "$HEARTBEAT_URL" > /dev/null

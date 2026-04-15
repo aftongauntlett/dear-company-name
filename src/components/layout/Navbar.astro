@@ -1,0 +1,27 @@
+---
+import { SITE } from '../../config/site';
+import ThemePicker from './ThemePicker.astro';
+---
+
+<header class="site-header">
+  <div class="site-header-inner container">
+    <a href="/" class="brand" aria-label={`Go to ${SITE.name} homepage`}>
+      <span class="brand-kicker">Template</span>
+      <span class="brand-name">{SITE.shortName}</span>
+    </a>
+
+    <nav aria-label="Primary" class="site-nav">
+      <ul>
+        {
+          SITE.nav.map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <ThemePicker />
+  </div>
+</header>

@@ -1,0 +1,20 @@
+---
+interface Props {
+  title: string;
+  eyebrow?: string;
+  href?: string;
+  class?: string;
+}
+
+const { title, eyebrow, href, class: className = '' } = Astro.props;
+---
+
+<article class={`card ${className}`.trim()}>
+  {eyebrow && <p class="card-eyebrow">{eyebrow}</p>}
+  <h3 class="card-title">
+    {href ? <a href={href}>{title}</a> : title}
+  </h3>
+  <div class="card-body">
+    <slot />
+  </div>
+</article>

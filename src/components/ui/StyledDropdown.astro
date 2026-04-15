@@ -1,0 +1,400 @@
+---
+interface DropdownOption {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  id: string;
+  name?: string;
+  label: string;
+  options: ReadonlyArray<string | DropdownOption>;
+  value?: string;
+  ariaLabel?: string;
+  labelPosition?: 'top' | 'left';
+  className?: string;
+}
+
+const {
+  id,
+  name = id,
+  label,
+  options,
+  value,
+  ariaLabel,
+  labelPosition = 'top',
+  className = '',
+} = Astro.props;
+
+const normalizedOptions: DropdownOption[] = options.map((option) => {
+  if (typeof option === 'string') {
+    return { value: option, label: option };
+  }
+
+  return option;
+});
+
+const fallbackOption = normalizedOptions[0];
+const selectedOption = normalizedOptions.find((option) => option.value === value) ?? fallbackOption;
+
+if (!selectedOption) {
+  throw new Error(`StyledDropdown (${id}) requires at least one option.`);
+}
+
+const selectedValue = selectedOption.value;
+const selectedLabel = selectedOption.label;
+
+const rootClass = [
+  'styled-dropdown',
+  labelPosition === 'left' ? 'styled-dropdown--label-left' : '',
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+
+const labelId = `${id}-label`;
+const triggerValueId = `${id}-trigger-value`;
+const listboxId = `${id}-listbox`;
+const liveRegionId = `${id}-live`;
+---
+
+<div class={rootClass} data-dropdown-root>
+  <label id={labelId} class="styled-dropdown__label" for={id}>{label}</label>
+
+  <div class="styled-dropdown__control-wrap">
+    <select
+      id={id}
+      name={name}
+      class="styled-dropdown__native"
+      aria-label={ariaLabel}
+      data-dropdown-native
+    >
+      {
+        normalizedOptions.map((option) => (
+          <option value={option.value} selected={option.value === selectedValue}>
+            {option.label}
+          </option>
+        ))
+      }
+    </select>
+
+    <div class="styled-dropdown__ui" data-dropdown-ui hidden>
+      <button
+        type="button"
+        class="styled-dropdown__trigger"
+        aria-haspopup="listbox"
+        aria-expanded="false"
+        aria-controls={listboxId}
+        aria-labelledby={`${labelId} ${triggerValueId}`}
+        data-dropdown-trigger
+      >
+        <span id={triggerValueId} data-dropdown-trigger-value>{selectedLabel}</span>
+        <span class="styled-dropdown__chevron" aria-hidden="true"></span>
+      </button>
+
+      <div class="styled-dropdown__panel" data-dropdown-panel hidden>
+        <ul
+          id={listboxId}
+          class="styled-dropdown__listbox"
+          role="listbox"
+          tabindex="-1"
+          aria-labelledby={labelId}
+          data-dropdown-listbox
+        >
+          {
+            normalizedOptions.map((option, index) => (
+              <li
+                id={`${id}-option-${index}`}
+                class="styled-dropdown__option"
+                role="option"
+                aria-selected={option.value === selectedValue ? 'true' : 'false'}
+                data-dropdown-option
+                data-value={option.value}
+              >
+                {option.label}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <p id={liveRegionId} class="visually-hidden" aria-live="polite" data-dropdown-live></p>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    const dropdownRoots = document.querySelectorAll('[data-dropdown-root]');
+
+    dropdownRoots.forEach((root) => {
+      if (!(root instanceof HTMLElement) || root.dataset.dropdownEnhanced === 'true') {
+        return;
+      }
+
+      const nativeSelect = root.querySelector('[data-dropdown-native]');
+      const ui = root.querySelector('[data-dropdown-ui]');
+      const trigger = root.querySelector('[data-dropdown-trigger]');
+      const panel = root.querySelector('[data-dropdown-panel]');
+      const listbox = root.querySelector('[data-dropdown-listbox]');
+      const triggerValue = root.querySelector('[data-dropdown-trigger-value]');
+      const liveRegion = root.querySelector('[data-dropdown-live]');
+      const optionNodes = Array.from(root.querySelectorAll('[data-dropdown-option]'));
+
+      if (
+        !(nativeSelect instanceof HTMLSelectElement) ||
+        !(ui instanceof HTMLElement) ||
+        !(trigger instanceof HTMLButtonElement) ||
+        !(panel instanceof HTMLElement) ||
+        !(listbox instanceof HTMLElement) ||
+        !(triggerValue instanceof HTMLElement) ||
+        !(liveRegion instanceof HTMLElement)
+      ) {
+        return;
+      }
+
+      const options = optionNodes.filter((node) => node instanceof HTMLElement);
+
+      if (options.length === 0) {
+        return;
+      }
+
+      let isOpen = false;
+      let activeIndex = 0;
+
+      const getSelectedIndex = () => {
+        const selectedIndex = nativeSelect.selectedIndex;
+        return selectedIndex >= 0 ? selectedIndex : 0;
+      };
+
+      const setActiveIndex = (nextIndex) => {
+        if (options.length === 0) {
+          activeIndex = 0;
+          return;
+        }
+
+        if (nextIndex < 0) {
+          activeIndex = options.length - 1;
+          return;
+        }
+
+        if (nextIndex >= options.length) {
+          activeIndex = 0;
+          return;
+        }
+
+        activeIndex = nextIndex;
+      };
+
+      const syncFromNative = ({ announce = false, alignActive = true } = {}) => {
+        const selectedIndex = getSelectedIndex();
+        const selectedText = nativeSelect.options[selectedIndex]?.textContent?.trim() ?? '';
+
+        triggerValue.textContent = selectedText;
+
+        if (alignActive) {
+          setActiveIndex(selectedIndex);
+        }
+
+        options.forEach((optionNode, index) => {
+          const isSelected = index === selectedIndex;
+          optionNode.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        });
+
+        const activeOption = options[activeIndex];
+
+        if (activeOption) {
+          listbox.setAttribute('aria-activedescendant', activeOption.id);
+          activeOption.scrollIntoView({ block: 'nearest' });
+        }
+
+        if (announce && selectedText) {
+          liveRegion.textContent = `${selectedText} selected`;
+        }
+      };
+
+      const openListbox = () => {
+        if (isOpen) {
+          return;
+        }
+
+        isOpen = true;
+        panel.hidden = false;
+        trigger.setAttribute('aria-expanded', 'true');
+        listbox.focus();
+        syncFromNative({ announce: false, alignActive: true });
+      };
+
+      const closeListbox = ({ returnFocus = false } = {}) => {
+        if (!isOpen) {
+          return;
+        }
+
+        isOpen = false;
+        panel.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+
+        if (returnFocus) {
+          trigger.focus();
+        }
+      };
+
+      const commitValue = (nextValue) => {
+        if (!nextValue || nativeSelect.value === nextValue) {
+          syncFromNative({ announce: true, alignActive: true });
+          return;
+        }
+
+        nativeSelect.value = nextValue;
+        nativeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        syncFromNative({ announce: true, alignActive: true });
+      };
+
+      const moveActiveBy = (delta) => {
+        setActiveIndex(activeIndex + delta);
+
+        const activeOption = options[activeIndex];
+        if (activeOption) {
+          listbox.setAttribute('aria-activedescendant', activeOption.id);
+          activeOption.scrollIntoView({ block: 'nearest' });
+        }
+      };
+
+      trigger.addEventListener('click', () => {
+        if (isOpen) {
+          closeListbox({ returnFocus: true });
+          return;
+        }
+
+        openListbox();
+      });
+
+      trigger.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          event.preventDefault();
+          openListbox();
+          moveActiveBy(event.key === 'ArrowDown' ? 1 : -1);
+          return;
+        }
+
+        if (event.key === ' ' || event.key === 'Enter') {
+          event.preventDefault();
+          openListbox();
+        }
+      });
+
+      listbox.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          closeListbox({ returnFocus: true });
+          return;
+        }
+
+        if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          moveActiveBy(1);
+          return;
+        }
+
+        if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          moveActiveBy(-1);
+          return;
+        }
+
+        if (event.key === 'Home') {
+          event.preventDefault();
+          setActiveIndex(0);
+          syncFromNative({ announce: false, alignActive: false });
+          return;
+        }
+
+        if (event.key === 'End') {
+          event.preventDefault();
+          setActiveIndex(options.length - 1);
+          syncFromNative({ announce: false, alignActive: false });
+          return;
+        }
+
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          const activeOption = options[activeIndex];
+          if (activeOption) {
+            commitValue(activeOption.dataset.value ?? '');
+          }
+          closeListbox({ returnFocus: true });
+          return;
+        }
+
+        if (event.key === 'Tab') {
+          closeListbox();
+        }
+      });
+
+      listbox.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const option = target.closest('[data-dropdown-option]');
+
+        if (!(option instanceof HTMLElement)) {
+          return;
+        }
+
+        const nextValue = option.dataset.value ?? '';
+        commitValue(nextValue);
+        closeListbox({ returnFocus: true });
+      });
+
+      listbox.addEventListener('mousemove', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+          return;
+        }
+
+        const option = target.closest('[data-dropdown-option]');
+
+        if (!(option instanceof HTMLElement)) {
+          return;
+        }
+
+        const hoveredIndex = options.findIndex((node) => node === option);
+
+        if (hoveredIndex >= 0) {
+          setActiveIndex(hoveredIndex);
+          listbox.setAttribute('aria-activedescendant', option.id);
+        }
+      });
+
+      nativeSelect.addEventListener('change', () => {
+        syncFromNative({ announce: false, alignActive: true });
+      });
+
+      nativeSelect.form?.addEventListener('reset', () => {
+        window.requestAnimationFrame(() => {
+          syncFromNative({ announce: false, alignActive: true });
+        });
+      });
+
+      document.addEventListener('pointerdown', (event) => {
+        if (!isOpen) {
+          return;
+        }
+
+        const target = event.target;
+        if (!(target instanceof Node) || root.contains(target)) {
+          return;
+        }
+
+        closeListbox();
+      });
+
+      root.dataset.dropdownEnhanced = 'true';
+      root.classList.add('is-enhanced');
+      ui.hidden = false;
+      syncFromNative({ announce: false, alignActive: true });
+    });
+  })();
+</script>

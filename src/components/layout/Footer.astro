@@ -1,0 +1,32 @@
+---
+import { SITE } from '../../config/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="site-footer-inner container">
+    <div class="footer-copy">
+      <p>{SITE.name}</p>
+      <p>
+        Built for mission-first orgs. {SITE.yearStarted} - {year}
+      </p>
+    </div>
+
+    <nav aria-label="Footer">
+      <ul class="footer-links">
+        {
+          SITE.footerLinks.map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <a href={`mailto:${SITE.contactEmail}`} class="footer-contact" aria-label="Send an email">
+      {SITE.contactEmail}
+    </a>
+  </div>
+</footer>
