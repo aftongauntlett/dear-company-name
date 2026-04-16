@@ -1,0 +1,311 @@
+---
+import { APPLICANT, COMPANY } from '../../config/site';
+import Button from '../ui/Button.astro';
+
+// The placeholder is always the "joke" text the animation types first.
+// Hardcoded so the gag works even when targetName is already the real company.
+const PLACEHOLDER_NAME = 'Your Company';
+---
+
+<section id="top" class="hero" aria-label="Introduction">
+  <div class="container hero-container">
+
+    {/* ── Left: image placeholder ──────────────────────────────── */}
+    <div class="hero-image-col" aria-hidden="true">
+      <div class="hero-image-placeholder">
+        <span class="hero-image-initials">AG</span>
+      </div>
+    </div>
+
+    {/* ── Right: text content ──────────────────────────────────── */}
+    <div class="hero-content">
+      {/* Accessible, always-present H1 — screen reader source of truth */}
+      <h1 class="hero-headline">Dear {COMPANY.targetName},</h1>
+
+      {/* Visual typewriter overlay — aria-hidden, never read by AT */}
+      <p class="hero-headline hero-typewriter" aria-hidden="true">
+        Dear <span class="hero-bracket">[</span><span
+          class="typewriter-target"
+          data-target={COMPANY.targetName}
+          data-placeholder={PLACEHOLDER_NAME}></span><span class="hero-bracket">]</span>,
+      </p>
+
+      <p class="hero-subhead">
+        I built this instead of recording a video. I think you&rsquo;ll agree it was the right
+        call.
+      </p>
+
+      <div class="hero-cta">
+        <Button href={`mailto:${APPLICANT.email}`}>Let&rsquo;s talk</Button>
+        <Button href="#work" variant="outline">See my work ↓</Button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hero-scroll-hint" aria-hidden="true">↓</div>
+</section>
+
+<style>
+  /* ─── Section ────────────────────────────────────────────────── */
+
+  .hero {
+    position: relative;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: var(--space-16);
+  }
+
+  /* ─── Two-column grid ────────────────────────────────────────── */
+
+  .hero-container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+    gap: var(--space-16);
+    align-items: center;
+  }
+
+  /* ─── Image column ───────────────────────────────────────────── */
+
+  .hero-image-col {
+    display: flex;
+    justify-content: center;
+  }
+
+  .hero-image-placeholder {
+    width: 100%;
+    max-width: 380px;
+    aspect-ratio: 4 / 5;
+    border: 2px dashed var(--tone-border);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--tone-surface) 80%, var(--tone-bg-accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-image-initials {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 6vw, 5rem);
+    font-weight: 700;
+    color: var(--tone-border);
+    user-select: none;
+    letter-spacing: 0.04em;
+  }
+
+  /* ─── Content column ─────────────────────────────────────────── */
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  /* ─── Headline shared styles ─────────────────────────────────── */
+
+  .hero-headline {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 5vw, 4.4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--tone-text);
+    margin: 0;
+  }
+
+  /* ─── Typewriter overlay (default: hidden, no-JS safe) ───────── */
+
+  .hero-typewriter {
+    display: none;
+  }
+
+  /* ─── With JS: visually hide real H1, show overlay ───────────── */
+
+  :global(.js) .hero-headline:not(.hero-typewriter) {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  :global(.js) .hero-typewriter {
+    display: block;
+  }
+
+  /* ─── Bracket styling ────────────────────────────────────────── */
+
+  .hero-bracket {
+    color: var(--tone-text-muted);
+  }
+
+  /* ─── Typing caret ───────────────────────────────────────────── */
+
+  .typewriter-target::after {
+    content: '|';
+    color: var(--tone-primary);
+    animation: hero-caret-blink 0.7s step-end infinite;
+  }
+
+  @keyframes hero-caret-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  /* ─── Subheadline ────────────────────────────────────────────── */
+
+  .hero-subhead {
+    font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+    color: var(--tone-text-muted);
+    max-width: 38rem;
+    line-height: 1.65;
+  }
+
+  /* ─── CTA cluster ────────────────────────────────────────────── */
+
+  .hero-cta {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* ─── Scroll hint ────────────────────────────────────────────── */
+
+  .hero-scroll-hint {
+    position: absolute;
+    bottom: var(--space-8);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.4rem;
+    color: var(--tone-text-muted);
+    animation: hero-scroll-bounce 2s ease-in-out infinite;
+    user-select: none;
+  }
+
+  @keyframes hero-scroll-bounce {
+    0%,
+    100% {
+      transform: translateX(-50%) translateY(0);
+    }
+    50% {
+      transform: translateX(-50%) translateY(6px);
+    }
+  }
+
+  /* ─── Mobile: single column, image on top ────────────────────── */
+
+  @media (max-width: 700px) {
+    .hero-container {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-image-col {
+      order: -1;
+    }
+
+    .hero-image-placeholder {
+      max-width: 200px;
+      aspect-ratio: 1 / 1;
+    }
+  }
+
+  /* ─── Reduced motion ─────────────────────────────────────────── */
+
+  @media (prefers-reduced-motion: reduce) {
+    /* Skip typewriter entirely — show plain H1, hide overlay */
+    .hero-typewriter {
+      display: none !important;
+    }
+
+    :global(.js) .hero-headline:not(.hero-typewriter) {
+      position: static !important;
+      inline-size: auto !important;
+      block-size: auto !important;
+      margin: 0 !important;
+      overflow: visible !important;
+      clip: auto !important;
+      clip-path: none !important;
+      white-space: normal !important;
+    }
+
+    .hero-scroll-hint {
+      animation: none;
+    }
+
+    .typewriter-target::after {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const section = document.querySelector<HTMLElement>('.hero');
+  const targetEl = document.querySelector<HTMLElement>('.typewriter-target');
+
+  if (section && targetEl) {
+    const placeholder = targetEl.dataset.placeholder ?? 'Your Company';
+    const finalTarget = targetEl.dataset.target ?? '';
+
+    const markDone = (): void => {
+      section.classList.add('hero--done');
+    };
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      // CSS handles this: overlay is hidden, real H1 is shown statically.
+      // No JS needed — just don't start the animation.
+    } else {
+      const TYPE_SPEED = 70; // ms per character (typing)
+      const ERASE_SPEED = 45; // ms per character (backspacing — slightly faster)
+      const INITIAL_DELAY = 500; // ms before we start typing the joke name
+      const PAUSE_ON_JOKE = 1400; // ms to hold "Your Company" before erasing
+
+      const typeChars = (text: string, onDone: () => void): void => {
+        let i = 0;
+        const tick = (): void => {
+          if (i < text.length) {
+            targetEl.textContent = text.slice(0, ++i);
+            setTimeout(tick, TYPE_SPEED);
+          } else {
+            onDone();
+          }
+        };
+        tick();
+      };
+
+      const eraseChars = (onDone: () => void): void => {
+        const tick = (): void => {
+          const current = targetEl.textContent ?? '';
+          if (current.length > 0) {
+            targetEl.textContent = current.slice(0, -1);
+            setTimeout(tick, ERASE_SPEED);
+          } else {
+            onDone();
+          }
+        };
+        tick();
+      };
+
+      // Sequence: wait → type joke → pause → erase → type real name → done
+      setTimeout(() => {
+        typeChars(placeholder, () => {
+          setTimeout(() => {
+            eraseChars(() => {
+              // Brief gap between erasing and re-typing feels natural
+              setTimeout(() => {
+                typeChars(finalTarget, markDone);
+              }, 200);
+            });
+          }, PAUSE_ON_JOKE);
+        });
+      }, INITIAL_DELAY);
+    }
+  }
+</script>

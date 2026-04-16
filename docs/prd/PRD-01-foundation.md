@@ -1,5 +1,8 @@
 # PRD-01: Foundation — Dark Theme, Site Config, and Nav
 
+Status: Complete
+Completed: 2026-04-15
+
 ## Goal
 
 Establish the configuration layer, dark theme tokens, and navigation structure that every subsequent section depends on. This is the first commit. Nothing visible to a hiring manager lives here — it's the scaffolding that makes everything else possible.

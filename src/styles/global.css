@@ -464,7 +464,7 @@ a {
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   text-decoration: none;
   font-weight: 700;
   border: 1px solid transparent;
@@ -499,12 +499,14 @@ a {
 }
 
 .btn-outline {
-  border-color: var(--tone-border);
+  border-color: var(--tone-primary);
   background: var(--tone-surface);
+  color: var(--tone-text);
 }
 
 .btn-outline:hover {
-  border-color: var(--tone-primary);
+  background: color-mix(in srgb, var(--tone-primary) 12%, var(--tone-surface));
+  border-color: var(--tone-primary-hover);
 }
 
 .btn-ghost {

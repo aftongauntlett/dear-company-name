@@ -1,8 +1,11 @@
 # PRD-02: Hero Section + Typewriter Effect
 
+Status: Complete
+Completed: 2026-04-15
+
 ## Goal
 
-Build the first section a hiring manager sees. It needs to land the personality immediately — confident, a little knowing, not trying too hard. The typewriter effect is the centerpiece: it types the company name into the headline after a brief pause where the brackets are literally visible, making the mail-merge joke land.
+Build the first section a hiring manager sees. It needs to land the personality immediately — confident, a little knowing, not trying too hard. The typewriter effect is the centerpiece: it types a placeholder company name first, then backspaces and replaces it with the real target, making the mail-merge joke land in real time.
 
 ## Scope
 
@@ -10,11 +13,10 @@ Build the first section a hiring manager sees. It needs to land the personality 
 - Create a typewriter animation using vanilla JS + CSS (no animation libraries).
 - Wire `COMPANY.targetName` from `src/config/site.ts` into the typewriter target.
 - Add the Hero to `src/pages/index.astro`.
-- Respect `prefers-reduced-motion` — reduce/skip the animation for users who have it set.
+- Respect `prefers-reduced-motion` — show the resolved headline statically, no animation.
 
 ## Out of Scope
 
-- No CTA button wiring (placeholder text only, per PRD-01 decisions).
 - No scroll-triggered animations — those come in PRD-05 polish if at all.
 
 ---
@@ -23,57 +25,54 @@ Build the first section a hiring manager sees. It needs to land the personality 
 
 ### Layout
 
-Full-viewport-height section (`min-height: 100dvh`), vertically centered content. Max content width consistent with site container token. Section `id="top"`.
+Two-column grid: image placeholder left, text content right. Full-viewport-height section (`min-height: 100dvh`), vertically centered. Max content width consistent with site container token. Section `id="top"`. Collapses to single column on mobile (image stacks above text).
 
 ### Headline Sequence
 
-The headline is an `<h1>`. The full final read state is:
+The headline is an `<h1>`. Brackets are always present and always styled muted (`--tone-text-muted`) to telegraph the mail-merge joke.
 
-> Dear [Company Name],
+The animation sequence:
+1. Page loads. Headline shows: `Dear [],` — brackets visible, content inside empty.
+2. After ~500ms pause, typewriter types the hardcoded placeholder: `Dear [Your Company],`
+3. Holds for ~1400ms.
+4. Backspaces the placeholder text, leaving: `Dear [],`
+5. Brief 200ms pause, then types `COMPANY.targetName`: `Dear [Prentus],`
+6. Blinking caret (`|`) remains after completion.
 
-The sequence:
-1. Page loads. Headline shows: `Dear [],` — brackets visible, comma present, content inside empty.
-2. After ~600ms pause, the typewriter starts typing the company name between the brackets.
-3. On completion, the brackets are removed (or fade out), leaving: `Dear Company Name,`
+The placeholder (`Your Company`) is hardcoded in the component — **not** derived from `COMPANY.targetName` — so the gag always works regardless of what `targetName` is set to.
 
-**Accessibility note:** The `<h1>` must contain the plain, final text for screen readers at all times — the typewriter effect is a `[aria-hidden="true"]` visual layer. The real H1 text should be present in the DOM and visible to assistive tech from the start, even if visually hidden during the animation.
+**Accessibility:** The real `<h1>` (`Dear {COMPANY.targetName},`) is always in the DOM. The animated overlay is `aria-hidden="true"`. Screen readers see the final resolved text from page load.
 
-Implementation approach:
-- The H1 renders the full text server-side (SSR/static): `Dear {COMPANY.targetName},`
-- A `<span aria-hidden="true">` visual overlay handles the animation, positioned over the H1.
-- When JS is not available, the plain H1 shows cleanly.
+**No-JS fallback:** Plain `<h1>` renders cleanly. Overlay is `display: none` without the `.js` class.
+
+**`prefers-reduced-motion`:** CSS hides the overlay and shows the real H1 statically. No JS animation runs. This is the correct behavior — without the animation the overlay would show `Dear [],` which is broken, so skipping to the final resolved state is the right call.
 
 ### Subheadline
 
-Below the H1, a `<p>` subhead:
-
 > I built this instead of recording a video. I think you'll agree it was the right call.
 
-Font: body font, larger than body text but clearly secondary to the H1. Muted text color (`--tone-text-muted`).
+Body font, larger than body text, muted color (`--tone-text-muted`).
 
 ### CTA Area
 
-Below the subhead, a small cluster:
+- Primary `Button` (solid): "Let's talk" → `mailto:${APPLICANT.email}`
+- Secondary `Button` (outline): "See my work ↓" → `#work`
 
-- Primary `Button` (solid): "Let's talk" — `href="#"` placeholder, links to `mailto:${APPLICANT.email}` once email is filled in.
-- Ghost `Button` or plain link: "See my work ↓" — `href="#work"` anchor.
+Both use `src/components/ui/Button.astro`. No one-off button markup.
 
-Use `src/components/ui/Button.astro` for both — do not create new button markup.
+### Scroll hint
 
-### Scroll hint (optional but polished)
-
-A small animated "↓" or chevron at the bottom of the hero viewport, fading out once the user scrolls. Low priority — skip if it adds complexity to the sprint. Implement only if it's clean to add.
+CSS-only animated `↓` anchored to the bottom of the viewport. `aria-hidden`, bounce animation disabled under `prefers-reduced-motion`.
 
 ---
 
 ## Typewriter Implementation Notes
 
-- The target string is `COMPANY.targetName`, injected into a `data-typewriter-target` attribute on the animated span at build time.
-- Typing speed: ~60–80ms per character.
-- Initial delay: 600ms before typing begins.
-- No blinking caret is required, but a caret character (`|`) that disappears on completion is acceptable.
-- The bracket pair (`[` and `]`) should be styled slightly differently (muted/dimmer) to telegraph the mail-merge joke before typing starts.
-- On `prefers-reduced-motion: reduce`: skip the typing animation entirely, show the completed headline immediately.
+- `data-placeholder` on the animated span holds the hardcoded joke string (`Your Company`).
+- `data-target` holds `COMPANY.targetName` (injected at build time).
+- Typing speed: 70ms/char. Erase speed: 45ms/char (slightly faster feels natural).
+- Initial delay: 500ms. Pause on placeholder: 1400ms. Gap before re-typing: 200ms.
+- Blinking caret is a CSS `::after` pseudo-element — no font character, solid `2px` block rendered in `--tone-primary`.
 
 ---
 
@@ -81,40 +80,48 @@ A small animated "↓" or chevron at the bottom of the hero viewport, fading out
 
 ### Props
 
-None — reads directly from `src/config/site.ts` imports. (APPLICANT, COMPANY)
+None — reads directly from `src/config/site.ts` imports (`APPLICANT`, `COMPANY`).
 
 ### Structure (simplified)
 
 ```astro
 <section id="top" class="hero" aria-label="Introduction">
-  <div class="container">
-    <!-- Accessible, always-present H1 (screen reader source of truth) -->
-    <h1 class="hero-headline">
-      Dear {COMPANY.targetName},
-    </h1>
+  <div class="container hero-container">
 
-    <!-- Visual typewriter overlay (aria-hidden) -->
-    <p class="hero-headline hero-typewriter" aria-hidden="true">
-      Dear [<span
-        class="typewriter-target"
-        data-target={COMPANY.targetName}
-      ></span>],
-    </p>
-
-    <p class="hero-subhead">
-      I built this instead of recording a video.
-      I think you'll agree it was the right call.
-    </p>
-
-    <div class="hero-cta">
-      <Button href={`mailto:${APPLICANT.email}`}>Let's talk</Button>
-      <Button href="#work" variant="ghost">See my work ↓</Button>
+    <!-- Left: image placeholder -->
+    <div class="hero-image-col" aria-hidden="true">
+      <div class="hero-image-placeholder">
+        <span class="hero-image-initials">AG</span>
+      </div>
     </div>
+
+    <!-- Right: text content -->
+    <div class="hero-content">
+      <!-- Accessible H1 — screen reader source of truth -->
+      <h1 class="hero-headline">Dear {COMPANY.targetName},</h1>
+
+      <!-- Visual typewriter overlay (aria-hidden) -->
+      <p class="hero-headline hero-typewriter" aria-hidden="true">
+        Dear <span class="hero-bracket">[</span><span
+          class="typewriter-target"
+          data-target={COMPANY.targetName}
+          data-placeholder="Your Company"></span><span class="hero-bracket">]</span>,
+      </p>
+
+      <p class="hero-subhead">
+        I built this instead of recording a video. I think you'll agree it was the right call.
+      </p>
+
+      <div class="hero-cta">
+        <Button href={`mailto:${APPLICANT.email}`}>Let's talk</Button>
+        <Button href="#work" variant="outline">See my work ↓</Button>
+      </div>
+    </div>
+
   </div>
+  <div class="hero-scroll-hint" aria-hidden="true">↓</div>
 </section>
 ```
-
-The `.hero-headline` (real H1) is visually hidden while the typewriter overlay is present, then shown after animation completes (or immediately if `prefers-reduced-motion`).
 
 ---
 

@@ -1,12 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { APPLICANT, COMPANY } from '../config/site';
+import Hero from '../components/sections/Hero.astro';
 ---
 
 <BaseLayout
   title={`Dear ${COMPANY.targetName} — ${APPLICANT.name}`}
   description={`A personal application from ${APPLICANT.name}, ${APPLICANT.title}.`}
 >
-  <!-- Sections added in PRD-02 through PRD-05 -->
+  <Hero />
+  <!-- Sections added in PRD-03 through PRD-05 -->
 </BaseLayout>
 

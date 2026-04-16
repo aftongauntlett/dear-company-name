@@ -10,7 +10,7 @@ export const APPLICANT = {
 
 export const COMPANY = {
   // ← Change this one value to target a new company
-  targetName: 'Your Company',
+  targetName: 'Prentus',
 } as const;
 
 export const THEMES = ['sprout', 'ocean', 'earth', 'dark'] as const;
