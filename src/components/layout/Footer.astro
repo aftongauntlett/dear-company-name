@@ -1,25 +1,74 @@
 ---
 import { APPLICANT } from '../../config/site';
+import Icon from '../ui/Icon.astro';
+import { Code, Briefcase, FileText, Mail } from '@lucide/astro';
 
 const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
   <div class="site-footer-inner container">
-    <p class="footer-copy">&copy; {year} {APPLICANT.name}</p>
 
-    <nav aria-label="Footer links" class="footer-links">
-      <ul>
+    <div class="footer-brand">
+      <p class="footer-name">{APPLICANT.name}</p>
+      <p class="footer-role">{APPLICANT.title}</p>
+    </div>
+
+    <nav aria-label="Footer links" class="footer-social">
+      <ul role="list">
         <li>
-          <a href={APPLICANT.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a
+            href={APPLICANT.github}
+            class="footer-icon-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub profile"
+            title="GitHub"
+          >
+            <Icon icon={Code} size={18} />
+          </a>
         </li>
         <li>
-          <a href={APPLICANT.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a
+            href={APPLICANT.linkedin}
+            class="footer-icon-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn profile"
+            title="LinkedIn"
+          >
+            <Icon icon={Briefcase} size={18} />
+          </a>
         </li>
         <li>
-          <a href={APPLICANT.resume} target="_blank" rel="noopener noreferrer">R&eacute;sum&eacute;</a>
+          <a
+            href={APPLICANT.resume}
+            class="footer-icon-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View résumé"
+            title="Résumé"
+          >
+            <Icon icon={FileText} size={18} />
+          </a>
+        </li>
+        <li>
+          <a
+            href={`mailto:${APPLICANT.email}`}
+            class="footer-icon-link"
+            aria-label="Send email"
+            title={APPLICANT.email}
+          >
+            <Icon icon={Mail} size={18} />
+          </a>
         </li>
       </ul>
     </nav>
+
+  </div>
+
+  <div class="footer-bottom container">
+    <p class="footer-copy">&copy; {year} {APPLICANT.name}</p>
+    <a href={`mailto:${APPLICANT.email}`} class="footer-email-link">{APPLICANT.email}</a>
   </div>
 </footer>

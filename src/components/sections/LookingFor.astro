@@ -1,0 +1,272 @@
+---
+import { APPLICANT } from '../../config/site';
+import Icon from '../ui/Icon.astro';
+import { Code, Briefcase, Globe, FileText, Phone, Mail, MapPin } from '@lucide/astro';
+---
+
+<section id="looking-for" class="lookingfor-section" aria-labelledby="looking-for-heading">
+  <div class="container">
+
+    <h2 id="looking-for-heading">What I&rsquo;m looking for</h2>
+
+    <div class="lookingfor-cols">
+
+      <div class="lookingfor-col-left">
+        <div class="lookingfor-body">
+          <p>
+            Async-friendly teams that trust engineers to manage their own time. A design bar that
+            people actually care about &mdash; not just &ldquo;it works on mobile.&rdquo; Work that
+            has a point to it, even if that point is just making a useful thing really well.
+          </p>
+          <p>
+            Fast-moving without being chaotic: opinionated enough to make decisions, humble enough to
+            revisit them. I want to work somewhere that treats accessibility and code quality as
+            defaults, not debt to pay down later.
+          </p>
+        </div>
+
+        <div class="contact-header">
+          <h3 class="videonote-heading">Reach me directly</h3>
+          <div class="videonote-rule" aria-hidden="true"></div>
+        </div>
+
+        <ul class="contact-chips" role="list">
+          <li>
+            <a href={APPLICANT.github} target="_blank" rel="noopener noreferrer" class="chip chip-link">
+              <Icon icon={Code} size={14} />
+              <span>GitHub</span>
+            </a>
+          </li>
+          <li>
+            <a href={APPLICANT.linkedin} target="_blank" rel="noopener noreferrer" class="chip chip-link">
+              <Icon icon={Briefcase} size={14} />
+              <span>LinkedIn</span>
+            </a>
+          </li>
+          <li>
+            <a href={APPLICANT.website} target="_blank" rel="noopener noreferrer" class="chip chip-link">
+              <Icon icon={Globe} size={14} />
+              <span>Portfolio</span>
+            </a>
+          </li>
+          <li>
+            <a href={APPLICANT.resume} target="_blank" rel="noopener noreferrer" class="chip chip-link">
+              <Icon icon={FileText} size={14} />
+              <span>R&eacute;sum&eacute;</span>
+            </a>
+          </li>
+          <li>
+            <a href={`mailto:${APPLICANT.email}`} class="chip chip-link">
+              <Icon icon={Mail} size={14} />
+              <span>{APPLICANT.email}</span>
+            </a>
+          </li>
+          {APPLICANT.phone && (
+            <li>
+              <a href={`tel:${APPLICANT.phone.replace(/\D/g, '')}`} class="chip chip-link">
+                <Icon icon={Phone} size={14} />
+                <span>{APPLICANT.phone}</span>
+              </a>
+            </li>
+          )}
+          <li>
+            <span class="chip chip-static">
+              <Icon icon={MapPin} size={14} />
+              <span>East Coast &mdash; night owl, can flex to other time zones</span>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="videonote-card">
+        <div class="videonote-card-header">
+          <p class="videonote-eyebrow">About the video ask</p>
+        </div>
+        <div class="videonote-card-body">
+        <p>
+          I don&rsquo;t perform well talking to myself on camera. I perform well in actual
+          conversations.
+        </p>
+        <p>
+          If you want to see how I think, let&rsquo;s get on a call and I&rsquo;ll walk you through
+          anything here live. I&rsquo;ll bring the same preparation I brought to building this, and
+          you&rsquo;ll get a much better read on whether we&rsquo;d work well together than a screen
+          recording would.
+        </p>
+        <p>
+          The same goes for live whiteboard and algorithmic interviews. I don&rsquo;t have a CS
+          fundamentals background, and if someone is watching me code under pressure I&rsquo;d
+          probably spell my name wrong &mdash; genuinely not my best side. Take-home exercises or
+          async work samples give a much more accurate picture of how I actually work.
+        </p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .lookingfor-section {
+    padding-block: var(--space-16);
+    background-color: var(--tone-surface);
+  }
+
+  .lookingfor-section h2 {
+    margin-block-end: var(--space-8);
+  }
+
+  .lookingfor-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-16);
+    align-items: stretch;
+  }
+
+  .lookingfor-col-left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .lookingfor-body {
+    grid-column: 1 / -1;
+  }
+
+  .lookingfor-body {
+    display: grid;
+    gap: var(--space-6);
+    border-left: 4px solid var(--tone-primary);
+    padding-inline-start: var(--space-8);
+  }
+
+  .lookingfor-body p {
+    font-size: clamp(1rem, 1.2vw, 1.15rem);
+    line-height: 1.75;
+    color: var(--tone-text);
+    margin: 0;
+  }
+
+  .contact-header {
+    margin-block-start: auto;
+  }
+
+  .contact-header .videonote-heading {
+    margin: 0 0 var(--space-2);
+  }
+
+  /* ── Chips ────────────────────────────────────────────────── */
+
+  .contact-chips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--tone-border);
+    background: color-mix(in srgb, var(--tone-surface-strong) 60%, transparent);
+    color: var(--tone-text-muted);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      color 140ms ease,
+      border-color 140ms ease,
+      background 140ms ease;
+  }
+
+  .chip-link:hover {
+    color: var(--tone-primary);
+    border-color: color-mix(in srgb, var(--tone-primary) 50%, var(--tone-border));
+    background: color-mix(in srgb, var(--tone-primary) 8%, var(--tone-surface));
+  }
+
+  .chip-link:focus-visible {
+    outline: 2px solid var(--tone-ring);
+    outline-offset: 2px;
+  }
+
+  .chip-static {
+    cursor: default;
+  }
+
+  /* ── Video note column ──────────────────────────────────────── */
+
+  .videonote-rule {
+    border-top: 1px solid var(--tone-border);
+    opacity: 0.5;
+  }
+
+  .videonote-heading {
+    font-size: clamp(1rem, 1.3vw, 1.125rem);
+    font-weight: 600;
+    color: var(--tone-text-muted);
+    margin: 0;
+  }
+
+  .videonote-card {
+    border: 1px solid var(--tone-border);
+    border-radius: var(--radius-lg);
+    background: var(--tone-bg);
+    box-shadow: var(--shadow-surface);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .videonote-card-header {
+    padding: var(--space-4) var(--space-8);
+    background: var(--tone-surface);
+    border-bottom: 1px solid var(--tone-border);
+  }
+
+  .videonote-card-body {
+    padding: var(--space-8);
+    display: grid;
+    gap: var(--space-6);
+    flex: 1;
+  }
+
+  .videonote-eyebrow {
+    font-family: var(--font-heading);
+    font-size: clamp(1rem, 1.3vw, 1.125rem);
+    font-weight: 600;
+    color: var(--tone-text);
+    margin: 0;
+  }
+
+  .videonote-card-body p {
+    font-size: clamp(1rem, 1.2vw, 1.15rem);
+    line-height: 1.75;
+    color: var(--tone-text);
+    margin: 0;
+  }
+
+  .videonote-signoff {
+    font-size: 0.925rem;
+    color: var(--tone-text-muted) !important;
+    font-style: normal;
+  }
+
+  .videonote-signoff cite {
+    font-style: italic;
+  }
+
+  @media (max-width: 720px) {
+    .lookingfor-cols {
+      grid-template-columns: 1fr;
+      gap: var(--space-12);
+    }
+  }
+</style>

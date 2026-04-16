@@ -53,20 +53,22 @@ Four project highlight cards that show range: nonprofit rebuild, community tooli
 |-------|-------|
 | **Title** | no-wb.org |
 | **Eyebrow** | Community tool |
-| **Tech** | TBD by Afton — add stack |
+| **Tech** | Astro · Tailwind · TypeScript · Vercel |
 | **Description** | A no-whiteboard hiring dashboard. Surfaces companies that skip the whiteboard interview. Built for developers who'd rather prove their skills by building things. |
-| **Link** | https://no-wb.org (placeholder — confirm) |
+| **Link** | https://no-wb.org |
+| **Repo** | https://github.com/aftongauntlett/no-whiteboard-jobs-dashboard |
 | **Image** | Placeholder slot |
 
-### 3. JS13k Entries
+### 3. Orbital Order (JS13k)
 
 | Field | Value |
 |-------|-------|
-| **Title** | JS13k Game Entries |
+| **Title** | Orbital Order |
 | **Eyebrow** | Constraint-driven game dev |
-| **Tech** | Canvas 2D · Web Audio API · 13kb limit |
-| **Description** | Annual game jam where the entire submission — HTML, JS, CSS, assets — must fit in 13 kilobytes. No frameworks. No libraries. Pure platform APIs and creative compression. |
-| **Link** | Placeholder — add js13kgames.com profile |
+| **Tech** | Vanilla JS · Canvas 2D · Web Audio API · 13KB limit |
+| **Description** | A physics puzzle game where you guide electrons into atomic orbitals. Built for the JS13k competition — the entire submission, HTML, JS, and assets, must fit in 13 kilobytes. No frameworks. No libraries. 8.2KB zipped. |
+| **Link** | https://orbital-order.aftongauntlett.com/ |
+| **Repo** | https://github.com/aftongauntlett/js13k-demo |
 | **Image** | Placeholder slot |
 
 ### 4. This Template

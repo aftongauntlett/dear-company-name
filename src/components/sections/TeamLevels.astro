@@ -1,0 +1,125 @@
+---
+import Card from '../ui/Card.astro';
+---
+
+<section id="teams" class="teamlevels-section" aria-labelledby="teams-heading">
+  <div class="container">
+
+    <div class="section-intro">
+      <h2 id="teams-heading">Things I&rsquo;ve leveled up teams on</h2>
+    </div>
+
+    <div class="teams-grid">
+
+      <Card eyebrow="Design systems" title="Filling the gap">
+        <p>
+          The team didn&rsquo;t have a designer. I took a night course through Booz Allen,
+          got comfortable in Figma, acquired team licenses, and introduced Storybook as a
+          living component reference. One person filling a gap turned into a workflow
+          the whole team depended on.
+        </p>
+      </Card>
+
+      <Card eyebrow="Client engagement" title="Winning the room">
+        <p>
+          Part of stakeholder review cycles from early wireframe through final demo. Built
+          interactive prototypes polished enough that the work routinely beat competing
+          proposals. Being in the room to present those decisions made a larger
+          impact than any individual deliverable.
+        </p>
+      </Card>
+
+      <Card eyebrow="Code quality" title="Reviewing the code">
+        <p>
+          Shaped how a team gave and received feedback on PRs — smaller diffs, comments
+          that taught rather than blocked, and a test coverage baseline that caught issues early. The habit changed before any tooling did, and it was the habit
+          that stuck.
+        </p>
+      </Card>
+
+    </div>
+
+    <div class="teams-divider" role="separator" aria-hidden="true"></div>
+
+    <div class="teams-result">
+      <Card eyebrow="The result" title="Promoted to lead within a year" class="promoted-card">
+        <p>
+          Within twelve months of joining <strong>Booz Allen Hamilton</strong>, I was promoted to lead, received three
+          internal awards, and was selected by the department to attend <strong>AWS re:Invent</strong> in Las Vegas.
+          The promotion and the recognition were a direct response to the design system work
+          and the client-facing demos. Evidence that the changes actually changed how the team operated.
+        </p>
+      </Card>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .teamlevels-section {
+    padding-block: var(--space-16);
+  }
+
+  .section-intro {
+    display: grid;
+    gap: var(--space-4);
+    margin-block-end: var(--space-8);
+  }
+
+  /* Center eyebrow + title in top-3 cards only */
+  .teams-grid :global(.card-eyebrow),
+  .teams-grid :global(.card-title) {
+    text-align: center;
+  }
+
+  /* Inline code chips */
+  .teams-grid :global(code),
+  :global(.promoted-card) :global(code) {
+    font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 0.82em;
+    background: color-mix(in srgb, var(--tone-primary) 10%, var(--tone-surface-strong));
+    color: color-mix(in srgb, var(--tone-primary) 80%, var(--tone-text));
+    border-radius: var(--radius-sm);
+    padding: 0.1em 0.4em;
+  }
+
+  .teams-grid {
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .teams-divider {
+    border: none;
+    border-top: 1px solid var(--tone-border);
+    margin-block: var(--space-12);
+    opacity: 0.4;
+  }
+
+  .teams-result {
+    display: flex;
+    justify-content: center;
+  }
+
+  :global(.promoted-card) {
+    max-width: 580px;
+    width: 100%;
+    padding: var(--space-8);
+  }
+
+  @media (max-width: 840px) {
+    .teams-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 540px) {
+    .teams-grid {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.promoted-card) {
+      padding: var(--space-6);
+    }
+  }
+</style>

@@ -1,5 +1,19 @@
 # PRD-06: Page Copy
 
+## Status
+
+| Section | Status | Notes |
+|---|---|---|
+| Hero | ✅ Built | Matches spec |
+| How I Start | ✅ Built | Group 2 has a third card ("Git hygiene") not in this PRD |
+| How I Choose a Stack | ✅ Built | Last two principles diverged — see note below |
+| Recent Work | ✅ Built | Descriptions condensed; copy intent preserved |
+| Things I've Leveled Up Teams On | ✅ Built | Card 4 updated — see note below |
+| What I'm Looking For | ✅ Built | Matches spec |
+| A Note on the Video Ask | ✅ Built | Whiteboard paragraph added — see note below |
+
+---
+
 ## Purpose
 
 This PRD contains the final (or near-final) copy for every section of the site. Implementing agents should use this as the source of truth for all text content. Do not derive copy from the raw reference files in `docs/content/` — those are source material; this PRD is the distillation.
@@ -13,7 +27,7 @@ This PRD contains the final (or near-final) copy for every section of the site. 
 
 ---
 
-## Section: Hero (`id="top"`)
+## Section: Hero (`id="top"`) ✅
 
 ### H1 (typewriter target)
 
@@ -38,7 +52,9 @@ Dear Your Company,
 
 ---
 
-## Section: How I Start (`id="start"`)
+## Section: How I Start (`id="start"`) ✅
+
+> **Divergence note:** The built component added a third card to the "Team projects" group: **Git hygiene** — *"Atomic commits, useful messages, rebase on main before the PR. I review MRs with actual feedback and don't panic at a merge conflict."* The "Agent rules" card body was also slightly condensed. Both changes are intentional improvements.
 
 ### H2
 
@@ -69,7 +85,13 @@ Everyone codes however they want. The hook cleans it before it hits the branch. 
 
 ---
 
-## Section: How I Choose a Stack (`id="stack"`)
+## Section: How I Choose a Stack (`id="stack"`) ✅
+
+> **Divergence note:** The last two principles in this PRD ("TanStack Query for data fetching" and "Design tokens over component libraries") were replaced in the built component with:
+> - **Accessibility is a constraint, not a checklist** — WCAG 2.2 AA, keyboard nav, focus styles, reduced motion, screen reader testing at the design stage.
+> - **I can work both sides of the API** — Supabase, RLS, OAuth, writing endpoints, TanStack Query for frontend caching.
+>
+> The built version is better. The copy below is retained for reference but does **not** reflect what's on the page.
 
 ### H2
 
@@ -98,7 +120,9 @@ I can work in any system, but I'd rather own the tokens than fight a third-party
 
 ---
 
-## Section: Recent Work (`id="work"`)
+## Section: Recent Work (`id="work"`) ✅
+
+> **Note:** Card descriptions were condensed in the built component. Copy intent and all key technical details are preserved. The PRD copy below remains useful reference if descriptions need to be restored to full length.
 
 ### H2
 
@@ -164,7 +188,7 @@ Annual game jam where the entire submission — HTML, JS, CSS, assets — must f
 
 ---
 
-## Section: Things I've Leveled Up Teams On (`id="teams"`)
+## Section: Things I've Leveled Up Teams On (`id="teams"`) ✅
 
 ### H2
 
@@ -197,18 +221,16 @@ Introduced TanStack Query to replace scattered `useEffect`/`useState` API patter
 
 ---
 
-### Card 4 (self-aware aside)
+### Card 4
 
-**Eyebrow:** Honest disclaimer
-**Title:** State management (with a caveat)
+**Eyebrow:** Booz Allen Hamilton
+**Title:** Promoted to lead within a year
 **Body:**
-I've shipped real products with thoughtful state architecture — Zustand, Context, TanStack Query, and yes, Redux when the project called for it.
-
-*That said: please don't ask me to whiteboard this cold. My brain has DROP DATABASE preinstalled under pressure, and I'd rather prove it in a real conversation than a performance review. I really hope this website is pulling its weight right now.*
+Within twelve months of joining, I was promoted to lead, received three internal awards, and was selected by the department to attend AWS re:Invent in Las Vegas. The promotion and the recognition were a direct response to the Figma workflow and Angular migration work — evidence that the changes actually changed how the team operated.
 
 ---
 
-## Section: What I'm Looking For (`id="looking-for"`)
+## Section: What I'm Looking For (`id="looking-for"`) ✅
 
 ### H2
 
@@ -222,7 +244,7 @@ I've shipped real products with thoughtful state architecture — Zustand, Conte
 
 ---
 
-## Section: A Note on the Video Ask (`id="video-note"` or no anchor — closing section)
+## Section: A Note on the Video Ask (`id="video-note"` or no anchor — closing section) ✅
 
 ### H2
 
@@ -233,6 +255,8 @@ I've shipped real products with thoughtful state architecture — Zustand, Conte
 > I don't perform well talking to myself on camera. I perform well in actual conversations.
 >
 > If you want to see how I think, let's get on a call and I'll walk you through anything here live. I'll bring the same preparation I brought to building this, and you'll get a much better read on whether we'd work well together than a screen recording would.
+>
+> The same goes for live whiteboard and algorithmic interviews. I don't have a CS fundamentals background, and if someone is watching me code under pressure I'd probably spell my name wrong — genuinely not my best side. Take-home exercises or async work samples give a much more accurate picture of how I actually work.
 
 ### CTA button
 
@@ -248,7 +272,6 @@ I've shipped real products with thoughtful state architecture — Zustand, Conte
 ## Copy Notes for Implementors
 
 - All section H2s should be consistent in tone — confident and dry, not corporate.
-- The "State management" card aside (italicized text) must visually differentiate from the card body — use an `<em>` or give it a lighter text color. Do not lose the joke to a formatting accident.
 - The `prettyprettyprettygood.md` line about "renting space from a platform that owns their presence" is good copy but doesn't have a home in these sections — it belongs on the PPG project itself. Don't force it here.
 - All external project links open in `target="_blank" rel="noopener noreferrer"`.
 - Tech tags on project cards are visual labels only — no links needed.

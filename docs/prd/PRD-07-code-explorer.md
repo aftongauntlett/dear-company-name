@@ -26,11 +26,12 @@ Create a `/code` page that gives hiring managers a curated, guided window into r
 - Create `src/config/codeViews.ts` — configuration for all curated views across repos.
 - Create `src/utils/github.ts` — build-time GitHub API utility functions (tree fetch + file content fetch).
 - Create `src/utils/github.test.ts` — unit tests for the utility functions.
-- Create `src/pages/code.astro` — the `/code` page, fetching all view data at build time.
+- Create `src/pages/code.astro` — the `/code` page, fetching all view data at build time. Reads the `?view=` query param at build time is not applicable (static); handle param client-side on mount to activate the matching tab.
 - Create `src/components/sections/CodeExplorer.astro` — the full explorer section (tree + content pane).
 - Create `src/components/ui/FileTree.astro` — the navigable file tree.
 - Create `src/components/ui/CodePane.astro` — the syntax-highlighted file content pane.
 - Add a `/code` nav link to `src/components/layout/Navbar.astro`.
+- Add `sandboxHref` and `sandboxLabel` optional props to `src/components/ui/ProjectCard.astro` — renders a "Code walkthrough" button in the card's links row when present.
 - Document the `GITHUB_TOKEN` env var in `.env.example`.
 
 ## Out of Scope
@@ -53,13 +54,97 @@ Add a `Code` nav link in `Navbar.astro` pointing to `/code`. Keep it last in the
 
 ---
 
+## Integration with Recent Work (PRD-04)
+
+The `ProjectCard` component (`src/components/ui/ProjectCard.astro`) should gain an optional `sandboxHref` prop. When present, it renders a third button alongside the existing GitHub and Live Site buttons — labelled **"Code walkthrough"** — linking to `/code?view={id}`. The `/code` page reads the `view` query param on load and activates the matching view in the tab selector; if the param is absent or unrecognised, the first view is selected instead.
+
+**Why this beats a modal:** The `/code` page was deliberately given a full-width layout because a file tree + code pane needs horizontal breathing room. An inline modal or drawer would require duplicating that layout. A link to `/code?view={id}` gets the context right for free.
+
+**`sandboxHref` on `ProjectCard`:**
+
+```ts
+interface Props {
+  // ... existing props
+  sandboxHref?: string;   // e.g. '/code?view=gbva' — omit if no walkthrough view exists for this project
+  sandboxLabel?: string;  // defaults to 'Code walkthrough'
+}
+```
+
+- Button variant: `outline`, size `sm` (same as the existing GitHub button).
+- Position: first in the links row, before the GitHub and Live Site buttons — it's the deepest engagement action, so it earns prime position.
+- Only render the button when `sandboxHref` is provided. Projects without a confirmed walkthrough view omit it entirely.
+
+### Per-project walkthrough feasibility
+
+| Project | `CODE_VIEWS` id | Repo | Status |
+|---------|-----------------|------|--------|
+| Ghostbusters Virginia | `gbva` | `ghostbustersvirginia/ghostbustersva` | ✅ Ready to configure |
+| prettyprettyprettygood | `prettyprettyprettygood` | `aftongauntlett/prettyprettyprettygood` | ✅ Ready to configure |
+| This template | `template-prd` | `aftongauntlett/dear-company-name` | ✅ Already in config stub |
+| NPC Finder | `npcfinder` | `aftongauntlett/npcfinder` | ✅ Confirmed public — not in PRD-04 project cards, but a strong standalone view on `/code` |
+| JS13k / Orbital Order | `js13k` | `aftongauntlett/js13k-demo` | ✅ Single repo confirmed — 5 source files total, the constraint story is very readable |
+| no-wb.org | `no-wb` | `aftongauntlett/no-whiteboard-jobs-dashboard` | ✅ Confirmed — Astro + Tailwind, data merge model is the highlight |
+
+### Suggested highlight paths per ready project
+
+These are starting points — the implementing agent should read the per-project write-ups in `docs/content/` and adjust.
+
+**`gbva` — Ghostbusters Virginia**
+
+Suggested `include` paths:
+- `src/utils/links.ts` — URL safety validators wired into Zod content schema (defense-in-depth at the data layer)
+- `src/utils/deriveEventStatus.ts` — timezone-aware event status logic using `Intl` API
+- `src/components/AppearanceForm/` — five-step wizard with conditional step skipping, session storage persistence, and copy-as-constants pattern
+
+**`prettyprettyprettygood` — prettyprettyprettygood.org**
+
+Suggested `include` paths:
+- `src/styles/tokens.css` (or equivalent) — every visual value as a custom property; nothing hardcoded
+- `src/pages/api/contact.ts` (or equivalent) — honeypot + timestamp + Turnstile + rate-limit layered spam defense
+- `src/pages/api/rate-limit.ts` (if separate) — SHA-256 hashed email keys in Upstash Redis
+
+**`template-prd` — this template (already in stub)**
+
+Suggested `include` paths (already set):
+- `docs/prd/` — shows planning discipline before code is written
+
+Consider expanding to also include:
+- `src/config/site.ts` — single source of truth for applicant/company config
+- `src/styles/global.css` — token-driven design system
+
+**`npcfinder` — NPC Finder (confirmed public)**
+
+Suggested `include` paths:
+- `supabase/migrations/` — schema evolution story; early decisions hardened over time as the threat model was understood better. The migration history is itself the argument.
+- `supabase/functions/` — edge functions with identity verification and SSRF protection on the scrape-url endpoint
+- `supabase/MIGRATIONS-README.md` — documents the migration workflow; context for a hiring manager reading the SQL
+
+Note: NPC Finder is not a PRD-04 project card (it's invite-only context). It lives as a standalone view on `/code` with no corresponding `sandboxHref` button on the project grid.
+
+---
+
+**`no-wb` — no-wb.org (no-whiteboard-jobs-dashboard)**
+
+Suggested `include` paths:
+- `src/data/` — three-file data model: `companies.json` (upstream mirror), `companies.local.json` (local-only additions), `companies.ts` (build-time merge with `source`/`overrideReason`/`overrideDate` traceability metadata). This is a clean example of respecting upstream, separating concerns, and making data provenance explicit.
+- `src/utils/` — client-side TypeScript for search/filter/sort/view state
+
+**`js13k` — Orbital Order (js13k-demo)**
+
+Suggested `include` paths:
+- `src/` — the entire source: only 5 files (`GameGolfed.js`, `components/ElectronGolfed.js`, `components/TutorialGolfed.js`, `systems/OrbitalSystemGolfed.js`, `systems/AudioSystemGolfed.js`). The constraint-driven architecture is visible at a glance — every class, every system justified by byte cost.
+- `package.json` — the custom Terser build pipeline with property mangling and 3-pass compression
+- `README.md` — the self-documented constraints + lessons learned section is itself worth reading
+
+---
+
 ## Configuration: `src/config/codeViews.ts`
 
 This file is the single source of truth for what gets shown. An implementing agent changes only this file to curate views — no template markup changes required.
 
 ```ts
 export interface CodeView {
-  /** Unique identifier — used as the tab/selector key. */
+  /** Unique identifier — used as the tab/selector key and as the `?view=` query param value. */
   id: string;
 
   /** Display label shown in the view selector. */
@@ -93,20 +178,102 @@ export interface CodeView {
    * Files outside the whitelist are filtered out before any content is fetched.
    */
   include: string[];
+
+  /**
+   * The file to open by default when this view is activated.
+   * Must be an exact path matching one of the resolved files in the tree.
+   * When omitted, the explorer opens the first file alphabetically.
+   *
+   * Use this when the alphabetical first file is not the right entry point
+   * — e.g. when a README should frame the code before the source is read.
+   */
+  defaultFile?: string;
 }
 
 export const CODE_VIEWS: CodeView[] = [
   {
     id: 'template-prd',
-    label: 'How I plan: this template\'s PRDs',
+    label: 'How I plan: the PRDs behind this site',
     description:
       'Every feature on this site started as a PRD in the docs/prd/ folder — scope, spec, acceptance criteria, and the reasoning behind each decision. This is what planning looks like before a line of code gets written.',
     owner: 'aftongauntlett',
     repo: 'dear-company-name',
-    include: ['docs/prd/'],
+    include: ['docs/prd/', 'src/config/site.ts'],
   },
-  // Add additional views here. One view per interesting point worth making.
-  // Keep the total number small — three to five is enough. Quality over coverage.
+  {
+    id: 'gbva',
+    label: 'GBVA: defense-in-depth at the data layer',
+    description:
+      'URL validators wired directly into Zod content schemas, timezone-aware event status using Intl, and a five-step form wizard with conditional branching and session storage recovery. Every decision earned its weight.',
+    owner: 'ghostbustersvirginia',
+    repo: 'ghostbustersva',
+    // Confirm exact paths against the actual repo tree before implementing.
+    include: [
+      'src/utils/links.ts',
+      'src/utils/deriveEventStatus.ts',
+      'src/components/AppearanceForm/',
+    ],
+  },
+  {
+    id: 'prettyprettyprettygood',
+    label: 'prettyprettyprettygood: layered spam defense and CSS tokens',
+    description:
+      'A contact form defended in layers — honeypot, submission timing, Turnstile, and rate limits keyed to SHA-256 hashed email addresses. Plus a token system where nothing is hardcoded and the hero animation pulls its palette from CSS custom properties.',
+    owner: 'aftongauntlett',
+    repo: 'prettyprettyprettygood',
+    // Confirm exact paths against the actual repo tree before implementing.
+    include: [
+      'src/styles/',
+      'src/pages/api/',
+    ],
+  },
+  {
+    id: 'no-wb',
+    label: 'no-wb.org: upstream data, local curation, explicit provenance',
+    description:
+      'Three-file data model: upstream mirror, local-only additions, and a build-time merge that tags every record with source and override metadata. Respecting upstream while making local changes traceable.',
+    owner: 'aftongauntlett',
+    repo: 'no-whiteboard-jobs-dashboard',
+    include: [
+      'src/data/',
+      'src/utils/',
+    ],
+  },
+  {
+    id: 'js13k',
+    label: 'Orbital Order: 13KB limit, zero dependencies',
+    description:
+      'Five source files, no libraries, everything under 13KB zipped. Procedural audio from Web Audio API, Canvas 2D rendering, a custom Terser build pipeline. Constraints as design tool.',
+    owner: 'aftongauntlett',
+    repo: 'js13k-demo',
+    include: [
+      'src/',
+      'package.json',
+      'README.md',
+    ],
+    // README opens first so the constraint rationale frames the single-letter class names
+    // before the source code is read. The terseness is intentional — this makes that clear.
+    defaultFile: 'README.md',
+  },
+  {
+    id: 'npcfinder',
+    label: 'NPC Finder: RLS, migrations, and honest iterating',
+    description:
+      'Row Level Security as the actual data isolation guarantee — not application-layer filtering. A migrations folder that tells the story of a threat model being understood over time, not designed perfectly upfront.',
+    owner: 'aftongauntlett',
+    repo: 'npcfinder',
+    include: [
+      'supabase/migrations/',
+      'supabase/functions/',
+      'supabase/MIGRATIONS-README.md',
+    ],
+    // Open the README first — it explains the migration workflow and why the history matters
+    // before the SQL files are read.
+    defaultFile: 'supabase/MIGRATIONS-README.md',
+  },
+  // Total: 6 views. That's at the upper edge of the "three to five" guidance — trim to 4–5 if
+  // the page feels like a portfolio dump. Recommended cuts if needed: drop `npcfinder`
+  // (no project card link) or `no-wb` (most self-contained story).
 ];
 ```
 
@@ -114,6 +281,7 @@ export const CODE_VIEWS: CodeView[] = [
 - Keep the view count small. Three to five curated views is the right range. More than five starts to read as a portfolio dump rather than a guided tour.
 - Every `description` field should answer "why does a hiring manager care about this?" before "what is this?"
 - The `include` whitelist is the editorial control. It is intentional that you cannot accidentally expose more than you mean to.
+- The `id` value is used as the `?view=` query param. Keep it lowercase, hyphenated, stable — changing it breaks links from project cards.
 
 ---
 
@@ -297,12 +465,14 @@ interface Props {
 - Render the selected view's `description` as visible copy above the explorer pane.
 - Apply ARIA `tablist` / `tab` / `tabpanel` pattern for the view selector (see ARIA spec below).
 - Pass the active view's file tree to `FileTree`.
-- Pass the initially selected file's content (first file in tree, alphabetically) to `CodePane` as the default.
+- Pass the initially selected file's content to `CodePane` as the default. Selection priority: (1) the view's `defaultFile` if set and found in the resolved file list; (2) otherwise the first file alphabetically.
 - Coordinate selection state between `FileTree` and `CodePane` via vanilla JS (no framework).
 
 ### View selector
 
 Tabs styled with `--tone-primary` active indicator. Keyboard: left/right arrow keys switch tabs per ARIA tab pattern. Each tab is a `<button role="tab">`.
+
+On page load, read `window.location.search` for a `view` param. If it matches a known view `id`, activate that tab. If absent or unrecognised, activate the first tab. This makes links from `ProjectCard` (`/code?view=gbva`) work without server-side routing.
 
 ### Layout
 
@@ -474,6 +644,11 @@ Add a `/code` link to `Navbar.astro`:
 - [ ] Font in file tree and code pane matches a monospace stack (`--font-mono` or fallback).
 - [ ] `GITHUB_TOKEN` is never serialized into the built HTML output.
 - [ ] A misconfigured or unreachable repo ref fails the build with a descriptive error.
+- [ ] Navigating to `/code?view=gbva` (or any valid view id) activates the correct tab on load.
+- [ ] Navigating to `/code?view=unknown` or `/code` with no param activates the first tab without error.
+- [ ] `ProjectCard` renders a "Code walkthrough" button when `sandboxHref` is provided; button is absent when prop is omitted.
+- [ ] "Code walkthrough" button links to the correct `/code?view={id}` URL for each project.
+- [ ] NPC Finder has no `sandboxHref` on a project card (it's not a PRD-04 card); its view is accessible via `/code` directly.
 - [ ] `npm run typecheck` passes.
 - [ ] `npm run lint` passes.
 - [ ] `npm run test` passes (github.ts utility functions have unit tests).
