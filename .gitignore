@@ -27,3 +27,6 @@ coverage/
 
 # jetbrains setting folder
 .idea/
+
+# local reference/content files (source material, not tracked)
+docs/content/
