@@ -1,7 +1,8 @@
 ---
 import { APPLICANT } from '../../config/site';
+import BrandIcon from '../ui/BrandIcon.astro';
 import Icon from '../ui/Icon.astro';
-import { Code, Briefcase, FileText, Mail } from '@lucide/astro';
+import { FileText, Mail } from '@lucide/astro';
 
 const year = new Date().getFullYear();
 ---
@@ -25,7 +26,7 @@ const year = new Date().getFullYear();
             aria-label="GitHub profile"
             title="GitHub"
           >
-            <Icon icon={Code} size={18} />
+            <BrandIcon name="github" size={18} />
           </a>
         </li>
         <li>
@@ -37,7 +38,7 @@ const year = new Date().getFullYear();
             aria-label="LinkedIn profile"
             title="LinkedIn"
           >
-            <Icon icon={Briefcase} size={18} />
+            <BrandIcon name="linkedin" size={18} />
           </a>
         </li>
         <li>

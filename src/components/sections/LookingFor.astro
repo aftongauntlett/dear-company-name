@@ -1,7 +1,8 @@
 ---
 import { APPLICANT } from '../../config/site';
+import BrandIcon from '../ui/BrandIcon.astro';
 import Icon from '../ui/Icon.astro';
-import { Code, Briefcase, Globe, FileText, Phone, Mail, MapPin } from '@lucide/astro';
+import { Globe, FileText, Phone, Mail, MapPin } from '@lucide/astro';
 ---
 
 <section id="looking-for" class="lookingfor-section" aria-labelledby="looking-for-heading">
@@ -33,13 +34,13 @@ import { Code, Briefcase, Globe, FileText, Phone, Mail, MapPin } from '@lucide/a
         <ul class="contact-chips" role="list">
           <li>
             <a href={APPLICANT.github} target="_blank" rel="noopener noreferrer" class="chip chip-link">
-              <Icon icon={Code} size={14} />
+              <BrandIcon name="github" size={14} />
               <span>GitHub</span>
             </a>
           </li>
           <li>
             <a href={APPLICANT.linkedin} target="_blank" rel="noopener noreferrer" class="chip chip-link">
-              <Icon icon={Briefcase} size={14} />
+              <BrandIcon name="linkedin" size={14} />
               <span>LinkedIn</span>
             </a>
           </li>
