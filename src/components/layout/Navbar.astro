@@ -1,6 +1,8 @@
 ---
 import { APPLICANT } from '../../config/site';
 import ThemePicker from './ThemePicker.astro';
+import Icon from '../ui/Icon.astro';
+import { Menu, X } from '@lucide/astro';
 
 const nav = [
   { href: '#start', label: 'How I Start' },
@@ -11,22 +13,130 @@ const nav = [
 ];
 ---
 
-<header class="site-header">
+<header class="site-header" id="site-header">
   <div class="site-header-inner container">
     <a href="#top" class="brand" aria-label="Back to top">
       <span class="brand-name">{APPLICANT.name}</span>
     </a>
 
-    <nav aria-label="Primary" class="site-nav">
+    <nav id="primary-nav" aria-label="Primary" class="site-nav">
       <ul>
         {nav.map((item) => (
           <li>
-            <a href={item.href}>{item.label}</a>
+            <a href={item.href} data-nav-href={item.href}>{item.label}</a>
           </li>
         ))}
       </ul>
     </nav>
 
-    <ThemePicker />
+    <div class="header-end">
+      <ThemePicker />
+      <button
+        id="nav-toggle"
+        class="nav-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="primary-nav"
+        aria-label="Open navigation menu"
+      >
+        <span class="nav-toggle-icon nav-toggle-icon--open" aria-hidden="true">
+          <Icon icon={Menu} size={20} />
+        </span>
+        <span class="nav-toggle-icon nav-toggle-icon--close" aria-hidden="true">
+          <Icon icon={X} size={20} />
+        </span>
+      </button>
+    </div>
   </div>
 </header>
+
+<script is:inline>
+  (function () {
+    // ── Active nav via IntersectionObserver ───────────────────────
+    const links = Array.from(
+      document.querySelectorAll('.site-nav a[data-nav-href]')
+    );
+
+    if ('IntersectionObserver' in window && links.length > 0) {
+      const sectionIds = links
+        .map((a) => a.getAttribute('data-nav-href')?.replace('#', ''))
+        .filter(Boolean);
+
+      const sections = sectionIds
+        .map((id) => document.getElementById(id))
+        .filter(Boolean);
+
+      if (sections.length > 0) {
+        let activeId = '';
+
+        function setActive(id) {
+          if (id === activeId) return;
+          activeId = id;
+          links.forEach((a) => {
+            const isActive = a.getAttribute('data-nav-href') === '#' + id;
+            a.classList.toggle('is-active', isActive);
+            a.setAttribute('aria-current', isActive ? 'true' : 'false');
+          });
+        }
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) setActive(entry.target.id);
+            });
+          },
+          { rootMargin: '-20% 0px -60% 0px', threshold: 0 }
+        );
+
+        sections.forEach((s) => observer.observe(s));
+      }
+    }
+
+    // ── Hamburger toggle ──────────────────────────────────────────
+    const header = document.getElementById('site-header');
+    const toggle = document.getElementById('nav-toggle');
+    const navEl  = document.getElementById('primary-nav');
+
+    if (!(header && toggle && navEl)) return;
+
+    function openNav() {
+      header.classList.add('nav-open');
+      toggle.setAttribute('aria-expanded', 'true');
+      toggle.setAttribute('aria-label', 'Close navigation menu');
+    }
+
+    function closeNav() {
+      header.classList.remove('nav-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Open navigation menu');
+    }
+
+    toggle.addEventListener('click', () => {
+      if (header.classList.contains('nav-open')) {
+        closeNav();
+      } else {
+        openNav();
+      }
+    });
+
+    // Close when a nav link is tapped
+    navEl.addEventListener('click', (e) => {
+      if (e.target instanceof HTMLAnchorElement) closeNav();
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (header.classList.contains('nav-open') && !header.contains(e.target)) {
+        closeNav();
+      }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && header.classList.contains('nav-open')) {
+        closeNav();
+        toggle.focus();
+      }
+    });
+  })();
+</script>

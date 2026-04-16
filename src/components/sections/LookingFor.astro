@@ -52,7 +52,7 @@ import { Code, Briefcase, Globe, FileText, Phone, Mail, MapPin } from '@lucide/a
           <li>
             <a href={APPLICANT.resume} target="_blank" rel="noopener noreferrer" class="chip chip-link">
               <Icon icon={FileText} size={14} />
-              <span>R&eacute;sum&eacute;</span>
+              <span>Resume</span>
             </a>
           </li>
           <li>
@@ -84,7 +84,7 @@ import { Code, Briefcase, Globe, FileText, Phone, Mail, MapPin } from '@lucide/a
         </div>
         <div class="videonote-card-body">
         <p>
-          I don&rsquo;t perform well talking to myself on camera. I perform well in actual
+          I don&rsquo;t perform well talking to myself on camera. I perform better in actual
           conversations.
         </p>
         <p>
@@ -223,6 +223,11 @@ import { Code, Briefcase, Globe, FileText, Phone, Mail, MapPin } from '@lucide/a
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    transition: border-color 180ms ease;
+  }
+
+  .videonote-card:hover {
+    border-color: color-mix(in srgb, var(--tone-primary) 40%, var(--tone-border));
   }
 
   .videonote-card-header {
@@ -239,7 +244,7 @@ import { Code, Briefcase, Globe, FileText, Phone, Mail, MapPin } from '@lucide/a
   }
 
   .videonote-eyebrow {
-    font-family: var(--font-heading);
+    font-family: var(--font-display);
     font-size: clamp(1rem, 1.3vw, 1.125rem);
     font-weight: 600;
     color: var(--tone-text);
@@ -247,9 +252,8 @@ import { Code, Briefcase, Globe, FileText, Phone, Mail, MapPin } from '@lucide/a
   }
 
   .videonote-card-body p {
-    font-size: clamp(1rem, 1.2vw, 1.15rem);
     line-height: 1.75;
-    color: var(--tone-text);
+    color: var(--tone-text-muted);
     margin: 0;
   }
 
@@ -267,6 +271,22 @@ import { Code, Briefcase, Globe, FileText, Phone, Mail, MapPin } from '@lucide/a
     .lookingfor-cols {
       grid-template-columns: 1fr;
       gap: var(--space-12);
+    }
+
+    .lookingfor-body {
+      border-left: none;
+      border-top: 4px solid var(--tone-primary);
+      padding-inline-start: 0;
+      padding-block-start: var(--space-6);
+    }
+
+    .contact-header {
+      text-align: center;
+      margin-block-start: 0;
+    }
+
+    .contact-chips {
+      justify-content: center;
     }
   }
 </style>

@@ -1,46 +1,50 @@
 ---
 import { THEMES } from '../../config/site';
-import StyledDropdown from '../ui/StyledDropdown.astro';
+import Icon from '../ui/Icon.astro';
+import { Palette } from '@lucide/astro';
 
-const themeOptions = THEMES.map((themeName) => ({
-  value: themeName,
-  label: themeName.charAt(0).toUpperCase() + themeName.slice(1),
-}));
+const themes = THEMES as unknown as string[];
 ---
 
-<StyledDropdown
-  id="theme-picker"
-  name="theme-picker"
-  label="Theme"
-  labelPosition="left"
-  className="theme-picker-dropdown"
-  ariaLabel="Choose color theme"
-  options={themeOptions}
-/>
+<button
+  id="theme-toggle"
+  class="theme-toggle"
+  type="button"
+  aria-label="Switch color theme"
+  title="Switch color theme"
+  data-themes={themes.join(',')}
+>
+  <Icon icon={Palette} size={18} />
+</button>
 
 <script is:inline>
-  const key = 'site-theme';
-  const picker = document.getElementById('theme-picker');
+  (function () {
+    const key = 'site-theme';
+    const btn = document.getElementById('theme-toggle');
+    if (!(btn instanceof HTMLButtonElement)) return;
 
-  if (picker instanceof HTMLSelectElement) {
+    const themes = (btn.dataset.themes ?? '').split(',').filter(Boolean);
+    if (themes.length === 0) return;
+
     const saved = localStorage.getItem(key);
-    const options = Array.from(picker.options).map((option) => option.value);
-    // Prefer saved value; otherwise keep the server-rendered data-theme default.
     const current = document.documentElement.dataset.theme ?? '';
     const initial =
-      saved && options.includes(saved)
+      saved && themes.includes(saved)
         ? saved
-        : options.includes(current)
+        : themes.includes(current)
           ? current
-          : picker.value;
+          : themes[0];
 
     document.documentElement.dataset.theme = initial;
-    picker.value = initial;
 
-    picker.addEventListener('change', () => {
-      const value = picker.value;
-      document.documentElement.dataset.theme = value;
-      localStorage.setItem(key, value);
+    btn.addEventListener('click', () => {
+      const idx = themes.indexOf(document.documentElement.dataset.theme ?? '');
+      const next = themes[(idx + 1) % themes.length];
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem(key, next);
+      btn.setAttribute('aria-label', `Switch color theme (current: ${next})`);
     });
-  }
+
+    btn.setAttribute('aria-label', `Switch color theme (current: ${initial})`);
+  })();
 </script>

@@ -86,4 +86,14 @@ const { term, icon } = Astro.props;
     border-radius: var(--radius-sm);
     padding: 0.1em 0.35em;
   }
+
+  @media (max-width: 540px) {
+    :global(.principle-icon) {
+      display: none;
+    }
+
+    .principle-row {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>

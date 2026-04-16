@@ -1,5 +1,8 @@
 # PRD-05: Closing Sections + Full Validation
 
+Status: In Progress
+Completed: 2026-04-16 1:00am
+
 ## Goal
 
 Three final sections that close the pitch — leveling up teams, what Afton is looking for, and a disarmingly honest note about the video ask. Then full validation pass before the site is considered done.
