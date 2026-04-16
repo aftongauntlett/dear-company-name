@@ -1,0 +1,75 @@
+---
+import PrincipleRow from '../ui/PrincipleRow.astro';
+---
+
+<section id="stack" class="stack-section" aria-labelledby="stack-heading">
+  <div class="container">
+
+    <div class="section-intro">
+      <h2 id="stack-heading">How I choose a tech stack</h2>
+      <p class="section-lead">Fast to ship, easy to hand off, boring where boring is correct.</p>
+    </div>
+
+    <dl class="principles-list">
+
+      <PrincipleRow term="Static first">
+        If the content doesn&rsquo;t need a server, I don&rsquo;t use one. Astro is my default —
+        it ships zero JavaScript unless I ask it to. Fast page loads, zero cold starts, no attack
+        surface from a running process.
+      </PrincipleRow>
+
+      <PrincipleRow term="Reach for the platform">
+        Native <code>&lt;dialog&gt;</code>, CSS scroll-snap,
+        <code>IntersectionObserver</code>. If the browser can do it, I don&rsquo;t reach for a
+        dependency. Less to update, less to audit, less to explain to the next developer.
+      </PrincipleRow>
+
+      <PrincipleRow term="Add a framework when the UI earns it">
+        React when the interaction complexity justifies the bundle cost — not by default.
+        I&rsquo;ve shipped Astro with React islands for exactly two interactive pieces while
+        everything else stayed zero-JS. That was the right call.
+      </PrincipleRow>
+
+      <PrincipleRow term="Accessibility is a constraint, not a checklist">
+        WCAG 2.2 AA, keyboard navigation, visible focus styles, screen reader testing,
+        <code>prefers-reduced-motion</code> — these get considered at the design stage, not bolted
+        on at the end. I love a good animation. The focus ring comes first.
+      </PrincipleRow>
+
+      <PrincipleRow term="I can work both sides of the API">
+        Comfortable with Supabase, row-level security, OAuth flows, and writing endpoints — not
+        just consuming them. TanStack Query when the frontend needs to cache and share that data.
+        I&rsquo;m not a backend engineer by title, but I won&rsquo;t block on one for a fetch call.
+      </PrincipleRow>
+
+    </dl>
+  </div>
+</section>
+
+<style>
+  .stack-section {
+    padding-block: var(--space-16);
+  }
+
+  .section-intro {
+    display: grid;
+    gap: var(--space-4);
+    margin-block-end: var(--space-8);
+  }
+
+  .section-lead {
+    color: var(--tone-text-muted);
+    font-size: clamp(1rem, 1.2vw, 1.15rem);
+    max-width: 64ch;
+    line-height: 1.65;
+  }
+
+  .principles-list {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  /* PrincipleRow hover is self-contained — no overrides needed here */
+</style>

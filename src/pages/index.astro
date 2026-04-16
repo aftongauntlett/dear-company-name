@@ -2,6 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { APPLICANT, COMPANY } from '../config/site';
 import Hero from '../components/sections/Hero.astro';
+import HowIStart from '../components/sections/HowIStart.astro';
+import HowIChooseStack from '../components/sections/HowIChooseStack.astro';
 ---
 
 <BaseLayout
@@ -9,6 +11,8 @@ import Hero from '../components/sections/Hero.astro';
   description={`A personal application from ${APPLICANT.name}, ${APPLICANT.title}.`}
 >
   <Hero />
-  <!-- Sections added in PRD-03 through PRD-05 -->
+  <HowIStart />
+  <HowIChooseStack />
+  <!-- Sections added in PRD-04 through PRD-05 -->
 </BaseLayout>
 

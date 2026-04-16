@@ -1,0 +1,56 @@
+---
+interface Props {
+  term: string;
+}
+
+const { term } = Astro.props;
+---
+
+<div class="principle-row">
+  <dt class="principle-term">{term}</dt>
+  <dd class="principle-detail">
+    <slot />
+  </dd>
+</div>
+
+<style>
+  .principle-row {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--tone-surface);
+    border: 1px solid var(--tone-border);
+    border-inline-start: 3px solid var(--tone-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-surface);
+    transition: border-color 180ms ease;
+  }
+
+  .principle-row:hover {
+    border-inline-start-color: var(--tone-primary);
+  }
+
+  .principle-term {
+    font-family: var(--font-display);
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    font-weight: 700;
+    color: var(--tone-text);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .principle-detail {
+    margin: 0;
+    color: var(--tone-text-muted);
+    line-height: 1.7;
+  }
+
+  .principle-detail :global(code) {
+    font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 0.875em;
+    color: var(--tone-primary);
+    background: color-mix(in srgb, var(--tone-primary) 12%, transparent);
+    border-radius: var(--radius-sm);
+    padding: 0.1em 0.35em;
+  }
+</style>

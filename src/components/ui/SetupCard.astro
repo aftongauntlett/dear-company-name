@@ -1,0 +1,49 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<article class="setup-card">
+  <h3 class="setup-card-title">{title}</h3>
+  <div class="setup-card-body">
+    <slot />
+  </div>
+</article>
+
+<style>
+  .setup-card {
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--tone-surface);
+    border: 1px solid var(--tone-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-surface);
+    transition: border-color 180ms ease;
+  }
+
+  .setup-card:hover {
+    border-color: color-mix(in srgb, var(--tone-primary) 40%, var(--tone-border));
+  }
+
+  .setup-card-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    font-weight: 700;
+    color: var(--tone-text);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .setup-card-body {
+    color: var(--tone-text-muted);
+    line-height: 1.65;
+  }
+
+  .setup-card-body p {
+    margin: 0;
+  }
+</style>

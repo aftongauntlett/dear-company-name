@@ -43,7 +43,6 @@ const PLACEHOLDER_NAME = 'Your Company';
 
   </div>
 
-  <div class="hero-scroll-hint" aria-hidden="true">↓</div>
 </section>
 
 <style>
@@ -51,11 +50,11 @@ const PLACEHOLDER_NAME = 'Your Company';
 
   .hero {
     position: relative;
-    min-height: 100dvh;
+    min-height: 70dvh;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-block: var(--space-16);
+    padding-block: var(--space-10);
   }
 
   /* ─── Two-column grid ────────────────────────────────────────── */
@@ -175,29 +174,7 @@ const PLACEHOLDER_NAME = 'Your Company';
     gap: var(--space-4);
     flex-wrap: wrap;
     align-items: center;
-  }
-
-  /* ─── Scroll hint ────────────────────────────────────────────── */
-
-  .hero-scroll-hint {
-    position: absolute;
-    bottom: var(--space-8);
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 1.4rem;
-    color: var(--tone-text-muted);
-    animation: hero-scroll-bounce 2s ease-in-out infinite;
-    user-select: none;
-  }
-
-  @keyframes hero-scroll-bounce {
-    0%,
-    100% {
-      transform: translateX(-50%) translateY(0);
-    }
-    50% {
-      transform: translateX(-50%) translateY(6px);
-    }
+    justify-content: flex-end;
   }
 
   /* ─── Mobile: single column, image on top ────────────────────── */
