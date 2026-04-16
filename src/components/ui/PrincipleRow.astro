@@ -1,22 +1,33 @@
 ---
+import Icon from './Icon.astro';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LucideComponent = (props: any) => any;
+
 interface Props {
   term: string;
+  icon?: LucideComponent;
 }
 
-const { term } = Astro.props;
+const { term, icon } = Astro.props;
 ---
 
 <div class="principle-row">
-  <dt class="principle-term">{term}</dt>
-  <dd class="principle-detail">
-    <slot />
-  </dd>
+  {icon && <Icon icon={icon} size={22} class="principle-icon" />}
+  <div class="principle-content">
+    <dt class="principle-term">{term}</dt>
+    <dd class="principle-detail">
+      <slot />
+    </dd>
+  </div>
 </div>
 
 <style>
   .principle-row {
     display: grid;
-    gap: var(--space-3);
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: var(--space-6);
     padding: var(--space-6);
     background: var(--tone-surface);
     border: 1px solid var(--tone-border);
@@ -30,6 +41,11 @@ const { term } = Astro.props;
     border-inline-start-color: var(--tone-primary);
   }
 
+  .principle-content {
+    display: grid;
+    gap: var(--space-2);
+  }
+
   .principle-term {
     font-family: var(--font-display);
     font-size: clamp(1.05rem, 1.5vw, 1.2rem);
@@ -39,10 +55,27 @@ const { term } = Astro.props;
     line-height: 1.2;
   }
 
+  :global(.principle-icon) {
+    color: var(--tone-primary);
+    flex-shrink: 0;
+    padding: 0.35rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--tone-primary) 12%, transparent);
+    box-sizing: content-box;
+  }
+
   .principle-detail {
     margin: 0;
     color: var(--tone-text-muted);
     line-height: 1.7;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .principle-row:hover :global(.principle-icon) {
+      animation: wiggle 0.5s ease-in-out;
+    }
   }
 
   .principle-detail :global(code) {

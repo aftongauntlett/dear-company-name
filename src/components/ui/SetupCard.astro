@@ -1,12 +1,23 @@
 ---
+import Icon from './Icon.astro';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LucideComponent = (props: any) => any;
+
 interface Props {
   title: string;
+  icon?: LucideComponent;
 }
 
-const { title } = Astro.props;
+const { title, icon } = Astro.props;
 ---
 
 <article class="setup-card">
+  {icon && (
+    <div class="setup-card-icon-wrap">
+      <Icon icon={icon} size={22} class="setup-card-icon" />
+    </div>
+  )}
   <h3 class="setup-card-title">{title}</h3>
   <div class="setup-card-body">
     <slot />
@@ -29,6 +40,17 @@ const { title } = Astro.props;
     border-color: color-mix(in srgb, var(--tone-primary) 40%, var(--tone-border));
   }
 
+  .setup-card-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--tone-primary) 12%, transparent);
+    margin-block-end: var(--space-2);
+  }
+
   .setup-card-title {
     font-family: var(--font-display);
     font-size: clamp(1.05rem, 1.5vw, 1.2rem);
@@ -45,5 +67,15 @@ const { title } = Astro.props;
 
   .setup-card-body p {
     margin: 0;
+  }
+
+  :global(.setup-card-icon) {
+    color: var(--tone-primary);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .setup-card:hover :global(.setup-card-icon) {
+      animation: wiggle 0.5s ease-in-out;
+    }
   }
 </style>

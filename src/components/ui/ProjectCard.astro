@@ -1,0 +1,228 @@
+---
+import Button from './Button.astro';
+import Icon from './Icon.astro';
+import { ExternalLink } from '@lucide/astro';
+
+interface Props {
+  title: string;
+  eyebrow?: string;
+  liveHref?: string;
+  liveLabel?: string;
+  repoHref?: string;
+  tech: string[];
+  imageSrc?: string;
+  imageAlt?: string;
+  class?: string;
+}
+
+const {
+  title,
+  eyebrow,
+  liveHref,
+  liveLabel = 'Live site',
+  repoHref,
+  tech,
+  imageSrc,
+  imageAlt,
+  class: className = '',
+} = Astro.props;
+---
+
+<article class={`project-card ${className}`.trim()}>
+  {
+    imageSrc ? (
+      <img
+        src={imageSrc}
+        alt={imageAlt ?? ''}
+        class="project-card-image"
+        loading="lazy"
+        decoding="async"
+      />
+    ) : (
+      <div
+        class="project-card-image project-card-image--placeholder"
+        role="img"
+        aria-label="Project screenshot placeholder"
+      >
+        <span aria-hidden="true">Screenshot coming soon</span>
+      </div>
+    )
+  }
+
+  <div class="project-card-content">
+    {eyebrow && <p class="project-card-eyebrow">{eyebrow}</p>}
+    <h3 class="project-card-title">{title}</h3>
+    <div class="project-card-body">
+      <slot />
+    </div>
+
+    <ul class="project-card-tech" aria-label="Technologies used">
+      {tech.map((tag) => <li>{tag}</li>)}
+    </ul>
+
+    {
+      (liveHref || repoHref) && (
+        <div class="project-card-links">
+          {repoHref && (
+            <Button
+              href={repoHref}
+              variant="outline"
+              size="sm"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub<span class="btn-icon-wrap"><Icon icon={ExternalLink} size={13} /></span>
+            </Button>
+          )}
+          {liveHref && (
+            <Button
+              href={liveHref}
+              size="sm"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {liveLabel}<span class="btn-icon-wrap"><Icon icon={ExternalLink} size={13} /></span>
+            </Button>
+          )}
+        </div>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--tone-surface);
+    border: 1px solid var(--tone-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-surface);
+    overflow: hidden;
+    transition: border-color 180ms ease;
+    height: 100%;
+  }
+
+  .project-card:hover {
+    border-color: color-mix(in srgb, var(--tone-primary) 40%, var(--tone-border));
+  }
+
+  /* Image area */
+  .project-card-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .project-card-image--placeholder {
+    background: var(--tone-surface-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: var(--tone-text-muted);
+    letter-spacing: 0.03em;
+  }
+
+  /* Content */
+  .project-card-content {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    flex: 1;
+  }
+
+  .project-card-body {
+    align-self: start;
+  }
+
+  .project-card-eyebrow {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--tone-text-muted);
+    margin: 0;
+  }
+
+  .project-card-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+    font-weight: 700;
+    color: var(--tone-text);
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .project-card-body {
+    color: var(--tone-text-muted);
+    line-height: 1.65;
+  }
+
+  .project-card-body p {
+    margin: 0;
+  }
+
+  .project-card-body p + p {
+    margin-block-start: var(--space-3);
+  }
+
+  /* Tech tags */
+  .project-card-tech {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .project-card-tech li {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    background: var(--tone-surface-strong);
+    border: 1px solid var(--tone-border);
+    border-radius: var(--radius-pill);
+    padding: 0.2em 0.65em;
+    color: var(--tone-text-muted);
+    line-height: 1.6;
+  }
+
+  /* Links */
+  .project-card-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: flex-end;
+    align-self: end;
+    margin-block-start: var(--space-6);
+  }
+
+  /* Button icon reveal on button hover */
+  .btn-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    max-width: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding-inline-start: 0;
+    transition:
+      max-width 200ms ease,
+      opacity 200ms ease,
+      padding-inline-start 200ms ease;
+  }
+
+  :global(.btn:hover) .btn-icon-wrap {
+    max-width: 20px;
+    opacity: 1;
+    padding-inline-start: 0.3em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-icon-wrap {
+      transition: none;
+    }
+  }
+</style>

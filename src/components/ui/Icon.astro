@@ -1,0 +1,25 @@
+---
+// Thin wrapper for @lucide/astro icons.
+// Provides consistent sizing, aria-hidden default, and a shared `.icon` class hook.
+// Usage: import { Zap } from '@lucide/astro'; then <Icon icon={Zap} />
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LucideComponent = (props: any) => any;
+
+interface Props {
+  icon: LucideComponent;
+  size?: number;
+  /** Accessible label. If omitted, icon is treated as decorative (aria-hidden). */
+  label?: string;
+  class?: string;
+}
+
+const { icon: LucideIcon, size = 20, label, class: className = '' } = Astro.props;
+---
+
+<LucideIcon
+  size={size}
+  class={`icon ${className}`.trim()}
+  aria-hidden={label ? undefined : 'true'}
+  aria-label={label ?? undefined}
+/>

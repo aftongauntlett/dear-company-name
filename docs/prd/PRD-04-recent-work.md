@@ -1,5 +1,8 @@
 # PRD-04: Recent Work Section
 
+Status: In Progress
+Completed: 2026-04-15 11:30pm (I paused to watch an episode of Twin Peaks!)
+
 ## Goal
 
 Four project highlight cards that show range: nonprofit rebuild, community tooling, game jam constraints, and the template itself. Cards use placeholder image slots so real screenshots can be dropped in later without touching markup.

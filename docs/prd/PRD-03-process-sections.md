@@ -1,5 +1,8 @@
 # PRD-03: Process Sections — "How I Start" + "How I Choose a Stack"
 
+Status: Complete
+Completed: 2026-04-15 9:30pm
+
 ## Goal
 
 Two back-to-back sections that show how Afton thinks before writing a single line of code. These should feel opinionated and specific — not generic developer buzzwords. They're the "I know what I'm doing" sections.
