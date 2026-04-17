@@ -30,15 +30,31 @@ This repository is a reusable Astro template for mission-driven organizations an
 - Do not mix unrelated one-off layout systems between pages; if the project expands from single-page to multi-page, preserve the same spacing, structure, and component language.
 - Template/demo buttons should be non-navigational by default; only add real button/link destinations when intentionally requested for production behavior.
 
+## Font Loading
+
+- Load Google Fonts via async `<link>` tags in `BaseLayout.astro`, never via `@import` in CSS. `@import` is render-blocking.
+- Include a `<noscript>` fallback for no-JS environments.
+- Do not add `@import` in `global.css` — fonts are handled in the layout.
+
+## Images
+
+- Every `<img>` must have explicit `width` and `height` attributes that match the element's rendered dimensions. This allows the browser to reserve layout space before the image loads, preventing Cumulative Layout Shift (CLS).
+- Use `loading="eager"` only for above-the-fold LCP images. All other images use `loading="lazy"`.
+- Use `decoding="async"` on all non-critical images.
+- Prefer `.webp` format. Consider `.avif` for further savings on large images.
+- Do not use fluid typography (`clamp()` with a `vw` middle value) for body or description text. Use a fixed `rem` value. Fluid sizing is appropriate for display headings (`h1`–`h3`) where large visual scale changes across breakpoints are intentional.
+
+## Semantic HTML
+
+- A `<div>` that is a direct child of a `<dl>` may only contain `<dt>` and `<dd>` elements — no other elements (including icon SVGs or wrapper divs). To include decorative icons alongside a term, place the icon inside the `<dt>` with `aria-hidden="true"`.
+- Use `<ul>/<li>` for unordered lists of items that are not term-definition pairs. Reserve `<dl>` for genuine term-definition or term-description relationships.
+
 ## Scroll-triggered Animations
 
-The page uses a single `IntersectionObserver` (in `BaseLayout.astro`) to add an `is-visible` class to `.fade-up` elements when they enter the viewport. The CSS transition is defined in `global.css` inside a `@media (prefers-reduced-motion: no-preference)` block, so users who prefer reduced motion see content immediately with no transition.
-
-- The hidden state uses `.js .fade-up` — elements are only hidden when JavaScript is available (the `html.js` class is set by an inline script before first paint, so there is no FOUC).
-- The LCP element (hero headline) must never receive `fade-up`; it should render immediately.
-- The observer uses `rootMargin: '0px 0px -10% 0px'` so elements begin fading in before they're fully in view. Do not default to `threshold: 0` with no `rootMargin` — that fires the moment one pixel enters the viewport, producing a jarring snap rather than a smooth lead-in.
-- Three-column card grids (`card-row-3`, `teams-grid`) use CSS `nth-child` stagger via `--fade-delay` to cascade cards with 100ms offsets per card.
-- Each `<section>` that does not have per-card stagger receives `fade-up` directly on the `<section>` element. Sections with card stagger apply `fade-up` to `section-intro` and individual card components instead.
+- Always gate CSS transitions on `@media (prefers-reduced-motion: no-preference)`. Users who opt out see content immediately.
+- Use `rootMargin: '0px 0px -10% 0px'` on the `IntersectionObserver` — do not use bare `threshold: 0`, which fires on the first pixel and looks like a snap.
+- Use `--fade-delay` as a CSS custom property for stagger timing. Apply it via `nth-child` on card grids rather than hardcoding per-element delays in markup.
+- CSS `opacity` transitions do not delay Lighthouse LCP. Fading via `opacity` is safe for above-the-fold elements.
 
 ## Done Definition
 

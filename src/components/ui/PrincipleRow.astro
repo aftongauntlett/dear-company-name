@@ -13,21 +13,19 @@ const { term, icon } = Astro.props;
 ---
 
 <div class="principle-row">
-  {icon && <Icon icon={icon} size={22} class="principle-icon" />}
-  <div class="principle-content">
-    <dt class="principle-term">{term}</dt>
-    <dd class="principle-detail">
-      <slot />
-    </dd>
-  </div>
+  <dt class="principle-term">
+    {icon && <Icon icon={icon} size={22} class="principle-icon" aria-hidden="true" />}
+    <span>{term}</span>
+  </dt>
+  <dd class="principle-detail">
+    <slot />
+  </dd>
 </div>
 
 <style>
   .principle-row {
     display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: var(--space-6);
+    gap: var(--space-2);
     padding: var(--space-6);
     background: var(--tone-card);
     border: 1px solid var(--tone-border);
@@ -41,14 +39,12 @@ const { term, icon } = Astro.props;
     border-inline-start-color: var(--tone-primary);
   }
 
-  .principle-content {
-    display: grid;
-    gap: var(--space-2);
-  }
-
   .principle-term {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
     font-family: var(--font-display);
-    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--tone-text);
     margin: 0;
@@ -90,10 +86,6 @@ const { term, icon } = Astro.props;
   @media (max-width: 540px) {
     :global(.principle-icon) {
       display: none;
-    }
-
-    .principle-row {
-      grid-template-columns: 1fr;
     }
   }
 </style>
