@@ -263,7 +263,6 @@ a {
   display: flex;
   justify-content: center;
   gap: var(--space-3);
-  flex-wrap: wrap;
 }
 
 .site-nav a {
@@ -272,6 +271,7 @@ a {
   border-radius: var(--radius-sm);
   color: var(--tone-text-muted);
   font-weight: 600;
+  white-space: nowrap;
   transition: color 0.2s ease, background 0.2s ease;
 }
 
@@ -816,12 +816,11 @@ a {
 }
 
 /* ─── Mobile nav (hamburger) ──────────────────────────────── */
-@media (width <= 768px) {
+@media (width <= 1100px) {
   .site-header-inner {
     display: flex;
     align-items: center;
     padding-block: var(--space-3);
-    flex-wrap: wrap;
     gap: var(--space-3);
   }
 
@@ -833,32 +832,45 @@ a {
     display: inline-flex;
   }
 
-  /* Collapsed nav drawer */
+  /* Absolutely positioned below header — standard navbar dropdown pattern */
   .site-nav {
-    width: 100%;
-    order: 1;
-    overflow: hidden;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: fit-content;
+    min-width: 14rem;
     max-height: 0;
-    transition: max-height 280ms ease;
+    opacity: 0;
+    visibility: hidden;
+    /* Match header visual treatment */
+    background: color-mix(in srgb, var(--tone-bg) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border: 1px solid color-mix(in srgb, var(--tone-border) 70%, transparent);
+    border-radius: 0 0 0 var(--radius-lg);
+    /* visibility delays until after fade-out so keyboard can't reach hidden links */
+    transition: max-height 280ms ease, opacity 200ms ease, visibility 0s 280ms;
   }
 
   .site-header.nav-open .site-nav {
     max-height: 500px;
+    opacity: 1;
+    visibility: visible;
+    /* visibility is immediate on open so links are reachable as soon as menu opens */
+    transition: max-height 280ms ease, opacity 200ms ease, visibility 0s;
   }
 
   .site-nav ul {
     flex-direction: column;
     align-items: stretch;
-    padding-block: var(--space-3) var(--space-2);
-    margin-top: var(--space-2);
-    border-top: 1px solid color-mix(in srgb, var(--tone-border) 60%, transparent);
-    gap: 0.25rem;
+    padding: var(--space-2);
+    gap: 0.15rem;
   }
 
   .site-nav a {
     border-radius: var(--radius-md);
     display: block;
-    padding: 0.65rem 0.9rem;
+    padding: 0.65rem 1rem;
+    text-align: left;
   }
 }
 

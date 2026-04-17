@@ -139,16 +139,24 @@ const isHomePage = currentPath === '/';
 
     if (!(header && toggle && navEl)) return;
 
+    // Set initial inert state in mobile mode so keyboard can't reach hidden links.
+    // Only applies when the hamburger is visible (toggle is not display:none).
+    if (getComputedStyle(toggle).display !== 'none') {
+      navEl.setAttribute('inert', '');
+    }
+
     function openNav() {
       header.classList.add('nav-open');
       toggle.setAttribute('aria-expanded', 'true');
       toggle.setAttribute('aria-label', 'Close navigation menu');
+      navEl.removeAttribute('inert');
     }
 
     function closeNav() {
       header.classList.remove('nav-open');
       toggle.setAttribute('aria-expanded', 'false');
       toggle.setAttribute('aria-label', 'Open navigation menu');
+      navEl.setAttribute('inert', '');
     }
 
     toggle.addEventListener('click', () => {

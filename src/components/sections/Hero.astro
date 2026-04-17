@@ -4,7 +4,7 @@ import Button from '../ui/Button.astro';
 
 // The placeholder is always the "joke" text the animation types first.
 // Hardcoded so the gag works even when targetName is already the real company.
-const PLACEHOLDER_NAME = 'Your Company';
+const PLACEHOLDER_NAME = 'Company';
 ---
 
 <section id="top" class="hero" aria-label="Introduction">
@@ -354,7 +354,7 @@ const PLACEHOLDER_NAME = 'Your Company';
   const targetEl = document.querySelector<HTMLElement>('.typewriter-target');
 
   if (section && targetEl) {
-    const placeholder = targetEl.dataset.placeholder ?? 'Your Company';
+    const placeholder = targetEl.dataset.placeholder ?? 'Company';
     const finalTarget = targetEl.dataset.target ?? '';
 
     const markDone = (): void => {
