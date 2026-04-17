@@ -10,10 +10,30 @@ const PLACEHOLDER_NAME = 'Your Company';
 <section id="top" class="hero" aria-label="Introduction">
   <div class="container hero-container">
 
-    {/* ── Left: image placeholder ──────────────────────────────── */}
+    {/* ── Left: headshot ───────────────────────────────────────── */}
     <div class="hero-image-col" aria-hidden="true">
-      <div class="hero-image-placeholder">
-        <span class="hero-image-initials">AG</span>
+      <div class="hero-image-wrap" id="hero-img-wrap">
+        <div class="hero-img-container" id="hero-img-container">
+          <img
+            src="/images/afton-headshot-v2.webp"
+            alt="Afton Gauntlett professional headshot"
+            class="hero-photo hero-photo--pro"
+            loading="eager"
+            decoding="async"
+            draggable="false"
+          />
+          <img
+            src="/images/little-afton.webp"
+            alt="Young Afton, circa early-90s"
+            class="hero-photo hero-photo--little"
+            loading="lazy"
+            decoding="async"
+            draggable="false"
+          />
+        </div>
+        <p class="hero-photo-caption">
+          <span class="hero-caption-text" id="hero-caption-text"></span>
+        </p>
       </div>
     </div>
 
@@ -73,25 +93,75 @@ const PLACEHOLDER_NAME = 'Your Company';
     justify-content: center;
   }
 
-  .hero-image-placeholder {
+  /* ─── Headshot wrap + image swap ─────────────────────────────── */
+
+  .hero-image-wrap {
     width: 100%;
     max-width: 380px;
-    aspect-ratio: 4 / 5;
-    border: 2px dashed var(--tone-border);
-    border-radius: var(--radius-lg);
-    background: color-mix(in srgb, var(--tone-surface) 80%, var(--tone-bg-accent));
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    gap: var(--space-3);
   }
 
-  .hero-image-initials {
-    font-family: var(--font-display);
-    font-size: clamp(3rem, 6vw, 5rem);
-    font-weight: 700;
-    color: var(--tone-border);
+  .hero-img-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 2px 24px color-mix(in srgb, var(--tone-text) 10%, transparent);
+  }
+
+  .hero-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 15%;
+    transition: opacity 1.5s ease;
     user-select: none;
-    letter-spacing: 0.04em;
+    -webkit-user-drag: none;
+  }
+
+  .hero-photo--pro {
+    opacity: 1;
+  }
+
+  .hero-photo--little {
+    opacity: 0;
+  }
+
+  .hero-img-container.is-little-afton .hero-photo--pro {
+    opacity: 0;
+  }
+
+  .hero-img-container.is-little-afton .hero-photo--little {
+    opacity: 1;
+  }
+
+  /* ─── Hover caption / easter-egg text ────────────────────────── */
+
+  .hero-photo-caption {
+    min-height: 5rem;
+    font-size: 0.875rem;
+    color: var(--tone-text-muted);
+    line-height: 1.6;
+    font-style: italic;
+    text-align: center;
+  }
+
+  .hero-caption-text.is-active::after {
+    content: '|';
+    color: var(--tone-primary);
+    animation: caption-caret-blink 0.7s step-end infinite;
+  }
+
+  @keyframes caption-caret-blink {
+    50% {
+      opacity: 0;
+    }
   }
 
   /* ─── Content column ─────────────────────────────────────────── */
@@ -188,9 +258,8 @@ const PLACEHOLDER_NAME = 'Your Company';
       order: -1;
     }
 
-    .hero-image-placeholder {
-      max-width: 200px;
-      aspect-ratio: 1 / 1;
+    .hero-image-wrap {
+      max-width: 220px;
     }
 
     .hero-cta {
@@ -204,6 +273,14 @@ const PLACEHOLDER_NAME = 'Your Company';
     /* Skip typewriter entirely — show plain H1, hide overlay */
     .hero-typewriter {
       display: none !important;
+    }
+
+    .hero-photo {
+      transition: none;
+    }
+
+    .hero-caption-text.is-active::after {
+      animation: none;
     }
 
     :global(.js) .hero-headline:not(.hero-typewriter) {
@@ -288,5 +365,132 @@ const PLACEHOLDER_NAME = 'Your Company';
         });
       }, INITIAL_DELAY);
     }
+  }
+
+  // ── Photo easter egg ─────────────────────────────────────────────
+  const imgWrap = document.getElementById('hero-img-wrap');
+  const imgContainer = document.getElementById('hero-img-container');
+  const captionEl = document.getElementById('hero-caption-text');
+
+  if (
+    imgWrap instanceof HTMLElement &&
+    imgContainer instanceof HTMLElement &&
+    captionEl instanceof HTMLElement &&
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ) {
+    const PRO_CAPTION =
+      'This is my super professional headshot that AI glamourized. Click the image 3 times to get a glimpse of my personality.';
+    const LITTLE_CAPTION = "Still silly, just more professional now!";
+    const TYPE_SPEED = 40;   // ms per char — typing
+    const ERASE_SPEED = 18;  // ms per char — erasing (faster feels right)
+    const EASTER_EGG_DURATION = 20_000; // ms before fading back to pro
+
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let isEasterEggActive = false;
+    let isHovering = false;
+    let clickCount = 0;
+    let clickResetTimer: ReturnType<typeof setTimeout> | null = null;
+    let fadeBackTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const stopTimer = (): void => {
+      if (timer !== null) { clearTimeout(timer); timer = null; }
+    };
+
+    const typeText = (targetText: string, onDone?: () => void): void => {
+      captionEl.classList.add('is-active');
+      const tick = (): void => {
+        const cur = captionEl.textContent ?? '';
+        if (cur.length < targetText.length) {
+          captionEl.textContent = targetText.slice(0, cur.length + 1);
+          timer = setTimeout(tick, TYPE_SPEED);
+        } else {
+          onDone?.();
+        }
+      };
+      tick();
+    };
+
+    const eraseText = (onDone?: () => void): void => {
+      captionEl.classList.add('is-active');
+      const tick = (): void => {
+        const cur = captionEl.textContent ?? '';
+        if (cur.length > 0) {
+          captionEl.textContent = cur.slice(0, -1);
+          timer = setTimeout(tick, ERASE_SPEED);
+        } else {
+          captionEl.classList.remove('is-active');
+          onDone?.();
+        }
+      };
+      tick();
+    };
+
+    imgWrap.addEventListener('mouseenter', () => {
+      isHovering = true;
+      if (isEasterEggActive) return;
+      stopTimer();
+      // If residual text doesn't match the start of PRO_CAPTION, clear it first
+      const cur = captionEl.textContent ?? '';
+      if (cur.length > 0 && !PRO_CAPTION.startsWith(cur)) {
+        captionEl.textContent = '';
+      }
+      typeText(PRO_CAPTION);
+    });
+
+    imgWrap.addEventListener('mouseleave', () => {
+      isHovering = false;
+      if (isEasterEggActive) return;
+      stopTimer();
+      eraseText();
+    });
+
+    const returnToPro = (): void => {
+      if (fadeBackTimer !== null) { clearTimeout(fadeBackTimer); fadeBackTimer = null; }
+      imgContainer.classList.remove('is-little-afton');
+      setTimeout(() => {
+        stopTimer();
+        eraseText(() => {
+          isEasterEggActive = false;
+          if (isHovering) typeText(PRO_CAPTION);
+        });
+      }, 800);
+    };
+
+    imgWrap.addEventListener('click', () => {
+      // While little-afton is showing, triple-click returns to pro immediately
+      if (isEasterEggActive) {
+        clickCount++;
+        if (clickResetTimer !== null) clearTimeout(clickResetTimer);
+        clickResetTimer = setTimeout(() => { clickCount = 0; }, 2000);
+        if (clickCount >= 3) {
+          clickCount = 0;
+          if (clickResetTimer !== null) { clearTimeout(clickResetTimer); clickResetTimer = null; }
+          returnToPro();
+        }
+        return;
+      }
+
+      clickCount++;
+      if (clickResetTimer !== null) clearTimeout(clickResetTimer);
+      clickResetTimer = setTimeout(() => { clickCount = 0; }, 2000);
+
+      if (clickCount >= 3) {
+        clickCount = 0;
+        if (clickResetTimer !== null) { clearTimeout(clickResetTimer); clickResetTimer = null; }
+        isEasterEggActive = true;
+        stopTimer();
+
+        // Swap to little Afton
+        imgContainer.classList.add('is-little-afton');
+
+        // Type easter-egg caption
+        captionEl.textContent = '';
+        typeText(LITTLE_CAPTION);
+
+        // Schedule auto fade back after timeout
+        if (fadeBackTimer !== null) clearTimeout(fadeBackTimer);
+        fadeBackTimer = setTimeout(returnToPro, EASTER_EGG_DURATION);
+      }
+    });
   }
 </script>
