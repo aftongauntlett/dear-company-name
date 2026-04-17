@@ -6,11 +6,11 @@ import { Menu, X } from '@lucide/astro';
 
 const nav = [
   { href: '#start', label: 'How I Start' },
-  { href: '#stack', label: 'Tech Stack' },
+  { href: '#stack', label: 'How I Choose a Stack' },
   { href: '#ai', label: 'How I Use AI' },
   { href: '#how-i-work', label: 'How I Work' },
-  { href: '#teams', label: "What I've Done" },
-  { href: '#looking-for', label: 'Looking For' },
+  { href: '#teams', label: 'Team Impact' },
+  { href: '#looking-for', label: "What I'm Looking For" },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -86,6 +86,16 @@ const isHomePage = currentPath === '/';
       });
     }
 
+    // ── Brand link: smooth scroll to top without adding #top to URL ────
+    const brandLink = document.querySelector('.brand[href="#top"]');
+    if (brandLink) {
+      brandLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        history.replaceState(null, '', window.location.pathname);
+      });
+    }
+
     // ── Immediate active on click ─────────────────────────────────
     links.forEach((a) => {
       a.addEventListener('click', () => {
@@ -95,27 +105,31 @@ const isHomePage = currentPath === '/';
     });
 
     // ── IntersectionObserver for scroll-based active ──────────────
+    // Must wait for DOMContentLoaded: this script runs before <main> sections
+    // are parsed, so getElementById returns null if called immediately.
     if ('IntersectionObserver' in window && links.length > 0) {
-      const sectionIds = links
-        .map((a) => a.getAttribute('data-nav-href')?.replace('#', ''))
-        .filter(Boolean);
+      document.addEventListener('DOMContentLoaded', function () {
+        const sectionIds = links
+          .map((a) => a.getAttribute('data-nav-href')?.replace('#', ''))
+          .filter(Boolean);
 
-      const sections = sectionIds
-        .map((id) => document.getElementById(id))
-        .filter(Boolean);
+        const sections = sectionIds
+          .map((id) => document.getElementById(id))
+          .filter(Boolean);
 
-      if (sections.length > 0) {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) setActive(entry.target.id);
-            });
-          },
-          { rootMargin: '-20% 0px -60% 0px', threshold: 0 }
-        );
+        if (sections.length > 0) {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) setActive(entry.target.id);
+              });
+            },
+            { rootMargin: '-20% 0px -60% 0px', threshold: 0 }
+          );
 
-        sections.forEach((s) => observer.observe(s));
-      }
+          sections.forEach((s) => observer.observe(s));
+        }
+      });
     }
 
     // ── Hamburger toggle ──────────────────────────────────────────

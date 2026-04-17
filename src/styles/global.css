@@ -269,7 +269,7 @@ a {
 .site-nav a {
   text-decoration: none;
   padding: 0.45rem 0.7rem;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   color: var(--tone-text-muted);
   font-weight: 600;
   transition: color 0.2s ease, background 0.2s ease;
@@ -765,6 +765,20 @@ a {
 }
 
 .footer-email-link:hover {
+  color: var(--tone-primary);
+}
+
+.footer-back-to-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.83rem;
+  color: var(--tone-text-muted);
+  text-decoration: none;
+  transition: color 140ms ease;
+}
+
+.footer-back-to-top:hover {
   color: var(--tone-primary);
 }
 

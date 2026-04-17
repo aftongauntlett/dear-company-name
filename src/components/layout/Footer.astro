@@ -2,7 +2,7 @@
 import { APPLICANT } from '../../config/site';
 import BrandIcon from '../ui/BrandIcon.astro';
 import Icon from '../ui/Icon.astro';
-import { FileText, Mail } from '@lucide/astro';
+import { FileText, Mail, ArrowUp } from '@lucide/astro';
 
 const year = new Date().getFullYear();
 ---
@@ -71,5 +71,22 @@ const year = new Date().getFullYear();
   <div class="footer-bottom container">
     <p class="footer-copy">© {year} {APPLICANT.name}</p>
     <a href={`mailto:${APPLICANT.email}`} class="footer-email-link">{APPLICANT.email}</a>
+    <a href="#top" class="footer-back-to-top" aria-label="Back to top">
+      <Icon icon={ArrowUp} size={14} aria-hidden="true" />
+      Back to top
+    </a>
   </div>
 </footer>
+
+<script is:inline>
+  (function () {
+    const btn = document.querySelector('.footer-back-to-top');
+    if (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        history.replaceState(null, '', window.location.pathname);
+      });
+    }
+  })();
+</script>

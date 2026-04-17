@@ -32,73 +32,81 @@ import {
 } from '../../utils/github';
 
 const token = import.meta.env.GITHUB_TOKEN as string | undefined;
+let resolvedView: ResolvedView | null = null;
+let highlightedPaths: string[] = [];
+let explorerLoadFailed = false;
 
-// ── Fetch all repo trees ──────────────────────────────────────────────────
-const viewsWithTrees = await Promise.all(
-  CODE_VIEWS.map(async (view) => {
-    const ref = view.ref ?? 'main';
-    const tree = await fetchRepoTree(view.owner, view.repo, ref, token);
-    const filteredEntries = filterTreeByWhitelist(tree, view.include);
-    return { view, ref, entries: filteredEntries };
-  }),
-);
+try {
+  // ── Fetch all repo trees ────────────────────────────────────────────────
+  const viewsWithTrees = await Promise.all(
+    CODE_VIEWS.map(async (view) => {
+      const ref = view.ref ?? 'main';
+      const tree = await fetchRepoTree(view.owner, view.repo, ref, token);
+      const filteredEntries = filterTreeByWhitelist(tree, view.include);
+      return { view, ref, entries: filteredEntries };
+    }),
+  );
 
-// ── Collect languages for a single Shiki init ────────────────────────────
-const allLanguages = [
-  ...new Set(
-    viewsWithTrees
-      .flatMap(({ entries }) => entries.map((e) => detectLanguage(e.path)))
-      .filter((lang) => lang !== 'text'),
-  ),
-] as BundledLanguage[];
+  // ── Collect languages for a single Shiki init ──────────────────────────
+  const allLanguages = [
+    ...new Set(
+      viewsWithTrees
+        .flatMap(({ entries }) => entries.map((e) => detectLanguage(e.path)))
+        .filter((lang) => lang !== 'text'),
+    ),
+  ] as BundledLanguage[];
 
-const highlighter = await getSingletonHighlighter({
-  themes: ['github-light', 'github-dark'],
-  langs: allLanguages.length > 0 ? allLanguages : ['typescript'],
-});
+  const highlighter = await getSingletonHighlighter({
+    themes: ['github-light', 'github-dark'],
+    langs: allLanguages.length > 0 ? allLanguages : ['typescript'],
+  });
 
-// ── Fetch and highlight every file ───────────────────────────────────────
-const resolvedViews: ResolvedView[] = await Promise.all(
-  viewsWithTrees.map(async ({ view, ref, entries }) => {
-    const files = await Promise.all(
-      entries.map(async (entry): Promise<ResolvedFile | null> => {
-        const content = await fetchFileContent(
-          view.owner,
-          view.repo,
-          entry.path,
-          ref,
-          token,
-        );
-        if (content === null) return null;
+  // ── Fetch and highlight every file ─────────────────────────────────────
+  const resolvedViews: ResolvedView[] = await Promise.all(
+    viewsWithTrees.map(async ({ view, ref, entries }) => {
+      const files = await Promise.all(
+        entries.map(async (entry): Promise<ResolvedFile | null> => {
+          const content = await fetchFileContent(
+            view.owner,
+            view.repo,
+            entry.path,
+            ref,
+            token,
+          );
+          if (content === null) return null;
 
-        const language = detectLanguage(entry.path);
-        let highlightedHtml: string;
-        try {
-          highlightedHtml = highlighter.codeToHtml(content, {
-            lang: language,
-            themes: { light: 'github-light', dark: 'github-dark' },
-          });
-        } catch {
-          highlightedHtml = highlighter.codeToHtml(content, {
-            lang: 'text',
-            themes: { light: 'github-light', dark: 'github-dark' },
-          });
-        }
+          const language = detectLanguage(entry.path);
+          let highlightedHtml: string;
+          try {
+            highlightedHtml = highlighter.codeToHtml(content, {
+              lang: language,
+              themes: { light: 'github-light', dark: 'github-dark' },
+            });
+          } catch {
+            highlightedHtml = highlighter.codeToHtml(content, {
+              lang: 'text',
+              themes: { light: 'github-light', dark: 'github-dark' },
+            });
+          }
 
-        return { path: entry.path, content, highlightedHtml, language };
-      }),
-    );
+          return { path: entry.path, content, highlightedHtml, language };
+        }),
+      );
 
-    return {
-      view,
-      files: files.filter((f): f is ResolvedFile => f !== null),
-      tree: entries,
-    };
-  }),
-);
+      return {
+        view,
+        files: files.filter((f): f is ResolvedFile => f !== null),
+        tree: entries,
+      };
+    }),
+  );
 
-const resolvedView = resolvedViews[0]!;
-const highlightedPaths = HIGHLIGHTED_FILES.map((h) => h.path);
+  resolvedView = resolvedViews[0] ?? null;
+  highlightedPaths = HIGHLIGHTED_FILES.map((h) => h.path);
+} catch (error) {
+  explorerLoadFailed = true;
+  console.error('[HowIWork] Explorer data unavailable; rendering fallback.', error);
+}
 ---
 
 <section id="how-i-work" class="howiwork-section" aria-labelledby="howiwork-heading">
@@ -153,25 +161,40 @@ const highlightedPaths = HIGHLIGHTED_FILES.map((h) => h.path);
       Slow loads: cat appears over the reserved space at the 300ms mark,
       fades out once requestIdleCallback signals the browser is done painting.
     -->
-    <div class="explorer-gate" id="explorer-gate">
-
-      <div
-        class="explorer-placeholder"
-        id="explorer-placeholder"
-        hidden
-        aria-hidden="true"
-      >
-        <div class="lottie-wrap">
-          <LottiePlayer src="/images/black-rainbow-cat.lottie" />
+    {
+      explorerLoadFailed || !resolvedView ? (
+        <div class="explorer-unavailable" role="status" aria-live="polite">
+          <div class="lottie-wrap" aria-hidden="true">
+            <LottiePlayer src="/images/black-rainbow-cat.lottie" />
+          </div>
+          <p class="explorer-unavailable-title">Temporary issue loading the code explorer.</p>
+          <p class="explorer-unavailable-body">
+            GitHub is currently unavailable or rate-limited. Everything else on this page is still
+            available.
+          </p>
         </div>
-        <p class="placeholder-label" aria-hidden="true">Loading…</p>
-      </div>
+      ) : (
+        <div class="explorer-gate" id="explorer-gate">
 
-      <div class="explorer-content" id="explorer-content" aria-hidden="true">
-        <CodeExplorer view={resolvedView} highlighted={highlightedPaths} />
-      </div>
+          <div
+            class="explorer-placeholder"
+            id="explorer-placeholder"
+            hidden
+            aria-hidden="true"
+          >
+            <div class="lottie-wrap">
+              <LottiePlayer src="/images/black-rainbow-cat.lottie" />
+            </div>
+            <p class="placeholder-label" aria-hidden="true">Loading…</p>
+          </div>
 
-    </div>
+          <div class="explorer-content" id="explorer-content" aria-hidden="true">
+            <CodeExplorer view={resolvedView} highlighted={highlightedPaths} />
+          </div>
+
+        </div>
+      )
+    }
 
   </div>
 </section>
@@ -346,6 +369,31 @@ const highlightedPaths = HIGHLIGHTED_FILES.map((h) => h.path);
   .lottie-wrap {
     width: clamp(120px, 18vw, 200px);
     aspect-ratio: 1;
+  }
+
+  .explorer-unavailable {
+    margin-block-start: var(--space-8);
+    border: 1px solid var(--tone-border);
+    border-radius: var(--radius-md);
+    background: var(--tone-surface);
+    padding: var(--space-8);
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: var(--space-4);
+  }
+
+  .explorer-unavailable-title {
+    margin: 0;
+    font-weight: 700;
+    color: var(--tone-text);
+  }
+
+  .explorer-unavailable-body {
+    margin: 0;
+    max-width: 48ch;
+    color: var(--tone-text-muted);
+    line-height: 1.6;
   }
 
   .placeholder-label {

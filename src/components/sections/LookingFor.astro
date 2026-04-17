@@ -2,7 +2,7 @@
 import { APPLICANT } from '../../config/site';
 import BrandIcon from '../ui/BrandIcon.astro';
 import Icon from '../ui/Icon.astro';
-import { Globe, FileText, Phone, Mail, MapPin } from '@lucide/astro';
+import { Globe, FileText, Phone, Mail, MapPin, ExternalLink } from '@lucide/astro';
 ---
 
 <section id="looking-for" class="lookingfor-section" aria-labelledby="looking-for-heading">
@@ -36,24 +36,36 @@ import { Globe, FileText, Phone, Mail, MapPin } from '@lucide/astro';
             <a href={APPLICANT.github} target="_blank" rel="noopener noreferrer" class="chip chip-link">
               <BrandIcon name="github" size={14} />
               <span>GitHub</span>
+              <span class="chip-external-indicator" aria-hidden="true">
+                <Icon icon={ExternalLink} size={11} />
+              </span>
             </a>
           </li>
           <li>
             <a href={APPLICANT.linkedin} target="_blank" rel="noopener noreferrer" class="chip chip-link">
               <BrandIcon name="linkedin" size={14} />
               <span>LinkedIn</span>
+              <span class="chip-external-indicator" aria-hidden="true">
+                <Icon icon={ExternalLink} size={11} />
+              </span>
             </a>
           </li>
           <li>
             <a href={APPLICANT.website} target="_blank" rel="noopener noreferrer" class="chip chip-link">
               <Icon icon={Globe} size={14} />
               <span>Portfolio</span>
+              <span class="chip-external-indicator" aria-hidden="true">
+                <Icon icon={ExternalLink} size={11} />
+              </span>
             </a>
           </li>
           <li>
             <a href={APPLICANT.resume} target="_blank" rel="noopener noreferrer" class="chip chip-link">
               <Icon icon={FileText} size={14} />
               <span>Resume</span>
+              <span class="chip-external-indicator" aria-hidden="true">
+                <Icon icon={ExternalLink} size={11} />
+              </span>
             </a>
           </li>
           <li>
@@ -195,6 +207,22 @@ import { Globe, FileText, Phone, Mail, MapPin } from '@lucide/astro';
     outline-offset: 2px;
   }
 
+  .chip-external-indicator {
+    display: inline-flex;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(1px);
+    transition:
+      opacity 140ms ease,
+      transform 140ms ease;
+  }
+
+  .chip-link[target='_blank']:hover .chip-external-indicator,
+  .chip-link[target='_blank']:focus-visible .chip-external-indicator {
+    opacity: 0.95;
+    transform: translateY(0);
+  }
+
   .chip-static {
     cursor: default;
   }
@@ -286,6 +314,12 @@ import { Globe, FileText, Phone, Mail, MapPin } from '@lucide/astro';
 
     .contact-chips {
       justify-content: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chip-external-indicator {
+      transition: none;
     }
   }
 </style>
