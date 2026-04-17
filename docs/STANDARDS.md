@@ -20,7 +20,6 @@ This repository is a reusable Astro template for mission-driven organizations an
 - Keep component APIs small and predictable.
 - Keep CSS tokenized and theme-aware.
 - Keep business logic in utility modules with tests.
-- Document setup for external services (Resend, Turnstile, Upstash) before implementation.
 
 ## Page Structure Consistency
 
