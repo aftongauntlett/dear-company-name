@@ -167,9 +167,9 @@ const isHomePage = currentPath === '/';
       }
     });
 
-    // Close when a nav link is tapped
+    // Close when a nav link is tapped (mobile only — guard against setting inert on desktop)
     navEl.addEventListener('click', (e) => {
-      if (e.target instanceof HTMLAnchorElement) closeNav();
+      if (e.target instanceof HTMLAnchorElement && header.classList.contains('nav-open')) closeNav();
     });
 
     // Close on outside click

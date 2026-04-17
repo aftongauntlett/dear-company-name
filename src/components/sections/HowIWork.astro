@@ -12,15 +12,11 @@
  *   3. `requestIdleCallback` fires when the browser goes idle after painting.
  *      Only then do we fade the Lottie out and the explorer in — so the cat
  *      plays for the actual duration of real browser work, not an artificial timer.
- *
- * Theme: LottiePlayer watches `document.documentElement.dataset.theme` via
- * MutationObserver and adjusts a CSS filter so the animation reads on all themes.
  */
 
 import { getSingletonHighlighter } from 'shiki';
 import type { BundledLanguage } from 'shiki';
 import CodeExplorer from './CodeExplorer.astro';
-import LottiePlayer from '../ui/LottiePlayer.astro';
 import Button from '../ui/Button.astro';
 import { CODE_VIEWS, HIGHLIGHTED_FILES } from '../../config/codeViews';
 import {
@@ -159,18 +155,12 @@ try {
     <!--
       ── Lazy-loading gate ──────────────────────────────────────────────
       The explorer content is in the DOM but hidden via content-visibility.
-      The Lottie placeholder is an absolute overlay — hidden by default,
-      only injected into view if rendering takes longer than ~300ms.
-      Fast loads: Lottie never appears, no layout shift, no extra height.
-      Slow loads: cat appears over the reserved space at the 300ms mark,
-      fades out once requestIdleCallback signals the browser is done painting.
+      The spinner placeholder is hidden by default, only shown if rendering
+      takes longer than ~300ms, then fades out once the browser goes idle.
     -->
     {
       explorerLoadFailed || !resolvedView ? (
         <div class="explorer-unavailable" role="status" aria-live="polite">
-          <div class="lottie-wrap" aria-hidden="true">
-            <LottiePlayer src="/images/black-rainbow-cat.lottie" />
-          </div>
           <p class="explorer-unavailable-title">Temporary issue loading the code explorer.</p>
           <p class="explorer-unavailable-body">
             GitHub is currently unavailable or rate-limited. Everything else on this page is still
@@ -186,9 +176,7 @@ try {
             hidden
             aria-hidden="true"
           >
-            <div class="lottie-wrap">
-              <LottiePlayer src="/images/black-rainbow-cat.lottie" />
-            </div>
+            <div class="placeholder-spinner" aria-hidden="true"></div>
             <p class="placeholder-label" aria-hidden="true">Loading…</p>
           </div>
 
@@ -382,9 +370,17 @@ try {
     pointer-events: none;
   }
 
-  .lottie-wrap {
-    width: clamp(120px, 18vw, 200px);
-    aspect-ratio: 1;
+  .placeholder-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 2px solid var(--tone-border);
+    border-top-color: var(--tone-primary);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 
   .explorer-unavailable {
