@@ -30,6 +30,9 @@ const { title, description = '', hideChrome = false } = Astro.props;
         in parallel with the rest of the page — reduces font latency. */}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/* Preconnect to jsDelivr — used by @lottiefiles/dotlottie-web for its
+        WASM binary. Loaded post-window.load so this just warms the connection. */}
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     {/* Load the font CSS asynchronously (non-render-blocking).
         media="print" tricks the browser into low-priority fetch;
         onload swaps it to "all" once downloaded so styles apply.

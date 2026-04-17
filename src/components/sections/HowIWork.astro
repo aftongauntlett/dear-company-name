@@ -21,6 +21,7 @@ import { getSingletonHighlighter } from 'shiki';
 import type { BundledLanguage } from 'shiki';
 import CodeExplorer from './CodeExplorer.astro';
 import LottiePlayer from '../ui/LottiePlayer.astro';
+import Button from '../ui/Button.astro';
 import { CODE_VIEWS, HIGHLIGHTED_FILES } from '../../config/codeViews';
 import {
   fetchRepoTree,
@@ -30,6 +31,11 @@ import {
   type ResolvedFile,
   type ResolvedView,
 } from '../../utils/github';
+
+const primaryView = CODE_VIEWS[0];
+const githubUrl = primaryView
+  ? `https://github.com/${primaryView.owner}/${primaryView.repo}`
+  : 'https://github.com';
 
 const token = import.meta.env.GITHUB_TOKEN as string | undefined;
 let resolvedView: ResolvedView | null = null;
@@ -115,9 +121,7 @@ try {
     <div class="section-intro">
       <h2 id="howiwork-heading">How I work</h2>
       <p class="section-lead">
-        You're looking at it — this page is the project. Every token, component, and
-        interaction here is source-available. Browse the full source in the explorer,
-        or keep an eye out for the starred <span class="star-accent" aria-hidden="true">&#9733;</span> files below.
+      You're looking at it! This page is the project and the explorer below is a peek under the hood. 
       </p>
     </div>
 
@@ -195,6 +199,18 @@ try {
         </div>
       )
     }
+
+    <div class="explorer-actions">
+      <Button
+        href={githubUrl}
+        variant="outline"
+        size="sm"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        View on GitHub →
+      </Button>
+    </div>
 
   </div>
 </section>
@@ -419,6 +435,13 @@ try {
   /* Phase 3: browser idle — fade in */
   .explorer-content.is-visible {
     opacity: 1;
+  }
+
+  /* ── GitHub link below explorer ──────────────────────────── */
+  .explorer-actions {
+    display: flex;
+    justify-content: center;
+    margin-block-start: var(--space-6);
   }
 
   /* ── File highlights: annotation cards below explorer ──────── */

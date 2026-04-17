@@ -52,9 +52,16 @@ export const CODE_VIEWS: CodeView[] = [
     description: 'The full source of this site.',
     owner: 'aftongauntlett',
     repo: 'dear-company-name',
-    // 'src/' prefix includes all files under the src directory.
-    // astro.config.mjs and package.json round out the project picture.
-    include: ['src/', 'astro.config.mjs', 'package.json'],
+    include: [
+      'src/components/',
+      'src/config/',
+      'src/layouts/',
+      'src/pages/index.astro',
+      'src/styles/',
+      'src/utils/',
+      'astro.config.mjs',
+      'package.json',
+    ],
     defaultFile: 'src/styles/global.css',
   },
 ];

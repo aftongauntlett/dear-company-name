@@ -1,13 +1,8 @@
 ---
 /**
- * LottiePlayer — renders a .lottie animation using @lottiefiles/dotlottie-web.
- *
- * Uses a canvas element. The animation autoplays and loops by default.
- * Theme-aware: watches data-theme on <html> and adjusts via CSS filter so the
- * animation reads well on both light and dark backgrounds.
- *
- * External control: dispatch a `lottie:stop` CustomEvent on document to stop
- * all active instances and disconnect their MutationObservers.
+ * LottiePlayer — canvas-based dotlottie animation, theme-aware via CSS filter.
+ * Loaded post-`window.load` to keep DotLottie + WASM off the critical path.
+ * Dispatch `lottie:stop` on document to stop all active instances.
  */
 interface Props {
   src: string;
@@ -28,47 +23,45 @@ const { src, class: className, width, height } = Astro.props;
 ></canvas>
 
 <script>
-  import { DotLottie } from '@lottiefiles/dotlottie-web';
+  // Deferred post-load: keeps DotLottie + WASM out of the critical path.
+  const initLottie = async () => {
+    const canvases = document.querySelectorAll<HTMLCanvasElement>('.lottie-canvas');
+    if (canvases.length === 0) return;
 
-  document.querySelectorAll<HTMLCanvasElement>('.lottie-canvas').forEach((canvas) => {
-    const src = canvas.dataset.src;
-    if (!src) return;
+    const { DotLottie } = await import('@lottiefiles/dotlottie-web');
 
-    const instance = new DotLottie({
-      canvas,
-      src,
-      autoplay: true,
-      loop: true,
-    });
+    canvases.forEach((canvas) => {
+      const src = canvas.dataset.src;
+      if (!src) return;
 
-    // ── Theme-aware filter ───────────────────────────────────────
-    // The animation has a black body — on dark themes it can disappear.
-    // A subtle brightness lift keeps it readable across all themes.
-    const applyThemeFilter = () => {
-      const theme = document.documentElement.dataset.theme ?? '';
-      const isDark = theme === 'dark';
-      canvas.style.filter = isDark ? 'brightness(1.15) saturate(1.1)' : 'none';
-    };
+      const instance = new DotLottie({ canvas, src, autoplay: true, loop: true });
 
-    applyThemeFilter();
+      const applyThemeFilter = () => {
+        const isDark = (document.documentElement.dataset.theme ?? '') === 'dark';
+        canvas.style.filter = isDark ? 'brightness(1.15) saturate(1.1)' : 'none';
+      };
 
-    const themeObserver = new MutationObserver(applyThemeFilter);
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme'],
-    });
+      applyThemeFilter();
 
-    // ── External stop ────────────────────────────────────────────
-    // Fired by HowIWork when the code explorer finishes revealing.
-    document.addEventListener(
-      'lottie:stop',
-      () => {
+      const themeObserver = new MutationObserver(applyThemeFilter);
+      themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme'],
+      });
+
+      // `lottie:stop` is dispatched by HowIWork once the code explorer is visible.
+      document.addEventListener('lottie:stop', () => {
         instance.stop();
         themeObserver.disconnect();
-      },
-      { once: true },
-    );
-  });
+      }, { once: true });
+    });
+  };
+
+  if (document.readyState === 'complete') {
+    initLottie();
+  } else {
+    window.addEventListener('load', initLottie, { once: true });
+  }
 </script>
 
 <style>
