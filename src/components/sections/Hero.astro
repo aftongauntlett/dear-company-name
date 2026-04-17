@@ -52,15 +52,27 @@ const PLACEHOLDER_NAME = 'Your Company';
 
       {/*
         Inline patch script: runs synchronously before the bundled animation script fires.
-        Reads ?to= from the URL and patches the h1 text, data-target, and document.title.
+        1. Reads ?to= param, saves to sessionStorage, strips param from URL (clean URL for recipient).
+        2. On refresh (no param), falls back to sessionStorage.
+        3. If neither has a value, redirects to /404.
         Uses .textContent (not .innerHTML) — safe from XSS.
       */}
       <script is:inline>
         (function () {
           const params = new URLSearchParams(window.location.search);
-          const company = params.get('to');
+          let company = params.get('to');
 
-          // No ?to= param means this isn't a personalised link — send to the 404 page.
+          if (company) {
+            // Save to sessionStorage so a page refresh still works after the param is stripped.
+            sessionStorage.setItem('dear-to', company);
+            // Clean the URL immediately — recipient only ever sees the base URL.
+            history.replaceState({}, '', '/');
+          } else {
+            // No param — check sessionStorage (covers the refresh case).
+            company = sessionStorage.getItem('dear-to');
+          }
+
+          // Still nothing — not a personalised link, send to 404.
           if (!company) {
             window.location.replace('/404');
             return;
