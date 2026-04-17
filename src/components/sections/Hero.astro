@@ -63,19 +63,22 @@ const PLACEHOLDER_NAME = 'Your Company';
           let company = params.get('to');
 
           if (company) {
-            // Save to sessionStorage so a page refresh still works after the param is stripped.
+            // Save to sessionStorage so a page refresh still works.
             sessionStorage.setItem('dear-to', company);
-            // Clean the URL immediately — recipient only ever sees the base URL.
-            history.replaceState({}, '', '/');
           } else {
             // No param — check sessionStorage (covers the refresh case).
             company = sessionStorage.getItem('dear-to');
           }
 
           // Still nothing — not a personalised link, send to 404.
+          // On localhost, skip the redirect and use a dev placeholder instead.
           if (!company) {
-            window.location.replace('/404');
-            return;
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+              company = 'Local Dev';
+            } else {
+              window.location.replace('/404');
+              return;
+            }
           }
 
           // Patch the accessible h1 (screen-reader source of truth)

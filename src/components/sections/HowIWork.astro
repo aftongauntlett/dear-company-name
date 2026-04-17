@@ -109,8 +109,21 @@ const highlightedPaths = HIGHLIGHTED_FILES.map((h) => h.path);
       <p class="section-lead">
         You&rsquo;re looking at it &mdash; this page is the project. Every token, component, and
         interaction here is source-available. Browse the full source in the explorer,
-        or keep an eye out for the starred &#9733; files below.
+        or keep an eye out for the starred <span class="star-accent" aria-hidden="true">&#9733;</span> files below.
       </p>
+    </div>
+
+    <!-- ── Tech stack chips ──────────────────────────────────────────── -->
+    <div class="stack-strip" aria-label="Tech stack used on this project">
+      <span class="stack-strip-label">Built with</span>
+      <ul class="chip-list" role="list">
+        {[
+          'Astro', 'TypeScript', 'Shiki', 'Lucide', 'Vitest',
+          'ESLint', 'CSS Tokens', 'GitHub API', 'Lottie',
+        ].map((tech) => (
+          <li class="chip">{tech}</li>
+        ))}
+      </ul>
     </div>
 
     <!-- ── File annotations: spotlight on highlighted files ─────────── -->
@@ -242,7 +255,7 @@ const highlightedPaths = HIGHLIGHTED_FILES.map((h) => h.path);
   .section-intro {
     display: grid;
     gap: var(--space-4);
-    margin-block-end: var(--space-8);
+    margin-block-end: var(--space-6);
   }
 
   .section-lead {
@@ -250,6 +263,49 @@ const highlightedPaths = HIGHLIGHTED_FILES.map((h) => h.path);
     font-size: clamp(1rem, 1.2vw, 1.15rem);
     max-width: 64ch;
     line-height: 1.65;
+  }
+
+  .star-accent {
+    color: var(--tone-primary);
+  }
+
+  /* ── Tech stack chip strip ─────────────────────────────────── */
+  .stack-strip {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-block-end: var(--space-8);
+  }
+
+  .stack-strip-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--tone-text-muted);
+    white-space: nowrap;
+  }
+
+  .chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1;
+    padding: 0.3em 0.7em;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--tone-primary) 10%, transparent);
+    color: var(--tone-primary-hover);
+    border: 1px solid color-mix(in srgb, var(--tone-primary) 25%, transparent);
   }
 
   /* ── Gate: position:relative so the overlay can anchor to it ── */
@@ -393,7 +449,7 @@ const highlightedPaths = HIGHLIGHTED_FILES.map((h) => h.path);
   .highlight-note :global(code) {
     font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
     font-size: 0.875em;
-    color: var(--tone-primary);
+    color: var(--tone-primary-hover);
     background: color-mix(in srgb, var(--tone-primary) 12%, transparent);
     border-radius: var(--radius-sm);
     padding: 0.1em 0.35em;

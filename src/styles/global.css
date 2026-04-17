@@ -272,6 +272,7 @@ a {
   border-radius: var(--radius-pill);
   color: var(--tone-text-muted);
   font-weight: 600;
+  transition: color 0.2s ease, background 0.2s ease;
 }
 
 .site-nav a:hover {

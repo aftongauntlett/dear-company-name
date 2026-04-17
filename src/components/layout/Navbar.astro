@@ -7,6 +7,7 @@ import { Menu, X } from '@lucide/astro';
 const nav = [
   { href: '#start', label: 'How I Start' },
   { href: '#stack', label: 'Tech Stack' },
+  { href: '#ai', label: 'How I Use AI' },
   { href: '#how-i-work', label: 'How I Work' },
   { href: '#teams', label: "What I've Done" },
   { href: '#looking-for', label: 'Looking For' },
@@ -73,6 +74,27 @@ const isHomePage = currentPath === '/';
       document.querySelectorAll('.site-nav a[data-nav-href]')
     );
 
+    let activeId = '';
+
+    function setActive(id) {
+      if (id === activeId) return;
+      activeId = id;
+      links.forEach((a) => {
+        const isActive = a.getAttribute('data-nav-href') === '#' + id;
+        a.classList.toggle('is-active', isActive);
+        a.setAttribute('aria-current', isActive ? 'true' : 'false');
+      });
+    }
+
+    // ── Immediate active on click ─────────────────────────────────
+    links.forEach((a) => {
+      a.addEventListener('click', () => {
+        const id = a.getAttribute('data-nav-href')?.replace('#', '');
+        if (id) setActive(id);
+      });
+    });
+
+    // ── IntersectionObserver for scroll-based active ──────────────
     if ('IntersectionObserver' in window && links.length > 0) {
       const sectionIds = links
         .map((a) => a.getAttribute('data-nav-href')?.replace('#', ''))
@@ -83,18 +105,6 @@ const isHomePage = currentPath === '/';
         .filter(Boolean);
 
       if (sections.length > 0) {
-        let activeId = '';
-
-        function setActive(id) {
-          if (id === activeId) return;
-          activeId = id;
-          links.forEach((a) => {
-            const isActive = a.getAttribute('data-nav-href') === '#' + id;
-            a.classList.toggle('is-active', isActive);
-            a.setAttribute('aria-current', isActive ? 'true' : 'false');
-          });
-        }
-
         const observer = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
