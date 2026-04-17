@@ -53,7 +53,10 @@ const { title, description = '', hideChrome = false } = Astro.props;
               }
             });
           },
-          { threshold: 0, rootMargin: '0px 0px -60px 0px' },
+          // rootMargin -10% on the bottom shrinks the trigger zone so an element
+          // begins fading before it's fully in view — avoids the jarring snap
+          // you get with threshold:0 (fires the moment one pixel enters).
+          { rootMargin: '0px 0px -10% 0px' },
         );
         document.querySelectorAll('.fade-up').forEach((el) => observer.observe(el));
       }

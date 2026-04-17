@@ -36,6 +36,7 @@ The page uses a single `IntersectionObserver` (in `BaseLayout.astro`) to add an 
 
 - The hidden state uses `.js .fade-up` — elements are only hidden when JavaScript is available (the `html.js` class is set by an inline script before first paint, so there is no FOUC).
 - The LCP element (hero headline) must never receive `fade-up`; it should render immediately.
+- The observer uses `rootMargin: '0px 0px -10% 0px'` so elements begin fading in before they're fully in view. Do not default to `threshold: 0` with no `rootMargin` — that fires the moment one pixel enters the viewport, producing a jarring snap rather than a smooth lead-in.
 - Three-column card grids (`card-row-3`, `teams-grid`) use CSS `nth-child` stagger via `--fade-delay` to cascade cards with 100ms offsets per card.
 - Each `<section>` that does not have per-card stagger receives `fade-up` directly on the `<section>` element. Sections with card stagger apply `fade-up` to `section-intro` and individual card components instead.
 
