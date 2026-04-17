@@ -26,7 +26,8 @@
   --tone-bg-accent: #e6efd9;
   --tone-surface: #fffdf5;
   --tone-surface-strong: #f1efe3;
-  --tone-card: #c0dad9;
+  --tone-card: #fbfbf9;
+  --tone-card-header: #dce6d5;
   --tone-text: #1f2a1d;
   --tone-text-muted: #5a6658;
   --tone-border: #c5cfbd;
@@ -41,7 +42,8 @@
   --tone-bg-accent: #ddeefa;
   --tone-surface: #ffffff;
   --tone-surface-strong: #e8f1f7;
-   --tone-card: #b0becb;
+  --tone-card: #f9fbfc;
+  --tone-card-header: #cfe2ef;
   --tone-text: #102333;
   --tone-text-muted: #445b6c;
   --tone-border: #bdd2df;
@@ -52,11 +54,12 @@
 }
 
 :root[data-theme='earth'] {
-  --tone-bg: #f6f1e8;
+  --tone-bg: #f9f5f1;
   --tone-bg-accent: #efe2cd;
   --tone-surface: #fffcf7;
   --tone-surface-strong: #f5ebdc;
-    --tone-card: #cbb9b0;
+  --tone-card: #fffefd;
+  --tone-card-header: #e3ceaf;
   --tone-text: #322215;
   --tone-text-muted: #705b47;
   --tone-border: #d8c6af;
@@ -69,11 +72,12 @@
 :root[data-theme='dark'] {
   --tone-bg: #0d1117;
   --tone-bg-accent: #3b4e6f;
-  --tone-surface: #131920;
+  --tone-surface: #080e16;
   --tone-surface-strong: #1c2333;
-   --tone-card: #696c88;
+  --tone-card: #020712;
+  --tone-card-header: #2f4060;
   --tone-text: #e6edf3;
-  --tone-text-muted: #8b949e;
+  --tone-text-muted: #c5ccd5;
   --tone-border: #30363d;
   --tone-primary: #58a6ff;
   --tone-primary-hover: #79b8ff;
@@ -572,7 +576,7 @@ a {
   border: 1px solid var(--tone-border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
-  background: var(--tone-surface);
+  background: var(--tone-card);
   box-shadow: var(--shadow-surface);
   display: grid;
   gap: 0;
@@ -859,24 +863,15 @@ a {
 }
 
 /* ── Shiki dual-theme syntax highlighting ────────────────────────────────
-   Shiki emits --shiki-light / --shiki-dark CSS vars on each token span.
-   We activate the right set based on the active data-theme attribute.
-   All three light themes (sprout, ocean, earth) use github-light;
-   the dark theme uses github-dark.
+   github-light colors are baked in as direct `color:` values by Shiki
+   (the default). The dark theme override swaps to --shiki-dark via CSS.
+   Light themes (sprout, ocean, earth) need no rule — they inherit the
+   baked-in colors. Only dark needs a selector.
 ──────────────────────────────────────────────────────────────────────── */
-:root:not([data-theme='dark']) .shiki,
-:root:not([data-theme='dark']) .shiki span {
-  color: var(--shiki-light);
-  background-color: var(--shiki-light-bg);
-  font-style: var(--shiki-light-font-style);
-  font-weight: var(--shiki-light-font-weight);
-  text-decoration: var(--shiki-light-text-decoration);
-}
-
 :root[data-theme='dark'] .shiki,
 :root[data-theme='dark'] .shiki span {
-  color: var(--shiki-dark);
-  background-color: var(--shiki-dark-bg);
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
   font-style: var(--shiki-dark-font-style);
   font-weight: var(--shiki-dark-font-weight);
   text-decoration: var(--shiki-dark-text-decoration);

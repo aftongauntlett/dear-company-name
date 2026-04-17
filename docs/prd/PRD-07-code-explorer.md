@@ -2,8 +2,8 @@
 
 **Phase:** 2 (after PRD-06 complete)
 
-Status: Completed (pivoted — see implementation notes below)
-Completed: 2026-04-16
+Status: Complete (pivoted — see implementation notes below)
+Completed: 2026-04-16 7:00pm
 
 ---
 
@@ -403,6 +403,7 @@ const highlightedHtml = highlighter.codeToHtml(content, { lang });
 - Use `github-dark` as the default theme. It visually aligns with the site's dark palette without needing a custom theme.
 - Initialize the highlighter once in `code.astro`'s frontmatter and pass the instance through; do not re-initialize per file.
 - If a language is not supported by Shiki, fall back to `'text'` — do not throw.
+- (See Notes below - This has been refactored)
 
 ---
 
@@ -699,3 +700,32 @@ The original spec called for a standalone `/code` page with 3–6 views across m
 ### Navbar
 
 `/code` link removed. `#work` anchor replaced with `#how-i-work`. The explorer is now a native section of the home page, not a separate destination.
+
+> **⚠️ Implementation correction (2026-04-16):** The original spec quoted the Shiki v0/v1 `getHighlighter` API, which does not exist in Shiki 4.x (the version vendored by Astro 6.x). The initial implementation used `createHighlighter`, which does exist but creates a **new isolated instance** on every call. During development this produced two bugs:
+>
+> 1. **Syntax highlighting showed as plain unstyled text.** The call was using `themes: { light, dark }` with `defaultColor: false`, which makes Shiki emit only CSS custom property references (`--shiki-light`, `--shiki-dark`) per token span. When those vars aren't resolved — e.g. because the `.shiki` selector rule wasn't matching correctly — every token renders colorless. The fix: drop `defaultColor: false`, which makes Shiki bake light-theme colors in as direct `color:` values (the 4.x default). The dark theme override is a single CSS selector in global.css.
+>
+> 2. **"20 instances have been created" warning during dev.** Astro's HMR re-runs component frontmatter on each file save. `createHighlighter` is not deprecated or broken — it just creates a new isolated instance, which leaks on every hot reload. `getSingletonHighlighter` is the correct API here because it returns the same cached instance on every call within the same Node process.
+>
+> **Correct pattern for Shiki 4.x in Astro:**
+>
+> ```ts
+> import { getSingletonHighlighter } from 'shiki';
+>
+> // Returns the same cached instance on every call within the same Node process.
+> // Safe to call in component frontmatter — no instance leak on HMR.
+> const highlighter = await getSingletonHighlighter({
+>   themes: ['github-light', 'github-dark'],
+>   langs: allLanguages,
+> });
+>
+> // No defaultColor override — light colors baked in, dark swapped via CSS.
+> const html = highlighter.codeToHtml(content, {
+>   lang,
+>   themes: { light: 'github-light', dark: 'github-dark' },
+> });
+> ```
+>
+> The intent of "initialize once, don't re-initialize per file" was right. The mechanism was wrong — `getSingletonHighlighter` handles the singleton guarantee internally, so no manual "pass the instance through" plumbing is needed.
+>
+> Also note: `shiki` was originally a transitive dep (pulled in by Astro). It has since been pinned explicitly in `package.json` (`"shiki": "^4.0.2"`) to prevent silent drift if Astro's internal dep ever changes.

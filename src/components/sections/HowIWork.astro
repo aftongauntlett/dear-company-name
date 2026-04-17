@@ -17,7 +17,7 @@
  * MutationObserver and adjusts a CSS filter so the animation reads on all themes.
  */
 
-import { createHighlighter } from 'shiki';
+import { getSingletonHighlighter } from 'shiki';
 import type { BundledLanguage } from 'shiki';
 import CodeExplorer from './CodeExplorer.astro';
 import LottiePlayer from '../ui/LottiePlayer.astro';
@@ -52,8 +52,8 @@ const allLanguages = [
   ),
 ] as BundledLanguage[];
 
-const highlighter = await createHighlighter({
-  themes: ['github-dark', 'github-light'],
+const highlighter = await getSingletonHighlighter({
+  themes: ['github-light', 'github-dark'],
   langs: allLanguages.length > 0 ? allLanguages : ['typescript'],
 });
 
@@ -77,13 +77,11 @@ const resolvedViews: ResolvedView[] = await Promise.all(
           highlightedHtml = highlighter.codeToHtml(content, {
             lang: language,
             themes: { light: 'github-light', dark: 'github-dark' },
-            defaultColor: false,
           });
         } catch {
           highlightedHtml = highlighter.codeToHtml(content, {
             lang: 'text',
             themes: { light: 'github-light', dark: 'github-dark' },
-            defaultColor: false,
           });
         }
 
@@ -347,7 +345,7 @@ const highlightedPaths = HIGHLIGHTED_FILES.map((h) => h.path);
     flex-direction: column;
     gap: var(--space-3);
     padding: var(--space-6);
-    background: var(--tone-surface);
+    background: var(--tone-card);
     border: 1px solid var(--tone-border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-surface);
@@ -392,12 +390,12 @@ const highlightedPaths = HIGHLIGHTED_FILES.map((h) => h.path);
     margin: 0;
   }
 
-  .highlight-note code {
-    font-family: var(--font-mono);
-    font-size: 0.85em;
-    background: color-mix(in srgb, var(--tone-primary) 10%, transparent);
-    padding: 0.1em 0.35em;
+  .highlight-note :global(code) {
+    font-family: ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 0.875em;
+    color: var(--tone-primary);
+    background: color-mix(in srgb, var(--tone-primary) 12%, transparent);
     border-radius: var(--radius-sm);
-    color: var(--tone-text);
+    padding: 0.1em 0.35em;
   }
 </style>

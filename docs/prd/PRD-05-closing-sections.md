@@ -132,7 +132,7 @@ Before marking this chunk complete, verify:
    - `<Hero />` (`#top`)
    - `<HowIStart />` (`#start`)
    - `<HowIChooseStack />` (`#stack`)
-   - `<RecentWork />` (`#work`)
+   - `<HowIWork />` (`#how-i-work`) — replaced `<RecentWork />` per PRD-04 pivot
    - `<TeamLevels />` (`#teams`)
    - `<LookingFor />` (`#looking-for`)
    - `<VideoNote />` (no anchor needed, acts as footer-level close)
