@@ -10,8 +10,9 @@ export const APPLICANT = {
 } as const;
 
 export const COMPANY = {
-  // ← Change this one value to target a new company
-  targetName: 'Prentus',
+  // Build-time placeholder — never shown. Visits without ?to= redirect to /404.
+  // The actual company name is set at runtime via ?to=CompanyName in the URL.
+  targetName: 'your team',
 } as const;
 
 export const THEMES = ['sprout', 'ocean', 'earth', 'dark'] as const;

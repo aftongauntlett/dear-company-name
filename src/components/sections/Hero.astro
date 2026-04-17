@@ -50,6 +50,35 @@ const PLACEHOLDER_NAME = 'Your Company';
           data-placeholder={PLACEHOLDER_NAME}></span><span class="hero-bracket">]</span>,
       </p>
 
+      {/*
+        Inline patch script: runs synchronously before the bundled animation script fires.
+        Reads ?to= from the URL and patches the h1 text, data-target, and document.title.
+        Uses .textContent (not .innerHTML) — safe from XSS.
+      */}
+      <script is:inline>
+        (function () {
+          const params = new URLSearchParams(window.location.search);
+          const company = params.get('to');
+
+          // No ?to= param means this isn't a personalised link — send to the 404 page.
+          if (!company) {
+            window.location.replace('/404');
+            return;
+          }
+
+          // Patch the accessible h1 (screen-reader source of truth)
+          const headline = document.querySelector('.hero-headline');
+          if (headline) headline.textContent = 'Dear ' + company + ',';
+
+          // Patch data-target so the typewriter animation types the right name
+          const typewriter = document.querySelector('[data-target]');
+          if (typewriter) typewriter.setAttribute('data-target', company);
+
+          // Patch the page title
+          document.title = 'Dear ' + company + ' \u2014 Afton Gauntlett';
+        })();
+      </script>
+
       <p class="hero-subhead">
         I built this instead of recording a video. I think you&rsquo;ll agree it was the right
         call.

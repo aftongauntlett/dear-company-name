@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { APPLICANT } from '../config/site';
+import LottiePlayer from '../components/ui/LottiePlayer.astro';
+---
+
+<BaseLayout title="Wrong link — Afton Gauntlett" hideChrome>
+  <div class="not-found">
+    <div class="not-found-animation" aria-hidden="true">
+      <LottiePlayer src="/images/black-rainbow-cat.lottie" width={220} height={220} />
+    </div>
+
+    <h1 class="not-found-heading">Oops — looks like you got the wrong link.</h1>
+
+    <p class="not-found-body">
+      This site personalises itself for whoever it&rsquo;s sent to, so each link is a one-time
+      thing. If you&rsquo;re a person and not a bot, there&rsquo;s a good chance Afton just needs
+      to send you a fresh one.
+    </p>
+
+    <a class="not-found-contact" href={`mailto:${APPLICANT.email}`}>
+      Email Afton for the right link →
+    </a>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-6);
+    padding-inline: var(--space-6);
+    padding-block: var(--space-16);
+    text-align: center;
+  }
+
+  .not-found-animation {
+    width: 220px;
+    height: 220px;
+    flex-shrink: 0;
+  }
+
+  .not-found-heading {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: var(--tone-text);
+    max-width: 28rem;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .not-found-body {
+    font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+    color: var(--tone-text-muted);
+    max-width: 32rem;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .not-found-contact {
+    display: inline-block;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--tone-primary);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--tone-primary) 40%, transparent);
+    padding-bottom: 1px;
+    transition: border-color 150ms ease;
+  }
+
+  .not-found-contact:hover,
+  .not-found-contact:focus-visible {
+    border-color: var(--tone-primary);
+  }
+
+  .not-found-contact:focus-visible {
+    outline: 2px solid var(--tone-primary);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+</style>

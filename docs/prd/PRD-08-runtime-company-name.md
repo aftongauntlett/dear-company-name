@@ -1,8 +1,9 @@
 # PRD-08: Runtime Company Name via Query Param
 
 **Phase:** 2
-Status: Not Started
-Completed:
+
+Status: Complete 
+Completed: 2026-04-17 2:00am 
 
 ---
 
@@ -144,11 +145,11 @@ This way you know which company clicked, when, and how many times — without an
 
 ## Acceptance Criteria
 
-- [ ] `?to=Stripe` → headline reads "Dear Stripe," and typewriter types "Stripe"
-- [ ] `?to=Booz+Allen` → headline reads "Dear Booz Allen,"
-- [ ] No `?to=` param → headline reads "Dear your team," (or chosen fallback)
-- [ ] `document.title` updates to match the param value
-- [ ] No flash of wrong company name before animation starts
-- [ ] XSS: `?to=<img src=x onerror=alert(1)>` renders as literal text, no script executes
-- [ ] `npm run typecheck`, `npm run lint`, `npm run test` all pass
+- [x] `?to=Stripe` → headline reads "Dear Stripe," and typewriter types "Stripe"
+- [x] `?to=Booz+Allen` → headline reads "Dear Booz Allen,"
+- [x] No `?to=` param → headline reads "Dear your team," (or chosen fallback)
+- [x] `document.title` updates to match the param value
+- [x] No flash of wrong company name before animation starts
+- [x] XSS: `?to=<img src=x onerror=alert(1)>` renders as literal text, no script executes
+- [x] `npm run typecheck`, `npm run lint`, `npm run test` all pass
 - [ ] Verified working on Vercel production deploy (not just local)
