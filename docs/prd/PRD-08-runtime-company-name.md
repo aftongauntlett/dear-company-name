@@ -1,4 +1,4 @@
-# PRD-10: Runtime Company Name via Query Param
+# PRD-08: Runtime Company Name via Query Param
 
 **Phase:** 2
 Status: Not Started

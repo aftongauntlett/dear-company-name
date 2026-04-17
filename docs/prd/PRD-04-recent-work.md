@@ -1,5 +1,9 @@
 # PRD-04: Recent Work Section
 
+**Status: DEPRECATED**
+Superseded by the pivot described at the bottom of this document. 
+
+_Original status line preserved below for historical context._
 Status: In Progress
 Completed: 2026-04-15 11:30pm (I paused to watch an episode of Twin Peaks!)
 
@@ -163,3 +167,28 @@ Each card shows the tech stack as a row of small pill tags below the description
 - [ ] `npm run lint` passes.
 - [ ] `npm run build` passes.
 - [ ] `npm run precommit:check` passes before committing.
+
+---
+
+## Pivot Notes — Why This Was Not Built
+
+This PRD was written to showcase 4 projects (GBVA, no-wb.org, Orbital Order, and this template) as project cards with images, tech tags, and links. During development the approach was reconsidered.
+
+### The problem with the original approach
+
+Showing other projects on the page raised an obvious question for the hiring manager: *why should I trust this person's description of their own work?* A card that says "I built a thing" is a claim. It can't be verified without following a link and reading the code yourself.
+
+The code explorer (PRD-07) was always the more honest answer. It shows the work directly, not a summary of it.
+
+### What replaced this section
+
+`RecentWork.astro` was removed from the home page. In its place: `HowIWork.astro` — a new section that embeds the full code explorer for *this project only*, with highlighted file annotations calling out the most interesting decisions. The argument is implicit: if the code you're reading right now is this well-considered, you can extrapolate.
+
+### What happened to the other projects
+
+NPC Finder, Orbital Order, GBVA, no-wb.org — none are showcased. The decision was to focus entirely on the artifact being presented (this site) rather than ask the hiring manager to context-switch to other repos. If they want to see more, the conversation is a better vehicle for that than a link grid.
+
+### Status
+
+- `src/components/sections/RecentWork.astro` — deleted.
+- `src/components/ui/ProjectCard.astro` — deleted.

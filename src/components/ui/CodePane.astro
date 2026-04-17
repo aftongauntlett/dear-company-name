@@ -1,0 +1,201 @@
+---
+/**
+ * CodePane — renders all files for a view pre-built at build time.
+ *
+ * All file articles are present in the DOM; only one is visible at a time.
+ * The active file is toggled by CodeExplorer via the `file-selected` event.
+ * Raw source text is read from the rendered <pre> element's textContent for clipboard copy.
+ */
+import type { ResolvedFile } from '../../utils/github';
+
+interface Props {
+  files: ResolvedFile[];
+  defaultPath: string;
+  /** Unique identifier for associating with a view panel. */
+  viewId: string;
+}
+
+const { files, defaultPath, viewId } = Astro.props;
+---
+
+<div class="code-pane" data-code-pane={viewId}>
+  {
+    files.length === 0 ? (
+      <div class="code-pane-empty" role="status">
+        <p>No files to display in this view.</p>
+      </div>
+    ) : (
+      files.map((file) => {
+        const isDefault = file.path === defaultPath;
+        return (
+          <article
+            aria-label={file.path}
+            data-file-path={file.path}
+            class:list={['code-pane-file', { 'code-pane-file--active': isDefault }]}
+            hidden={!isDefault}
+          >
+            <header class="code-pane-header">
+              <span class="code-pane-filename" title={file.path}>
+                {file.path}
+              </span>
+              <button
+                type="button"
+                class="copy-btn"
+                aria-label="Copy file contents"
+                data-copy-state="idle"
+              >
+                Copy
+              </button>
+            </header>
+            <div class="code-scroll-container" set:html={file.highlightedHtml} />
+          </article>
+        );
+      })
+    )
+  }
+</div>
+
+<style>
+  .code-pane {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .code-pane-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-12);
+    color: var(--tone-text-muted);
+    font-size: clamp(1rem, 1.2vw, 1.15rem);
+    text-align: center;
+  }
+
+  .code-pane-empty p {
+    margin: 0;
+  }
+
+  .code-pane-file {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* Astro scoped styles beat the UA [hidden] rule — override explicitly. */
+  .code-pane-file[hidden] {
+    display: none;
+  }
+
+  .code-pane-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--tone-border);
+    background: var(--tone-bg);
+    flex-shrink: 0;
+  }
+
+  .code-pane-filename {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--tone-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .copy-btn {
+    flex-shrink: 0;
+    padding: 0.25rem var(--space-3);
+    border: 1px solid var(--tone-border);
+    border-radius: var(--radius-sm);
+    background: var(--tone-surface);
+    color: var(--tone-text-muted);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background 120ms ease,
+      color 120ms ease,
+      border-color 120ms ease;
+    min-width: 4.5rem;
+    text-align: center;
+  }
+
+  .copy-btn:hover {
+    background: var(--tone-surface-strong);
+    color: var(--tone-text);
+    border-color: var(--tone-primary);
+  }
+
+  .copy-btn:focus-visible {
+    outline: 3px solid var(--tone-ring);
+    outline-offset: 2px;
+  }
+
+  .copy-btn[data-copy-state='success'] {
+    color: var(--tone-primary);
+    border-color: var(--tone-primary);
+  }
+
+  .code-scroll-container {
+    overflow: auto;
+    flex: 1;
+    tab-size: 2;
+  }
+
+  /* Shiki output normalisation */
+  .code-scroll-container :global(pre) {
+    margin: 0;
+    padding: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.65;
+    min-width: max-content;
+  }
+
+  .code-scroll-container :global(code) {
+    font-family: inherit;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .copy-btn {
+      transition: none;
+    }
+  }
+
+</style>
+
+<script>
+  // Copy button behaviour — reads plain text from the rendered <pre> element.
+  async function handleCopy(btn: HTMLElement): Promise<void> {
+    const article = btn.closest<HTMLElement>('.code-pane-file');
+    const pre = article?.querySelector('pre');
+    const text = pre?.textContent ?? '';
+
+    await navigator.clipboard.writeText(text);
+    btn.textContent = 'Copied!';
+    btn.setAttribute('data-copy-state', 'success');
+
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.setAttribute('data-copy-state', 'idle');
+    }, 2000);
+  }
+
+  document.querySelectorAll<HTMLElement>('.copy-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      handleCopy(btn).catch(() => {
+        // Clipboard write failed silently — non-critical feature
+      });
+    });
+  });
+</script>

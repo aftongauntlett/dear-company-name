@@ -2,22 +2,26 @@
 
 **Phase:** 2 (after PRD-06 complete)
 
-Status: In Progress
-Completed: 
+Status: Completed (pivoted — see implementation notes below)
+Completed: 2026-04-16
 
 ---
 
-## Assessment
+## ⚠️ Implementation Divergence
+
+This PRD was written with a `/code` standalone page showing multiple repos. The actual implementation pivoted significantly during development. See the **Pivot Notes** section at the bottom for the full rationale. The rest of this document describes the original spec; the implementation notes describe what was actually built.
+
+---
+
+## Original Assessment (preserved for context)
 
 This feature belongs in this project. The entire site exists to replace a Loom video — to show how Afton thinks, not just what she's shipped. PRD-02 through PRD-05 establish the *claims*: "I think carefully before writing code, I choose stacks deliberately, I've built these things." The file explorer is the *evidence*: here is the actual code, here is why this part is worth reading, here is what intentional decision-making looks like in a real codebase.
 
 The technical approach is appropriate. All fetching happens at build time, Shiki is already part of Astro's compile pipeline, and no new architectural patterns are introduced. The WCAG and token requirements are identical to every other section.
 
-The one honest constraint: this is Phase 2. PRD-01 is complete; PRD-02 through PRD-05 are the must-have day-one scope. This PRD should not be started until those are done. But it should be the first Phase 2 feature — it's load-bearing for the site's purpose.
-
 ---
 
-## Goal
+## Original Goal (preserved for context)
 
 Create a `/code` page that gives hiring managers a curated, guided window into real codebases. Not a GitHub clone — a small number of intentionally selected views, each labeled with what it is and why it's worth looking at. The experience should feel like someone handed you a well-annotated code review, not a repo dump.
 
@@ -656,3 +660,42 @@ Add a `/code` link to `Navbar.astro`:
 - [ ] `npm run test` passes (github.ts utility functions have unit tests).
 - [ ] `npm run build` passes.
 - [ ] `npm run precommit:check` passes before committing.
+
+---
+
+## Pivot Notes — What Was Actually Built
+
+The original spec called for a standalone `/code` page with 3–6 views across multiple repos (this site, NPC Finder, Orbital Order, GBVA, no-wb, prettyprettyprettygood). During implementation, the design pivoted significantly. Here is what actually shipped and why.
+
+### What changed
+
+**No `/code` page.** The standalone route was removed. `src/pages/code.astro` was deleted. The code explorer is now embedded in the home page as the `#how-i-work` section.
+
+**One repo, this one.** The multi-repo concept was dropped entirely. Showing other projects alongside this one diluted the point — the site *is* the evidence. The explorer now shows the full `src/` tree of `dear-company-name` only.
+
+**No view-switcher sidebar.** The tablist sidebar (which switched between curated views) was removed. With one repo the tabs were meaningless. The tree now shows the entire project, and the user browses freely.
+
+**Highlighted files instead of curated views.** The "curated view" editorial layer is replaced by a `HIGHLIGHTED_FILES` array in `src/config/codeViews.ts`. These are 4 specific files worth calling out. They appear in the file tree with a `★` badge and accent color, and as annotation cards *above* the explorer so users know what to look for before they start browsing.
+
+**Lazy loading as the featured pattern.** The explorer is heavy HTML. Rather than pre-rendering with a visible loading state, it uses `content-visibility: hidden` to defer browser paint until the section enters the viewport, then `requestIdleCallback` to detect when rendering is truly done before fading in. A Lottie animation (`black-rainbow-cat.lottie`) appears only if render takes longer than 300ms — the threshold at which users first perceive a delay. The lazy loading pattern itself became one of the highlighted files.
+
+**Lottie animation added.** `@lottiefiles/dotlottie-web` was installed. `src/components/ui/LottiePlayer.astro` was created. The animation is theme-aware via a `MutationObserver` on `document.documentElement`.
+
+### Files as-built
+
+| File | Status | Notes |
+|------|--------|-------|
+| `src/config/codeViews.ts` | Modified | One view (`source`), plus new `HIGHLIGHTED_FILES` export |
+| `src/utils/github.ts` | Created as specced | Build-time fetch + filter + language detection |
+| `src/utils/github.test.ts` | Created as specced | 40 unit tests |
+| `src/components/sections/CodeExplorer.astro` | Created, then simplified | No tablist; single `view` prop + `highlighted` prop |
+| `src/components/ui/FileTree.astro` | Created as specced | Added `highlighted` prop — starred files styled with accent color |
+| `src/components/ui/CodePane.astro` | Created as specced | |
+| `src/components/ui/LottiePlayer.astro` | New — not in original spec | Canvas-based dotlottie player, theme-aware |
+| `src/components/sections/HowIWork.astro` | New — not in original spec | Replaces `RecentWork.astro` on home page; owns the lazy-loading logic |
+| `src/pages/code.astro` | Deleted | Route removed entirely |
+| `src/components/sections/RecentWork.astro` | Deleted | Was removed from `index.astro`; file deleted as dead code |
+
+### Navbar
+
+`/code` link removed. `#work` anchor replaced with `#how-i-work`. The explorer is now a native section of the home page, not a separate destination.

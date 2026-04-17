@@ -1,0 +1,403 @@
+---
+/**
+ * HowIWork — replaces the "Recent Work" section.
+ *
+ * Shows the source code of *this* page via the CodeExplorer.
+ * The explorer is heavy HTML, so it uses a three-phase lazy-loading strategy:
+ *
+ *   1. Page loads — explorer is in the DOM with `content-visibility: hidden`
+ *      (browser parses but does NOT paint/layout it — free for scroll performance).
+ *   2. User scrolls to section — IntersectionObserver fires, we flip
+ *      content-visibility to `visible`, which triggers browser layout/paint.
+ *   3. `requestIdleCallback` fires when the browser goes idle after painting.
+ *      Only then do we fade the Lottie out and the explorer in — so the cat
+ *      plays for the actual duration of real browser work, not an artificial timer.
+ *
+ * Theme: LottiePlayer watches `document.documentElement.dataset.theme` via
+ * MutationObserver and adjusts a CSS filter so the animation reads on all themes.
+ */
+
+import { createHighlighter } from 'shiki';
+import type { BundledLanguage } from 'shiki';
+import CodeExplorer from './CodeExplorer.astro';
+import LottiePlayer from '../ui/LottiePlayer.astro';
+import { CODE_VIEWS, HIGHLIGHTED_FILES } from '../../config/codeViews';
+import {
+  fetchRepoTree,
+  fetchFileContent,
+  filterTreeByWhitelist,
+  detectLanguage,
+  type ResolvedFile,
+  type ResolvedView,
+} from '../../utils/github';
+
+const token = import.meta.env.GITHUB_TOKEN as string | undefined;
+
+// ── Fetch all repo trees ──────────────────────────────────────────────────
+const viewsWithTrees = await Promise.all(
+  CODE_VIEWS.map(async (view) => {
+    const ref = view.ref ?? 'main';
+    const tree = await fetchRepoTree(view.owner, view.repo, ref, token);
+    const filteredEntries = filterTreeByWhitelist(tree, view.include);
+    return { view, ref, entries: filteredEntries };
+  }),
+);
+
+// ── Collect languages for a single Shiki init ────────────────────────────
+const allLanguages = [
+  ...new Set(
+    viewsWithTrees
+      .flatMap(({ entries }) => entries.map((e) => detectLanguage(e.path)))
+      .filter((lang) => lang !== 'text'),
+  ),
+] as BundledLanguage[];
+
+const highlighter = await createHighlighter({
+  themes: ['github-dark', 'github-light'],
+  langs: allLanguages.length > 0 ? allLanguages : ['typescript'],
+});
+
+// ── Fetch and highlight every file ───────────────────────────────────────
+const resolvedViews: ResolvedView[] = await Promise.all(
+  viewsWithTrees.map(async ({ view, ref, entries }) => {
+    const files = await Promise.all(
+      entries.map(async (entry): Promise<ResolvedFile | null> => {
+        const content = await fetchFileContent(
+          view.owner,
+          view.repo,
+          entry.path,
+          ref,
+          token,
+        );
+        if (content === null) return null;
+
+        const language = detectLanguage(entry.path);
+        let highlightedHtml: string;
+        try {
+          highlightedHtml = highlighter.codeToHtml(content, {
+            lang: language,
+            themes: { light: 'github-light', dark: 'github-dark' },
+            defaultColor: false,
+          });
+        } catch {
+          highlightedHtml = highlighter.codeToHtml(content, {
+            lang: 'text',
+            themes: { light: 'github-light', dark: 'github-dark' },
+            defaultColor: false,
+          });
+        }
+
+        return { path: entry.path, content, highlightedHtml, language };
+      }),
+    );
+
+    return {
+      view,
+      files: files.filter((f): f is ResolvedFile => f !== null),
+      tree: entries,
+    };
+  }),
+);
+
+const resolvedView = resolvedViews[0]!;
+const highlightedPaths = HIGHLIGHTED_FILES.map((h) => h.path);
+---
+
+<section id="how-i-work" class="howiwork-section" aria-labelledby="howiwork-heading">
+  <div class="container">
+
+    <div class="section-intro">
+      <h2 id="howiwork-heading">How I work</h2>
+      <p class="section-lead">
+        You&rsquo;re looking at it &mdash; this page is the project. Every token, component, and
+        interaction here is source-available. Browse the full source in the explorer,
+        or keep an eye out for the starred &#9733; files below.
+      </p>
+    </div>
+
+    <!-- ── File annotations: spotlight on highlighted files ─────────── -->
+    <div class="file-highlights" aria-label="Notable files">
+      <h3 class="highlights-heading">Files worth reading</h3>
+      <ul class="highlights-list" role="list">
+        {
+          HIGHLIGHTED_FILES.map(({ path, note }) => (
+            <li class="highlight-card">
+              <div class="highlight-card-header">
+                <span class="highlight-star" aria-hidden="true">&#9733;</span>
+                <code class="highlight-path">{path}</code>
+              </div>
+              <p class="highlight-note" set:html={note} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <!--
+      ── Lazy-loading gate ──────────────────────────────────────────────
+      The explorer content is in the DOM but hidden via content-visibility.
+      The Lottie placeholder is an absolute overlay — hidden by default,
+      only injected into view if rendering takes longer than ~300ms.
+      Fast loads: Lottie never appears, no layout shift, no extra height.
+      Slow loads: cat appears over the reserved space at the 300ms mark,
+      fades out once requestIdleCallback signals the browser is done painting.
+    -->
+    <div class="explorer-gate" id="explorer-gate">
+
+      <div
+        class="explorer-placeholder"
+        id="explorer-placeholder"
+        hidden
+        aria-hidden="true"
+      >
+        <div class="lottie-wrap">
+          <LottiePlayer src="/images/black-rainbow-cat.lottie" />
+        </div>
+        <p class="placeholder-label" aria-hidden="true">Loading&hellip;</p>
+      </div>
+
+      <div class="explorer-content" id="explorer-content" aria-hidden="true">
+        <CodeExplorer view={resolvedView} highlighted={highlightedPaths} />
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<script>
+  const gate = document.getElementById('explorer-gate');
+  const placeholder = document.getElementById('explorer-placeholder') as HTMLElement | null;
+  const content = document.getElementById('explorer-content');
+
+  if (!gate || !placeholder || !content) {
+    content?.removeAttribute('aria-hidden');
+  } else {
+    // Threshold: show Lottie only if render hasn't finished by this point.
+    // Below ~300ms users don't perceive a delay — no indicator needed.
+    // At 300ms they first notice "something is happening" — that's the right
+    // moment for the cat to appear and say "yes, I know, loading."
+    const SLOW_THRESHOLD_MS = 300;
+    const FADE_MS = 350;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0]?.isIntersecting) return;
+        observer.disconnect();
+
+        // Start rendering — browser begins layout/paint now
+        content.classList.add('is-rendering');
+
+        let didShowLottie = false;
+
+        // If still not done after threshold, reveal the Lottie overlay
+        const slowTimer = setTimeout(() => {
+          didShowLottie = true;
+          placeholder.hidden = false;
+          placeholder.setAttribute('role', 'status');
+          placeholder.setAttribute('aria-label', 'Loading code explorer');
+          // rAF so the browser registers `hidden = false` before adding the class
+          requestAnimationFrame(() => placeholder.classList.add('is-visible'));
+        }, SLOW_THRESHOLD_MS);
+
+        const onIdle = () => {
+          clearTimeout(slowTimer);
+
+          // Reveal explorer
+          content.classList.add('is-visible');
+          content.removeAttribute('aria-hidden');
+
+          if (didShowLottie) {
+            // Fade Lottie out, then clean up
+            placeholder.classList.remove('is-visible');
+            placeholder.classList.add('is-done');
+            setTimeout(() => {
+              placeholder.hidden = true;
+              placeholder.removeAttribute('role');
+              document.dispatchEvent(new CustomEvent('lottie:stop'));
+            }, FADE_MS);
+          }
+        };
+
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(onIdle, { timeout: 2500 });
+        } else {
+          requestAnimationFrame(() => requestAnimationFrame(onIdle));
+        }
+      },
+      { threshold: 0.05 },
+    );
+
+    observer.observe(gate);
+  }
+
+  // ── Jump-to-file buttons on highlight cards ────────────────────────
+  // (no jump-button handler — buttons removed)
+</script>
+
+<style>
+  .howiwork-section {
+    padding-block: var(--space-16);
+    background-color: var(--tone-bg);
+  }
+
+  .section-intro {
+    display: grid;
+    gap: var(--space-4);
+    margin-block-end: var(--space-8);
+  }
+
+  .section-lead {
+    color: var(--tone-text-muted);
+    font-size: clamp(1rem, 1.2vw, 1.15rem);
+    max-width: 64ch;
+    line-height: 1.65;
+  }
+
+  /* ── Gate: position:relative so the overlay can anchor to it ── */
+  .explorer-gate {
+    position: relative;
+    margin-block-start: var(--space-8);
+  }
+
+  /* ── Placeholder: absolute overlay — never adds height ──────── */
+  /* hidden by default; JS reveals it only after the slow threshold */
+  .explorer-placeholder {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    border: 1px solid var(--tone-border);
+    border-radius: var(--radius-md);
+    background: var(--tone-surface);
+    opacity: 0;
+    transition: opacity 200ms ease;
+    pointer-events: none;
+  }
+
+  .explorer-placeholder.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .explorer-placeholder.is-done {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .lottie-wrap {
+    width: clamp(120px, 18vw, 200px);
+    aspect-ratio: 1;
+  }
+
+  .placeholder-label {
+    color: var(--tone-text-muted);
+    font-size: 0.875rem;
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Explorer content: deferred until in-view ───────────────── */
+  .explorer-content {
+    content-visibility: hidden;
+    contain-intrinsic-size: 0 640px;
+    opacity: 0;
+    transition: opacity 350ms ease;
+  }
+
+  /* Phase 2: browser is rendering it (not yet visible) */
+  .explorer-content.is-rendering {
+    content-visibility: visible;
+  }
+
+  /* Phase 3: browser idle — fade in */
+  .explorer-content.is-visible {
+    opacity: 1;
+  }
+
+  /* ── File highlights: annotation cards below explorer ──────── */
+  .file-highlights {
+    margin-block-start: var(--space-12);
+  }
+
+  .highlights-heading {
+    font-family: var(--font-display);
+    font-size: clamp(1.1rem, 1.4vw, 1.3rem);
+    font-weight: 700;
+    color: var(--tone-text-muted);
+    margin-block-end: var(--space-6);
+    letter-spacing: -0.01em;
+  }
+
+  .highlights-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 28rem), 1fr));
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .highlight-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--tone-surface);
+    border: 1px solid var(--tone-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-surface);
+    transition: border-color 180ms ease;
+  }
+
+  .highlight-card:hover {
+    border-color: color-mix(in srgb, var(--tone-primary) 40%, var(--tone-border));
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .highlight-card:hover .highlight-star {
+      animation: wiggle 0.5s ease-in-out;
+    }
+  }
+
+  .highlight-card-header {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  .highlight-star {
+    font-size: 0.85rem;
+    color: var(--tone-primary);
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .highlight-path {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--tone-primary);
+    word-break: break-all;
+    line-height: 1.4;
+  }
+
+  .highlight-note {
+    color: var(--tone-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  .highlight-note code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: color-mix(in srgb, var(--tone-primary) 10%, transparent);
+    padding: 0.1em 0.35em;
+    border-radius: var(--radius-sm);
+    color: var(--tone-text);
+  }
+</style>

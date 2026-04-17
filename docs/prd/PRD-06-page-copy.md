@@ -259,7 +259,7 @@ Within twelve months of joining, I was promoted to lead, received three internal
 >
 > If you want to see how I think, let's get on a call and I'll walk you through anything here live. I'll bring the same preparation I brought to building this, and you'll get a much better read on whether we'd work well together than a screen recording would.
 >
-> The same goes for live whiteboard and algorithmic interviews. I don't have a CS fundamentals background, and if someone is watching me code under pressure I'd probably spell my name wrong — genuinely not my best side. Take-home exercises or async work samples give a much more accurate picture of how I actually work.
+> The same goes for live whiteboard and algorithmic interviews. I don't have a CS degree, and if someone is watching me code under pressure I'd probably spell my name wrong — genuinely not my best side. Take-home exercises or async work samples give a much more accurate picture of how I actually work.
 
 ### CTA button
 

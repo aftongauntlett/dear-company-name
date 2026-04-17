@@ -1,0 +1,81 @@
+---
+/**
+ * LottiePlayer — renders a .lottie animation using @lottiefiles/dotlottie-web.
+ *
+ * Uses a canvas element. The animation autoplays and loops by default.
+ * Theme-aware: watches data-theme on <html> and adjusts via CSS filter so the
+ * animation reads well on both light and dark backgrounds.
+ *
+ * External control: dispatch a `lottie:stop` CustomEvent on document to stop
+ * all active instances and disconnect their MutationObservers.
+ */
+interface Props {
+  src: string;
+  class?: string;
+  width?: number | string;
+  height?: number | string;
+}
+
+const { src, class: className, width, height } = Astro.props;
+---
+
+<canvas
+  class:list={['lottie-canvas', className]}
+  data-src={src}
+  aria-hidden="true"
+  role="presentation"
+  style={`${width ? `width:${typeof width === 'number' ? `${width}px` : width};` : ''}${height ? `height:${typeof height === 'number' ? `${height}px` : height};` : ''}`}
+></canvas>
+
+<script>
+  import { DotLottie } from '@lottiefiles/dotlottie-web';
+
+  document.querySelectorAll<HTMLCanvasElement>('.lottie-canvas').forEach((canvas) => {
+    const src = canvas.dataset.src;
+    if (!src) return;
+
+    const instance = new DotLottie({
+      canvas,
+      src,
+      autoplay: true,
+      loop: true,
+    });
+
+    // ── Theme-aware filter ───────────────────────────────────────
+    // The animation has a black body — on dark themes it can disappear.
+    // A subtle brightness lift keeps it readable across all themes.
+    const applyThemeFilter = () => {
+      const theme = document.documentElement.dataset.theme ?? '';
+      const isDark = theme === 'dark';
+      canvas.style.filter = isDark ? 'brightness(1.15) saturate(1.1)' : 'none';
+    };
+
+    applyThemeFilter();
+
+    const themeObserver = new MutationObserver(applyThemeFilter);
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    // ── External stop ────────────────────────────────────────────
+    // Fired by HowIWork when the code explorer finishes revealing.
+    document.addEventListener(
+      'lottie:stop',
+      () => {
+        instance.stop();
+        themeObserver.disconnect();
+      },
+      { once: true },
+    );
+  });
+</script>
+
+<style>
+  .lottie-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transition: filter 200ms ease;
+  }
+</style>

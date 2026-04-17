@@ -23,6 +23,7 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@lottiefiles/dotlottie-web": "^0.71.0",
     "@lucide/astro": "^1.8.0",
     "astro": "^6.1.4"
   },

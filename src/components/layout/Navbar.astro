@@ -7,25 +7,41 @@ import { Menu, X } from '@lucide/astro';
 const nav = [
   { href: '#start', label: 'How I Start' },
   { href: '#stack', label: 'Tech Stack' },
-  { href: '#work', label: 'Recent Work' },
-  { href: '#teams', label: 'What I\'ve Done' },
+  { href: '#how-i-work', label: 'How I Work' },
+  { href: '#teams', label: "What I've Done" },
   { href: '#looking-for', label: 'Looking For' },
 ];
+
+const currentPath = Astro.url.pathname;
+const isHomePage = currentPath === '/';
 ---
 
 <header class="site-header" id="site-header">
   <div class="site-header-inner container">
-    <a href="#top" class="brand" aria-label="Back to top">
+    <a href={isHomePage ? '#top' : '/'} class="brand" aria-label={isHomePage ? 'Back to top' : 'Home'}>
       <span class="brand-name">{APPLICANT.name}</span>
     </a>
 
     <nav id="primary-nav" aria-label="Primary" class="site-nav">
       <ul>
-        {nav.map((item) => (
-          <li>
-            <a href={item.href} data-nav-href={item.href}>{item.label}</a>
-          </li>
-        ))}
+        {nav.map((item) => {
+          const isAnchor = item.href.startsWith('#');
+          const isPageLink = !isAnchor;
+          const resolvedHref = isAnchor && !isHomePage ? `/${item.href}` : item.href;
+          const isCurrentPage = isPageLink && currentPath === item.href;
+          return (
+            <li>
+              <a
+                href={resolvedHref}
+                data-nav-href={isAnchor && isHomePage ? item.href : undefined}
+                aria-current={isCurrentPage ? 'page' : undefined}
+                class:list={[{ 'is-active': isCurrentPage }]}
+              >
+                {item.label}
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </nav>
 

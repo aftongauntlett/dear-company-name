@@ -1,0 +1,390 @@
+---
+/**
+ * FileTree — renders a keyboard-navigable, ARIA-compliant file tree.
+ *
+ * Uses Astro.self for recursive directory rendering.
+ * The root call renders role="tree"; recursive calls render role="group".
+ *
+ * Dispatches a custom DOM event `file-selected` with `detail: { path: string }`
+ * when a file item is activated by click or keyboard.
+ */
+import type { GitTreeEntry } from '../../utils/github';
+
+interface TreeNode {
+  name: string;
+  path: string;
+  type: 'file' | 'dir';
+  children: TreeNode[];
+}
+
+interface Props {
+  entries: GitTreeEntry[];
+  selectedPath: string;
+  viewId: string;
+  /** Paths that should be visually highlighted (accent color + star) in the tree. */
+  highlighted?: string[];
+  /** Internal — do not pass from outside. */
+  _nodes?: TreeNode[];
+  /** Internal — do not pass from outside. */
+  _isRoot?: boolean;
+}
+
+function buildTree(entries: GitTreeEntry[]): TreeNode[] {
+  const nodeMap = new Map<string, TreeNode>();
+  const roots: TreeNode[] = [];
+
+  for (const entry of entries) {
+    const parts = entry.path.split('/');
+
+    // Ensure all ancestor directory nodes exist
+    for (let depth = 1; depth < parts.length; depth++) {
+      const dirPath = parts.slice(0, depth).join('/') + '/';
+      if (!nodeMap.has(dirPath)) {
+        const dir: TreeNode = {
+          name: parts[depth - 1],
+          path: dirPath,
+          type: 'dir',
+          children: [],
+        };
+        nodeMap.set(dirPath, dir);
+
+        if (depth === 1) {
+          roots.push(dir);
+        } else {
+          const parentPath = parts.slice(0, depth - 1).join('/') + '/';
+          nodeMap.get(parentPath)?.children.push(dir);
+        }
+      }
+    }
+
+    const fileNode: TreeNode = {
+      name: parts[parts.length - 1],
+      path: entry.path,
+      type: 'file',
+      children: [],
+    };
+    nodeMap.set(entry.path, fileNode);
+
+    if (parts.length === 1) {
+      roots.push(fileNode);
+    } else {
+      const parentPath = parts.slice(0, -1).join('/') + '/';
+      nodeMap.get(parentPath)?.children.push(fileNode);
+    }
+  }
+
+  const sort = (nodes: TreeNode[]): TreeNode[] =>
+    nodes
+      .sort((a, b) => {
+        if (a.type !== b.type) return a.type === 'dir' ? -1 : 1;
+        return a.name.localeCompare(b.name);
+      })
+      .map((n) => ({ ...n, children: sort(n.children) }));
+
+  return sort(roots);
+}
+
+const {
+  entries,
+  selectedPath,
+  viewId,
+  highlighted = [],
+  _nodes,
+  _isRoot = true,
+} = Astro.props;
+
+const nodes = _nodes ?? buildTree(entries);
+---
+
+<ul
+  role={_isRoot ? 'tree' : 'group'}
+  class={_isRoot ? 'file-tree' : 'file-tree-group'}
+  aria-label={_isRoot ? 'Repository files' : undefined}
+>
+  {
+    nodes.map((node, i) => {
+      const isSelected = node.type === 'file' && node.path === selectedPath;
+      return (
+        <li
+          role="treeitem"
+          aria-expanded={node.type === 'dir' ? 'true' : undefined}
+          aria-selected={node.type === 'file' ? (isSelected ? 'true' : 'false') : undefined}
+          data-path={node.path}
+          data-type={node.type}
+          data-view={viewId}
+          tabindex={_isRoot && i === 0 ? '0' : '-1'}
+          class:list={[
+            'tree-item',
+            `tree-item--${node.type}`,
+            { 'tree-item--selected': isSelected },
+            { 'tree-item--highlighted': node.type === 'file' && highlighted.includes(node.path) },
+          ]}
+        >
+          <span class={`tree-label tree-label--${node.type}`}>
+            {node.name}
+            {node.type === 'file' && highlighted.includes(node.path) && (
+              <span class="tree-label-star" aria-hidden="true">★</span>
+            )}
+          </span>
+          {node.type === 'dir' && node.children.length > 0 && (
+            <Astro.self
+              entries={entries}
+              selectedPath={selectedPath}
+              viewId={viewId}
+              highlighted={highlighted}
+              _nodes={node.children}
+              _isRoot={false}
+            />
+          )}
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .file-tree,
+  .file-tree-group {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .file-tree-group {
+    /* Indent nested children */
+    padding-inline-start: var(--space-4);
+  }
+
+  .tree-item {
+    display: block;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    outline: none;
+    position: relative;
+  }
+
+  .tree-item:focus-visible {
+    outline: 2px solid var(--tone-primary);
+    outline-offset: 2px;
+  }
+
+  .tree-label {
+    display: block;
+    padding: 0.3rem var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: var(--tone-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: var(--radius-sm);
+    transition: background 120ms ease;
+  }
+
+  .tree-label--dir {
+    color: var(--tone-text-muted);
+    font-weight: 600;
+  }
+
+  .tree-label--dir::before {
+    content: '▶';
+    display: inline-block;
+    margin-inline-end: var(--space-2);
+    font-size: 0.6rem;
+    vertical-align: middle;
+    transition: transform 120ms ease;
+    color: var(--tone-text-muted);
+  }
+
+  /* When directory is expanded, rotate the indicator */
+  [aria-expanded='true'] > .tree-label--dir::before {
+    transform: rotate(90deg);
+  }
+
+  /* Hover states */
+  .tree-label--file:hover {
+    background: color-mix(in srgb, var(--tone-surface-strong) 60%, transparent);
+  }
+
+  .tree-label--dir:hover {
+    background: color-mix(in srgb, var(--tone-surface-strong) 40%, transparent);
+  }
+
+  /* Selected file */
+  .tree-item--selected > .tree-label--file {
+    background: var(--tone-surface-strong);
+    color: var(--tone-primary);
+    border-left: 2px solid var(--tone-primary);
+    padding-inline-start: calc(var(--space-3) - 2px);
+  }
+
+  /* Highlighted file: accent color + star badge */
+  .tree-item--highlighted > .tree-label--file {
+    color: var(--tone-primary);
+    font-weight: 600;
+  }
+
+  .tree-label-star {
+    display: inline-block;
+    margin-inline-start: 0.35em;
+    font-size: 0.7em;
+    vertical-align: super;
+    color: var(--tone-primary);
+    opacity: 0.85;
+    line-height: 1;
+  }
+
+  /* Collapsed directory children */
+  [aria-expanded='false'] > .file-tree-group {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tree-label--dir::before {
+      transition: none;
+    }
+
+    .tree-label {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // ── FileTree keyboard and click interaction ──────────────────────────────
+  // Runs once per page, delegates via the .file-tree root element.
+
+  function initFileTree(tree: HTMLElement) {
+    // Returns all currently visible treeitem elements
+    function getVisibleItems(): HTMLElement[] {
+      return Array.from(
+        tree.querySelectorAll<HTMLElement>(
+          '[role="treeitem"]:not([aria-expanded="false"] [role="treeitem"])',
+        ),
+      );
+    }
+
+    function selectFile(item: HTMLElement) {
+      const path = item.dataset.path;
+      if (!path || item.dataset.type !== 'file') return;
+
+      const viewId = item.dataset.view;
+
+      // Update aria-selected on all file items in this tree
+      tree
+        .querySelectorAll<HTMLElement>('[role="treeitem"][data-type="file"]')
+        .forEach((el) => {
+          el.setAttribute('aria-selected', el === item ? 'true' : 'false');
+          el.classList.toggle('tree-item--selected', el === item);
+          const label = el.querySelector('.tree-label');
+          if (el === item) {
+            label?.classList.add('tree-label--selected');
+          } else {
+            label?.classList.remove('tree-label--selected');
+          }
+        });
+
+      // Dispatch event for CodeExplorer to pick up
+      tree.dispatchEvent(
+        new CustomEvent('file-selected', {
+          detail: { path, viewId },
+          bubbles: true,
+        }),
+      );
+    }
+
+    function toggleDir(item: HTMLElement) {
+      const expanded = item.getAttribute('aria-expanded') === 'true';
+      item.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    }
+
+    function moveFocus(items: HTMLElement[], current: HTMLElement, delta: number) {
+      const idx = items.indexOf(current);
+      const next = items[idx + delta];
+      if (next) {
+        next.setAttribute('tabindex', '0');
+        current.setAttribute('tabindex', '-1');
+        next.focus();
+      }
+    }
+
+    tree.addEventListener('click', (e) => {
+      const item = (e.target as Element).closest<HTMLElement>('[role="treeitem"]');
+      if (!item) return;
+
+      if (item.dataset.type === 'dir') {
+        toggleDir(item);
+      } else {
+        selectFile(item);
+      }
+      item.focus();
+    });
+
+    tree.addEventListener('keydown', (e) => {
+      const item = (e.target as Element).closest<HTMLElement>('[role="treeitem"]');
+      if (!item) return;
+
+      const items = getVisibleItems();
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          moveFocus(items, item, 1);
+          break;
+
+        case 'ArrowUp':
+          e.preventDefault();
+          moveFocus(items, item, -1);
+          break;
+
+        case 'ArrowRight':
+          e.preventDefault();
+          if (item.dataset.type === 'dir') {
+            if (item.getAttribute('aria-expanded') === 'false') {
+              item.setAttribute('aria-expanded', 'true');
+            } else {
+              // Move to first child
+              const firstChild = item.querySelector<HTMLElement>('[role="treeitem"]');
+              if (firstChild) {
+                item.setAttribute('tabindex', '-1');
+                firstChild.setAttribute('tabindex', '0');
+                firstChild.focus();
+              }
+            }
+          }
+          break;
+
+        case 'ArrowLeft':
+          e.preventDefault();
+          if (item.dataset.type === 'dir' && item.getAttribute('aria-expanded') === 'true') {
+            item.setAttribute('aria-expanded', 'false');
+          } else {
+            // Move focus to parent directory
+            const parent = item
+              .closest('[role="group"]')
+              ?.closest<HTMLElement>('[role="treeitem"]');
+            if (parent) {
+              item.setAttribute('tabindex', '-1');
+              parent.setAttribute('tabindex', '0');
+              parent.focus();
+            }
+          }
+          break;
+
+        case 'Enter':
+        case ' ':
+          e.preventDefault();
+          if (item.dataset.type === 'dir') {
+            toggleDir(item);
+          } else {
+            selectFile(item);
+          }
+          break;
+      }
+    });
+  }
+
+  // Initialize all file trees on the page
+  document.querySelectorAll<HTMLElement>('.file-tree').forEach(initFileTree);
+</script>

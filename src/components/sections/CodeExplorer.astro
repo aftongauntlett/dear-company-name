@@ -1,0 +1,205 @@
+---
+/**
+ * CodeExplorer — single-repo file browser used in the HowIWork section.
+ *
+ * No tab sidebar — one view, the full project tree.
+ * Highlighted files are marked in the tree with the theme's primary accent color.
+ * All data is pre-rendered at build time; JS only handles show/hide state.
+ */
+import type { ResolvedView } from '../../utils/github';
+import FileTree from '../ui/FileTree.astro';
+import CodePane from '../ui/CodePane.astro';
+
+interface Props {
+  view: ResolvedView;
+  highlighted?: string[];
+}
+
+const { view, highlighted = [] } = Astro.props;
+
+function getDefaultPath(rv: ResolvedView): string {
+  const filePaths = rv.files.map((f) => f.path);
+  if (rv.view.defaultFile && filePaths.includes(rv.view.defaultFile)) {
+    return rv.view.defaultFile;
+  }
+  const sorted = [...filePaths].sort((a, b) => a.localeCompare(b));
+  return sorted[0] ?? '';
+}
+
+const defaultPath = getDefaultPath(view);
+---
+
+<div class="code-explorer" aria-label="Code explorer">
+
+  <!-- Mobile: tree in a disclosure widget above the code pane -->
+  <details class="tree-disclosure" aria-label="File tree">
+    <summary class="tree-disclosure-summary">
+      <span class="tree-disclosure-label">Files</span>
+      <span class="tree-disclosure-filename" aria-hidden="true">{defaultPath}</span>
+    </summary>
+    <div class="tree-disclosure-body">
+      <FileTree
+        entries={view.tree}
+        selectedPath={defaultPath}
+        viewId={view.view.id}
+        highlighted={highlighted}
+      />
+    </div>
+  </details>
+
+  <!-- Desktop: side-by-side layout -->
+  <div class="explorer-layout">
+    <div class="tree-pane" aria-label="File tree">
+      <FileTree
+        entries={view.tree}
+        selectedPath={defaultPath}
+        viewId={view.view.id}
+        highlighted={highlighted}
+      />
+    </div>
+    <div class="code-pane-wrap">
+      <CodePane
+        files={view.files}
+        defaultPath={defaultPath}
+        viewId={view.view.id}
+      />
+    </div>
+  </div>
+
+</div>
+
+<style>
+  .code-explorer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  /* ── Mobile disclosure ──────────────────────────────────────── */
+  .tree-disclosure {
+    border: 1px solid var(--tone-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .tree-disclosure-summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--tone-surface-strong);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    list-style: none;
+    user-select: none;
+  }
+
+  .tree-disclosure-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .tree-disclosure-summary::before {
+    content: '▶';
+    font-size: 0.6rem;
+    transition: transform 120ms ease;
+    color: var(--tone-text-muted);
+  }
+
+  details[open] .tree-disclosure-summary::before {
+    transform: rotate(90deg);
+  }
+
+  .tree-disclosure-label {
+    color: var(--tone-text-muted);
+  }
+
+  .tree-disclosure-filename {
+    color: var(--tone-primary);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .tree-disclosure-body {
+    padding: var(--space-3);
+    background: var(--tone-surface);
+    border-top: 1px solid var(--tone-border);
+    max-height: 18rem;
+    overflow-y: auto;
+  }
+
+  /* ── Desktop two-pane layout ────────────────────────────────── */
+  .explorer-layout {
+    display: none;
+    gap: 0;
+    height: clamp(36rem, 72vh, 56rem);
+    border: 1px solid var(--tone-border);
+    border-radius: var(--radius-md);
+    background: var(--tone-surface);
+    overflow: hidden;
+  }
+
+  .tree-pane {
+    width: 240px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    border-right: 1px solid var(--tone-border);
+    padding: var(--space-3);
+  }
+
+  .code-pane-wrap {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (min-width: 768px) {
+    .tree-disclosure {
+      display: none;
+    }
+
+    .explorer-layout {
+      display: flex;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tree-disclosure-summary::before {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const maybeExplorer = document.querySelector<HTMLElement>('.code-explorer');
+  if (!maybeExplorer) throw new Error('CodeExplorer: .code-explorer not found');
+  // Capture as a definitely-non-null reference so closures below don't lose the narrowing.
+  const explorer: HTMLElement = maybeExplorer;
+
+  // ── File selection from FileTree clicks ─────────────────────────────
+  function handleFileSelect(path: string) {
+    explorer
+      .querySelectorAll<HTMLElement>('[data-code-pane] .code-pane-file')
+      .forEach((article) => {
+        const isTarget = article.dataset.filePath === path;
+        article.hidden = !isTarget;
+        article.classList.toggle('code-pane-file--active', isTarget);
+      });
+
+    const summaryFilename = explorer.querySelector<HTMLElement>(
+      '.tree-disclosure-filename',
+    );
+    if (summaryFilename) summaryFilename.textContent = path;
+  }
+
+  explorer.addEventListener('file-selected', (e: Event) => {
+    const { path } = (e as CustomEvent<{ path: string; viewId: string }>).detail;
+    handleFileSelect(path);
+  });
+</script>
