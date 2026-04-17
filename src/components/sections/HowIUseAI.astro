@@ -9,25 +9,25 @@ import { FileCode, Bot, GitMerge, ShieldCheck, Layers } from '@lucide/astro';
     <div class="section-intro">
       <h2 id="ai-heading">How I use AI</h2>
       <p class="section-lead">
-        I use AI as a tool to augment my work, not as a shortcut. It&rsquo;s a teammate that can handle rote tasks and generate first drafts, but it doesn&rsquo;t replace the need for human judgment and creativity.
+        I use AI as a tool to augment my work, not as a shortcut. It's a teammate that can handle rote tasks and generate first drafts, but it doesn't replace the need for human judgment and creativity.
       </p>
     </div>
 
     <dl class="principles-list">
 
       <PrincipleRow term="The agent rules live in the repo" icon={Layers}>
-        Agent constraints &mdash; reuse existing components, use design tokens, enforce WCAG,
-        never hard-code colors &mdash; are written into <code>.github/copilot-instructions.md</code>
+        Agent constraints — reuse existing components, use design tokens, enforce WCAG,
+        never hard-code colors — are written into <code>.github/copilot-instructions.md</code>
         and component APIs. The AI works within the system, not around it.
       </PrincipleRow>
 
       <PrincipleRow term="Structured workflows, not ad-hoc prompts" icon={GitMerge}>
-        Spec &rarr; generate &rarr; agent review &rarr; validate (typecheck, lint, tests,
-        build) &rarr; human review. Same sequence every time. Predictable output is the point.
+        Spec → generate → agent review → validate (typecheck, lint, tests,
+        build) → human review. Same sequence every time. Predictable output is the point.
       </PrincipleRow>
 
       <PrincipleRow term="PRDs before prompts" icon={FileCode}>
-        Every feature chunk starts with a written spec &mdash; scope, constraints, component
+        Every feature chunk starts with a written spec — scope, constraints, component
         reuse rules, acceptance criteria. The agent works from a document, not a vibe. This is
         why AI-generated code in this project matches the design system instead of working around
         it.
@@ -35,14 +35,14 @@ import { FileCode, Bot, GitMerge, ShieldCheck, Layers } from '@lucide/astro';
 
       <PrincipleRow term="Multiple agents, one task" icon={Bot}>
         I run agents in parallel on different sub-tasks: one generating, one reviewing the
-        contract, one checking accessibility. They&rsquo;re not a single chat session &mdash;
-        they&rsquo;re a pipeline with distinct roles.
+        contract, one checking accessibility. They're not a single chat session —
+        they're a pipeline with distinct roles.
       </PrincipleRow>
 
       <PrincipleRow term="AI reviews first, I review after" icon={ShieldCheck}>
         Before I look at generated code, the agent reviews its own output against the spec. My
-        pass is the senior-engineer layer: architecture, edge cases, things the agent couldn&rsquo;t
-        know. I don&rsquo;t rubber-stamp &mdash; I catch what the agent can&rsquo;t see about the
+        pass is the senior-engineer layer: architecture, edge cases, things the agent couldn't
+        know. I don't rubber-stamp — I catch what the agent can't see about the
         broader system.
       </PrincipleRow>
 

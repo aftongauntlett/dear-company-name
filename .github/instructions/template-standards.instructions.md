@@ -19,6 +19,7 @@ Follow these standards when generating or editing code:
 - Keep interaction styling consistent across pages: reuse existing hover/focus/active patterns via shared components and tokens.
 - For template/demo pages, keep buttons non-navigational unless a real destination is explicitly requested.
 - Keep TypeScript strict and avoid any.
+- Write copy using real Unicode characters directly (', ', ", ", —, …, ©, →, etc.). Do not use HTML character entities like `&rsquo;`, `&mdash;`, `&copy;` for typographic characters. The only entities that should appear in markup are the four structural ones: `&amp;`, `&lt;`, `&gt;`, `&quot;`.
 - Add tests for new logic modules.
 - Update docs when behavior or setup changes.
 - Keep commit-time checks passing with `npm run precommit:check`.

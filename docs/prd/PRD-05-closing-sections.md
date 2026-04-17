@@ -11,7 +11,6 @@ Three final sections that close the pitch — leveling up teams, what Afton is l
 
 - Create `src/components/sections/TeamLevels.astro`
 - Create `src/components/sections/LookingFor.astro`
-- Create `src/components/sections/VideoNote.astro`
 - Add all three to `src/pages/index.astro` in order after Recent Work.
 - Run `npm run validate` and verify all checks pass clean.
 - Update `src/config/site.ts` Navbar anchor links to include `#teams` and `#looking-for` (if not already added in PRD-01).
