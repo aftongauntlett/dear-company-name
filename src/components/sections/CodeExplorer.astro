@@ -31,6 +31,11 @@ const defaultPath = getDefaultPath(view);
 
 <div class="code-explorer" aria-label="Code explorer">
 
+  <!-- Small-screen fallback note -->
+  <p class="explorer-small-note">
+    The code explorer is best viewed on a wider screen. Come back on a tablet or desktop to browse the source.
+  </p>
+
   <!-- Mobile: tree in a disclosure widget above the code pane -->
   <details class="tree-disclosure" aria-label="File tree">
     <summary class="tree-disclosure-summary">
@@ -73,6 +78,30 @@ const defaultPath = getDefaultPath(view);
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
+  }
+
+  /* ── Small-screen fallback ──────────────────────────────────── */
+  .explorer-small-note {
+    display: none;
+    text-align: center;
+    color: var(--tone-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    padding: var(--space-8) var(--space-6);
+    border: 1px solid var(--tone-border);
+    border-radius: var(--radius-md);
+    background: var(--tone-surface);
+  }
+
+  @media (max-width: 560px) {
+    .explorer-small-note {
+      display: block;
+    }
+
+    .tree-disclosure,
+    .explorer-layout {
+      display: none !important;
+    }
   }
 
   /* ── Mobile disclosure ──────────────────────────────────────── */

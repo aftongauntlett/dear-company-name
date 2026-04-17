@@ -74,7 +74,7 @@ const PLACEHOLDER_NAME = 'Your Company';
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-block: var(--space-10);
+    padding-block: var(--space-12);
   }
 
   /* ─── Two-column grid ────────────────────────────────────────── */
@@ -250,20 +250,22 @@ const PLACEHOLDER_NAME = 'Your Company';
   /* ─── Mobile: single column, image on top ────────────────────── */
 
   @media (max-width: 700px) {
+    .hero {
+      min-height: unset;
+      padding-block: var(--space-12);
+    }
+
     .hero-container {
       grid-template-columns: 1fr;
+      gap: var(--space-6);
     }
 
     .hero-image-col {
-      order: -1;
-    }
-
-    .hero-image-wrap {
-      max-width: 220px;
+      display: none;
     }
 
     .hero-cta {
-      justify-content: flex-start;
+      justify-content: flex-end;
     }
   }
 

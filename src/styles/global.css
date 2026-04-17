@@ -197,8 +197,14 @@ a {
 }
 
 .container {
-  width: min(1120px, 100% - 2rem);
+  width: min(1120px, 100% - 3rem);
   margin-inline: auto;
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: min(1120px, 100% - 2.5rem);
+  }
 }
 
 .visually-hidden {
