@@ -11,7 +11,7 @@ const PLACEHOLDER_NAME = 'Your Company';
   <div class="container hero-container">
 
     {/* ── Left: headshot ───────────────────────────────────────── */}
-    <div class="hero-image-col" aria-hidden="true">
+    <div class="hero-image-col fade-up" style="--fade-delay: 0" aria-hidden="true">
       <div class="hero-image-wrap" id="hero-img-wrap">
         <div class="hero-img-container" id="hero-img-container">
           <img
@@ -38,7 +38,7 @@ const PLACEHOLDER_NAME = 'Your Company';
     </div>
 
     {/* ── Right: text content ──────────────────────────────────── */}
-    <div class="hero-content">
+    <div class="hero-content fade-up" style="--fade-delay: 1">
       {/* Accessible, always-present H1 — screen reader source of truth */}
       <h1 class="hero-headline">Dear {COMPANY.targetName},</h1>
 
@@ -95,13 +95,12 @@ const PLACEHOLDER_NAME = 'Your Company';
       </script>
 
       <p class="hero-subhead">
-        I built this instead of recording a video. I think you'll agree it was the right
-        call.
+        I built this instead of recording a video. I hope this gives you a better sense of who I am and what I can bring to your team.
       </p>
 
       <div class="hero-cta">
-        <Button href="#looking-for">Let's talk</Button>
-        <Button href="#how-i-work" variant="outline">See how I work ↓</Button>
+        <Button href="#how-i-work">See my work ↓</Button>
+        <Button href="#start" variant="outline">See how I work ↓</Button>
       </div>
     </div>
 

@@ -897,3 +897,35 @@ a {
   font-weight: var(--shiki-dark-font-weight);
   text-decoration: var(--shiki-dark-text-decoration);
 }
+
+/* ─── Scroll-triggered fade-in ──────────────────────────────────────
+   Hidden only when JS is available — elements are always visible for
+   no-JS visitors and for prefers-reduced-motion: reduce users.
+   The `html.js` class is set synchronously by the inline BaseLayout
+   script before first paint, so there is no flash of invisible content.
+─────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .js .fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.55s ease,
+      transform 0.55s ease;
+    transition-delay: calc(var(--fade-delay, 0) * 100ms);
+  }
+
+  .js .fade-up.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stagger: three-column card rows (HowIStart) */
+  .card-row-3 > .fade-up:nth-child(1) { --fade-delay: 0; }
+  .card-row-3 > .fade-up:nth-child(2) { --fade-delay: 1; }
+  .card-row-3 > .fade-up:nth-child(3) { --fade-delay: 2; }
+
+  /* Stagger: team-levels three-column grid */
+  .teams-grid > .fade-up:nth-child(1) { --fade-delay: 0; }
+  .teams-grid > .fade-up:nth-child(2) { --fade-delay: 1; }
+  .teams-grid > .fade-up:nth-child(3) { --fade-delay: 2; }
+}

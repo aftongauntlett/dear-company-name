@@ -7,12 +7,13 @@ type LucideComponent = (props: any) => any;
 interface Props {
   title: string;
   icon?: LucideComponent;
+  class?: string;
 }
 
-const { title, icon } = Astro.props;
+const { title, icon, class: className = '' } = Astro.props;
 ---
 
-<article class="setup-card">
+<article class={`setup-card${className ? ` ${className}` : ''}`}>
   {icon && (
     <div class="setup-card-icon-wrap">
       <Icon icon={icon} size={22} class="setup-card-icon" />

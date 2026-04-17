@@ -30,6 +30,15 @@ This repository is a reusable Astro template for mission-driven organizations an
 - Do not mix unrelated one-off layout systems between pages; if the project expands from single-page to multi-page, preserve the same spacing, structure, and component language.
 - Template/demo buttons should be non-navigational by default; only add real button/link destinations when intentionally requested for production behavior.
 
+## Scroll-triggered Animations
+
+The page uses a single `IntersectionObserver` (in `BaseLayout.astro`) to add an `is-visible` class to `.fade-up` elements when they enter the viewport. The CSS transition is defined in `global.css` inside a `@media (prefers-reduced-motion: no-preference)` block, so users who prefer reduced motion see content immediately with no transition.
+
+- The hidden state uses `.js .fade-up` — elements are only hidden when JavaScript is available (the `html.js` class is set by an inline script before first paint, so there is no FOUC).
+- The LCP element (hero headline) must never receive `fade-up`; it should render immediately.
+- Three-column card grids (`card-row-3`, `teams-grid`) use CSS `nth-child` stagger via `--fade-delay` to cascade cards with 100ms offsets per card.
+- Each `<section>` that does not have per-card stagger receives `fade-up` directly on the `<section>` element. Sections with card stagger apply `fade-up` to `section-intro` and individual card components instead.
+
 ## Done Definition
 
 A change is done only when all are true:
