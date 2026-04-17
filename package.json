@@ -25,7 +25,7 @@
   "dependencies": {
     "@lottiefiles/dotlottie-web": "^0.71.0",
     "@lucide/astro": "^1.8.0",
-    "astro": "^6.1.4"
+    "astro": "^6.1.7"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
@@ -35,11 +35,11 @@
     "eslint": "^10.2.0",
     "eslint-plugin-astro": "^1.7.0",
     "jsdom": "^26.1.0",
-    "prettier": "^3.8.1",
+    "prettier": "^3.8.3",
     "prettier-plugin-astro": "^0.14.1",
     "shiki": "^4.0.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.58.1",
+    "typescript-eslint": "^8.58.2",
     "vitest": "^3.2.4"
   }
 }
