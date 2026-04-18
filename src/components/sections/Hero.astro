@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import { COMPANY } from '../../config/site';
 import Button from '../ui/Button.astro';
-import headshotImg from '../../assets/images/afton-headshot-v2.webp';
+import headshotImg from '../../assets/images/afton-headshot.png';
 import littleAftonImg from '../../assets/images/little-afton.webp';
 
 // The placeholder is always the "joke" text the animation types first.
@@ -23,6 +23,7 @@ const PLACEHOLDER_NAME = 'Company';
             class="hero-photo hero-photo--pro"
             widths={[380, 760]}
             sizes="380px"
+            quality={90}
             loading="eager"
             fetchpriority="high"
             decoding="async"
