@@ -27,7 +27,7 @@ import { FileCode, Bot, GitMerge, ShieldCheck, Layers } from '@lucide/astro';
       </PrincipleRow>
 
       <PrincipleRow term="PRDs before prompts" icon={FileCode}>
-        Every feature chunk starts with a written spec — scope, constraints, component
+        Every feature chunk starts with a written spec: scope, constraints, component
         reuse rules, acceptance criteria. The agent works from a document, not a vibe. This is
         why AI-generated code in this project matches the design system instead of working around
         it.
@@ -35,15 +35,12 @@ import { FileCode, Bot, GitMerge, ShieldCheck, Layers } from '@lucide/astro';
 
       <PrincipleRow term="Multiple agents, one task" icon={Bot}>
         I run agents in parallel on different sub-tasks: one generating, one reviewing the
-        contract, one checking accessibility. They're not a single chat session —
-        they're a pipeline with distinct roles.
+        contract, one checking accessibility. I treat them as a pipeline with distinct roles.
       </PrincipleRow>
 
       <PrincipleRow term="AI reviews first, I review after" icon={ShieldCheck}>
         Before I look at generated code, the agent reviews its own output against the spec. My
-        pass is the senior-engineer layer: architecture, edge cases, things the agent couldn't
-        know. I don't rubber-stamp — I catch what the agent can't see about the
-        broader system.
+        pass is the senior-engineer layer: architecture, edge cases, things the agent can't "see".
       </PrincipleRow>
 
     </dl>

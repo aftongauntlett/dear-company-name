@@ -152,4 +152,4 @@ This way you know which company clicked, when, and how many times — without an
 - [x] No flash of wrong company name before animation starts
 - [x] XSS: `?to=<img src=x onerror=alert(1)>` renders as literal text, no script executes
 - [x] `npm run typecheck`, `npm run lint`, `npm run test` all pass
-- [ ] Verified working on Vercel production deploy (not just local)
+- [x] Verified working on Vercel production deploy (not just local)

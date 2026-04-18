@@ -2,10 +2,10 @@
 
 ## Client Snapshot
 
-- **Name:** Afton Gauntlett
+- **Name:** Dear Company
 - **Project type:** Personal application microsite (job application)
 - **Industry:** Frontend development
-- **Mission:** Replace a Loom video submission with a polished, personality-forward personal microsite Afton can target at specific companies.
+- **Mission:** Replace a video submission with a polished, personality-forward personal microsite I can target at specific companies.
 - **Primary audience:** Hiring managers and engineering leads.
 
 ## Success Criteria
