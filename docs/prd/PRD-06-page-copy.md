@@ -81,7 +81,7 @@ Reusable components, theme tokens, accessibility, keyboard nav — defined in Co
 ### Card group 2 — eyebrow: "Team projects"
 
 **Prettier + ESLint**
-Consistent formatting isn't about style opinions — it's about eliminating noisy format-diff PRs in code review so the actual logic gets the attention.
+Consistent formatting is about eliminating noisy format-diff PRs in code review so the actual logic gets the attention.
 
 **Husky pre-commit hooks**
 Everyone codes however they want. The hook cleans it before it hits the branch. No config policing, no "can you just run prettier" comments in review.

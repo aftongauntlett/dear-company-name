@@ -61,6 +61,8 @@ export const CODE_VIEWS: CodeView[] = [
       'src/utils/',
       'astro.config.mjs',
       'package.json',
+      'docs/prd/PRD-08-runtime-company-name.md',
+      'docs/AGENT_QUICKSTART.md',
     ],
     defaultFile: 'src/styles/global.css',
   },
@@ -81,11 +83,11 @@ export const HIGHLIGHTED_FILES: Array<{ path: string; note: string }> = [
     note: 'The entire explorer was assembled at compile time. GitHub API during <code>astro build</code>, syntax highlighting via Astro\'s built-in <code>&lt;Code /&gt;</code> component, zero network calls at runtime. The test file next to it specifies exactly what the filtering and language-detection guarantees.',
   },
   {
-    path: 'src/components/layout/ThemePicker.astro',
-    note: 'About 50 lines, no framework, no dependencies. Persists to <code>localStorage</code>, sets a data attribute on the root element, and everything downstream reacts through CSS custom properties.',
-  },
-  {
     path: 'src/components/sections/HowIWork.astro',
     note: 'This section. <code>content-visibility: hidden</code> defers paint until the section enters the viewport, then <code>requestIdleCallback</code> detects when the browser is actually idle — so the spinner shows for the real duration of browser work, not a fake timer.',
+  },
+  {
+    path: 'docs/prd/PRD-08-runtime-company-name.md',
+    note: 'A PRD written before a single line of implementation. The security section — why <code>.textContent</code> instead of <code>.innerHTML</code>, why inline not deferred — shows the kind of reasoning that usually only surfaces in code review, not planning docs.',
   },
 ];
