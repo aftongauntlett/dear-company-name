@@ -273,6 +273,14 @@ describe('fetchFileContent', () => {
     ).rejects.toThrow(/not found/i);
   });
 
+  it('throws a rate-limit error on 403', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(new Response('Forbidden', { status: 403 }));
+
+    await expect(
+      fetchFileContent('owner', 'repo', 'file.ts', 'main'),
+    ).rejects.toThrow(/rate limit/i);
+  });
+
   it('throws a rate-limit error on 429', async () => {
     vi.mocked(fetch).mockResolvedValueOnce(
       new Response('Too Many Requests', { status: 429 }),
@@ -281,6 +289,18 @@ describe('fetchFileContent', () => {
     await expect(
       fetchFileContent('owner', 'repo', 'file.ts', 'main'),
     ).rejects.toThrow(/rate limit/i);
+  });
+
+  it('returns null when content field is missing from response', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ encoding: 'base64', size: 10 }),
+        { status: 200 },
+      ),
+    );
+
+    const result = await fetchFileContent('owner', 'repo', 'file.ts', 'main');
+    expect(result).toBeNull();
   });
 
   it('encodes the path correctly in the URL (handles spaces and special chars)', async () => {

@@ -18,4 +18,8 @@ describe('theme utilities', () => {
     expect(resolveTheme('invalid')).toBe(DEFAULT_THEME);
     expect(resolveTheme(null)).toBe(DEFAULT_THEME);
   });
+
+  it('falls back to default theme for undefined', () => {
+    expect(resolveTheme(undefined)).toBe(DEFAULT_THEME);
+  });
 });
