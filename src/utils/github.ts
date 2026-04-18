@@ -8,11 +8,10 @@ export interface GitTreeEntry {
   size?: number;
 }
 
-/** A fully resolved file node with its decoded content and highlighted HTML. */
+/** A fully resolved file node with its decoded content and detected language. */
 export interface ResolvedFile {
   path: string;
   content: string; // decoded UTF-8 source text
-  highlightedHtml: string; // Shiki-rendered HTML, safe to set as innerHTML
   language: string; // detected language for the filename
 }
 
@@ -187,7 +186,7 @@ const SPECIAL_FILENAMES: Record<string, string> = {
 };
 
 /**
- * Detect a Shiki-compatible language name from a file's extension.
+ * Detect a language name (compatible with Astro's Code component) from a file's extension.
  * Returns 'text' for unknown extensions.
  */
 export function detectLanguage(path: string): string {
@@ -198,7 +197,7 @@ export function detectLanguage(path: string): string {
     return SPECIAL_FILENAMES[filename];
   }
 
-  // Handle dotfiles like .env, .env.example, .gitignore
+  // Handle simple dotfiles like .env, .gitignore — no extension after the leading dot
   if (filename.startsWith('.') && !filename.slice(1).includes('.')) {
     return 'bash';
   }

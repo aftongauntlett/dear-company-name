@@ -1,11 +1,13 @@
 ---
 /**
- * CodePane — renders all files for a view pre-built at build time.
+ * CodePane — renders all files for a view, highlighted at build time via Astro's Code component.
  *
  * All file articles are present in the DOM; only one is visible at a time.
  * The active file is toggled by CodeExplorer via the `file-selected` event.
  * Raw source text is read from the rendered <pre> element's textContent for clipboard copy.
  */
+import { Code } from 'astro:components';
+import type { CodeLanguage } from 'astro';
 import type { ResolvedFile } from '../../utils/github';
 import { Copy, Check } from '@lucide/astro';
 
@@ -49,7 +51,14 @@ const { files, defaultPath, viewId } = Astro.props;
                 <Check size={15} aria-hidden="true" class="copy-icon copy-icon--success" />
               </button>
             </header>
-            <div class="code-scroll-container" set:html={file.highlightedHtml} />
+            <div class="code-scroll-container">
+              <Code
+                code={file.content}
+                lang={file.language as CodeLanguage}
+                themes={{ light: 'github-light-high-contrast', dark: 'github-dark-high-contrast' }}
+                wrap={false}
+              />
+            </div>
           </article>
         );
       })
@@ -171,7 +180,7 @@ const { files, defaultPath, viewId } = Astro.props;
     tab-size: 2;
   }
 
-  /* Shiki output normalisation */
+  /* Code component output normalisation */
   .code-scroll-container :global(pre) {
     margin: 0;
     padding: var(--space-4);

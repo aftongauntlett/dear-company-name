@@ -3,7 +3,7 @@ import { THEMES } from '../../config/site';
 import Icon from '../ui/Icon.astro';
 import { Palette } from '@lucide/astro';
 
-const themes = THEMES as unknown as string[];
+const themes = [...THEMES];
 ---
 
 <button
@@ -26,7 +26,8 @@ const themes = THEMES as unknown as string[];
     const themes = (btn.dataset.themes ?? '').split(',').filter(Boolean);
     if (themes.length === 0) return;
 
-    const saved = localStorage.getItem(key);
+    let saved = null;
+    try { saved = localStorage.getItem(key); } catch { /* storage unavailable */ }
     const current = document.documentElement.dataset.theme ?? '';
     const initial =
       saved && themes.includes(saved)
@@ -41,7 +42,7 @@ const themes = THEMES as unknown as string[];
       const idx = themes.indexOf(document.documentElement.dataset.theme ?? '');
       const next = themes[(idx + 1) % themes.length];
       document.documentElement.dataset.theme = next;
-      localStorage.setItem(key, next);
+      try { localStorage.setItem(key, next); } catch { /* storage unavailable */ }
       btn.setAttribute('aria-label', `Switch color theme (current: ${next})`);
     });
 

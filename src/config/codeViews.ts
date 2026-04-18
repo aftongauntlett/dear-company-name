@@ -78,7 +78,7 @@ export const HIGHLIGHTED_FILES: Array<{ path: string; note: string }> = [
   },
   {
     path: 'src/utils/github.ts',
-    note: 'The entire explorer was assembled at compile time. GitHub API during astro build, Shiki highlighting baked in, zero network calls at runtime. The test file next to it specifies exactly what the filtering and language-detection guarantees.',
+    note: 'The entire explorer was assembled at compile time. GitHub API during <code>astro build</code>, syntax highlighting via Astro\'s built-in <code>&lt;Code /&gt;</code> component, zero network calls at runtime. The test file next to it specifies exactly what the filtering and language-detection guarantees.',
   },
   {
     path: 'src/components/layout/ThemePicker.astro',
@@ -86,6 +86,6 @@ export const HIGHLIGHTED_FILES: Array<{ path: string; note: string }> = [
   },
   {
     path: 'src/components/sections/HowIWork.astro',
-    note: 'This section. <code>content-visibility: hidden</code> defers paint until the section enters the viewport, then <code>requestIdleCallback</code> detects when the browser is actually idle — so the Lottie plays for the real duration of browser work, not a fake timer.',
+    note: 'This section. <code>content-visibility: hidden</code> defers paint until the section enters the viewport, then <code>requestIdleCallback</code> detects when the browser is actually idle — so the spinner shows for the real duration of browser work, not a fake timer.',
   },
 ];

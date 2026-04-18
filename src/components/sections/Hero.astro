@@ -1,6 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import { COMPANY } from '../../config/site';
 import Button from '../ui/Button.astro';
+import headshotImg from '../../assets/images/afton-headshot-v2.webp';
+import littleAftonImg from '../../assets/images/little-afton.webp';
 
 // The placeholder is always the "joke" text the animation types first.
 // Hardcoded so the gag works even when targetName is already the real company.
@@ -14,23 +17,23 @@ const PLACEHOLDER_NAME = 'Company';
     <div class="hero-image-col fade-up" style="--fade-delay: 0" aria-hidden="true">
       <div class="hero-image-wrap" id="hero-img-wrap">
         <div class="hero-img-container" id="hero-img-container">
-          <img
-            src="/images/afton-headshot-v2.webp"
+          <Image
+            src={headshotImg}
             alt="Afton Gauntlett professional headshot"
             class="hero-photo hero-photo--pro"
-            width="380"
-            height="475"
+            widths={[380, 760]}
+            sizes="380px"
             loading="eager"
             fetchpriority="high"
             decoding="async"
             draggable="false"
           />
-          <img
-            src="/images/little-afton.webp"
+          <Image
+            src={littleAftonImg}
             alt="Young Afton, circa early-90s"
             class="hero-photo hero-photo--little"
-            width="380"
-            height="475"
+            widths={[380, 760]}
+            sizes="380px"
             loading="lazy"
             decoding="async"
             draggable="false"

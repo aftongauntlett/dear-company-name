@@ -14,8 +14,6 @@
  *      plays for the actual duration of real browser work, not an artificial timer.
  */
 
-import { getSingletonHighlighter } from 'shiki';
-import type { BundledLanguage } from 'shiki';
 import CodeExplorer from './CodeExplorer.astro';
 import Button from '../ui/Button.astro';
 import { CODE_VIEWS, HIGHLIGHTED_FILES } from '../../config/codeViews';
@@ -49,21 +47,7 @@ try {
     }),
   );
 
-  // ── Collect languages for a single Shiki init ──────────────────────────
-  const allLanguages = [
-    ...new Set(
-      viewsWithTrees
-        .flatMap(({ entries }) => entries.map((e) => detectLanguage(e.path)))
-        .filter((lang) => lang !== 'text'),
-    ),
-  ] as BundledLanguage[];
-
-  const highlighter = await getSingletonHighlighter({
-    themes: ['github-light', 'github-dark'],
-    langs: allLanguages.length > 0 ? allLanguages : ['typescript'],
-  });
-
-  // ── Fetch and highlight every file ─────────────────────────────────────
+  // ── Fetch file content — highlighting is done at render time by <Code /> ──
   const resolvedViews: ResolvedView[] = await Promise.all(
     viewsWithTrees.map(async ({ view, ref, entries }) => {
       const files = await Promise.all(
@@ -77,21 +61,7 @@ try {
           );
           if (content === null) return null;
 
-          const language = detectLanguage(entry.path);
-          let highlightedHtml: string;
-          try {
-            highlightedHtml = highlighter.codeToHtml(content, {
-              lang: language,
-              themes: { light: 'github-light', dark: 'github-dark' },
-            });
-          } catch {
-            highlightedHtml = highlighter.codeToHtml(content, {
-              lang: 'text',
-              themes: { light: 'github-light', dark: 'github-dark' },
-            });
-          }
-
-          return { path: entry.path, content, highlightedHtml, language };
+          return { path: entry.path, content, language: detectLanguage(entry.path) };
         }),
       );
 
@@ -126,7 +96,9 @@ try {
       <span class="stack-strip-label">Built with</span>
       <ul class="chip-list" role="list">
         {[
-          'Astro', 'TypeScript', 'Shiki', 'Lucide', 'Vitest',
+          'Astro', 'TypeScript',
+          'Vercel', 'Lucide', 'Vitest', 
+          'Shiki',
           'ESLint', 'CSS Tokens', 'GitHub API', 'Lottie',
         ].map((tech) => (
           <li class="chip">{tech}</li>
@@ -269,8 +241,6 @@ try {
     observer.observe(gate);
   }
 
-  // ── Jump-to-file buttons on highlight cards ────────────────────────
-  // (no jump-button handler — buttons removed)
 </script>
 
 <style>

@@ -202,7 +202,7 @@ a {
   margin-inline: auto;
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .container {
     width: min(1120px, 100% - 2.5rem);
   }
@@ -897,13 +897,13 @@ a {
 }
 
 /* ── Shiki dual-theme syntax highlighting ────────────────────────────────
-   github-light colors are baked in as direct `color:` values by Shiki
-   (the default). The dark theme override swaps to --shiki-dark via CSS.
-   Light themes (sprout, ocean, earth) need no rule — they inherit the
-   baked-in colors. Only dark needs a selector.
+   Astro's <Code> component emits `class="astro-code astro-code-themes …"`.
+   Each span carries --shiki-dark as an inline CSS custom property alongside
+   its baked-in light color. The rule below activates those variables when
+   the dark theme is selected. Light themes need no override.
 ──────────────────────────────────────────────────────────────────────── */
-:root[data-theme='dark'] .shiki,
-:root[data-theme='dark'] .shiki span {
+:root[data-theme='dark'] .astro-code,
+:root[data-theme='dark'] .astro-code span {
   color: var(--shiki-dark) !important;
   background-color: var(--shiki-dark-bg) !important;
   font-style: var(--shiki-dark-font-style);

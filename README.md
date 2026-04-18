@@ -47,6 +47,6 @@ docs/          # Brief, standards, PRDs, WCAG checklist
 
 ## Code Explorer
 
-The site fetches this repo's source at build time via the GitHub API and renders it with Shiki — no network calls at runtime.
+The site fetches this repo's source at build time via the GitHub API and renders it using Astro's built-in `<Code />` component — no network calls at runtime.
 
 Optional: set `GITHUB_TOKEN` in your build environment to avoid the unauthenticated rate limit (60 req/hr).
