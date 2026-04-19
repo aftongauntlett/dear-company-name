@@ -23,17 +23,17 @@
 
   --shadow-surface: 0 12px 28px rgb(26 35 20 / 0.08);
 
-  --tone-bg: #f4f3ea;
-  --tone-bg-accent: #e6efd9;
-  --tone-surface: #fffdf5;
-  --tone-surface-strong: #f1efe3;
-  --tone-card: #fbfbf9;
-  --tone-card-header: #dce6d5;
+  --tone-bg: #f2faf4;
+  --tone-bg-accent: #e1ede7;
+  --tone-surface: #f7fdf9;
+  --tone-surface-strong: #ffffff;
+  --tone-card: #f9fbfa;
+  --tone-card-header: #bacaae;
   --tone-text: #1f2a1d;
   --tone-text-muted: #5a6658;
-  --tone-border: #c5cfbd;
-  --tone-primary: #2f7d4b;
-  --tone-primary-hover: #24623a;
+  --tone-border: #b5d1de;
+  --tone-primary: #4c6a62;
+  --tone-primary-hover: #2f5249;
   --tone-primary-contrast: #f7fff9;
   --tone-ring: #245f99;
 }
@@ -42,7 +42,7 @@
   --tone-bg: #f0f7fb;
   --tone-bg-accent: #ddeefa;
   --tone-surface: #ffffff;
-  --tone-surface-strong: #e8f1f7;
+  --tone-surface-strong: #fafdff;
   --tone-card: #f9fbfc;
   --tone-card-header: #cfe2ef;
   --tone-text: #102333;
@@ -58,9 +58,9 @@
   --tone-bg: #f9f5f1;
   --tone-bg-accent: #efe2cd;
   --tone-surface: #fffcf7;
-  --tone-surface-strong: #f5ebdc;
+  --tone-surface-strong: #ffffff;
   --tone-card: #fffefd;
-  --tone-card-header: #e3ceaf;
+  --tone-card-header: #d3cec6;
   --tone-text: #322215;
   --tone-text-muted: #705b47;
   --tone-border: #d8c6af;
@@ -74,9 +74,9 @@
   --tone-bg: #0d1117;
   --tone-bg-accent: #3b4e6f;
   --tone-surface: #080e16;
-  --tone-surface-strong: #1c2333;
+  --tone-surface-strong: #0f1011;
   --tone-card: #020712;
-  --tone-card-header: #2f4060;
+  --tone-card-header: #0d0d0d;
   --tone-text: #e6edf3;
   --tone-text-muted: #c5ccd5;
   --tone-border: #30363d;
@@ -197,6 +197,19 @@ a {
   flex: 1;
 }
 
+/* Section stripe backgrounds — order-independent.
+   Uses nth-of-type (not nth-child) so <script> tags emitted by components
+   as siblings inside <main> don't throw off the alternating count. */
+.page-main > section:nth-of-type(odd)  { background-color: var(--tone-bg); }
+.page-main > section:nth-of-type(even) { background-color: color-mix(in srgb, var(--tone-bg-accent) 60%, var(--tone-bg)); }
+.page-main > section + section         { border-top: 1px solid var(--tone-border); }
+
+/* Dark mode: bg-accent is a strong blue — dial back the blend so even sections
+   stay dark and subtle instead of producing a bright blue tile. */
+[data-theme='dark'] .page-main > section:nth-of-type(even) {
+  background-color: color-mix(in srgb, var(--tone-bg-accent) 20%, var(--tone-bg));
+}
+
 .container {
   width: min(1120px, 100% - 3rem);
   margin-inline: auto;
@@ -242,14 +255,6 @@ a {
   text-decoration: none;
   display: inline-grid;
   gap: 0.1rem;
-}
-
-.brand-kicker {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--tone-text-muted);
 }
 
 .brand-name {
@@ -322,7 +327,7 @@ a {
   outline-offset: 2px;
 }
 
-/* Hamburger toggle — hidden on desktop, shown via 768px query */
+/* Hamburger toggle — hidden on desktop, shown via 1100px query */
 .nav-toggle {
   display: none;
   align-items: center;
@@ -505,12 +510,6 @@ a {
   margin: 0;
 }
 
-.section {
-  width: min(1120px, 100% - 2rem);
-  margin-inline: auto;
-  margin-block: var(--space-16);
-}
-
 .kicker {
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -611,78 +610,9 @@ a {
   color: var(--tone-text-muted);
 }
 
-.theme-grid {
-  display: grid;
-  gap: var(--space-4);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.theme-preview {
-  padding: var(--space-6);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--tone-border);
-  background: var(--tone-surface);
-  box-shadow: var(--shadow-surface);
-  display: grid;
-  gap: var(--space-3);
-}
-
-.theme-preview .theme-name {
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--tone-text-muted);
-  font-weight: 700;
-}
-
-.theme-preview[data-theme='sprout'] {
-  --tone-bg: #f4f3ea;
-  --tone-bg-accent: #e6efd9;
-  --tone-surface: #fffdf5;
-  --tone-surface-strong: #f1efe3;
-  --tone-card: #c0dad9;
-  --tone-text: #1f2a1d;
-  --tone-text-muted: #5a6658;
-  --tone-border: #c5cfbd;
-  --tone-primary: #2f7d4b;
-  --tone-primary-hover: #24623a;
-  --tone-primary-contrast: #f7fff9;
-  --tone-ring: #245f99;
-}
-
-.theme-preview[data-theme='ocean'] {
-  --tone-bg: #f0f7fb;
-  --tone-bg-accent: #ddeefa;
-  --tone-surface: #ffffff;
-  --tone-surface-strong: #e8f1f7;
-  --tone-card: #b0becb;
-  --tone-text: #102333;
-  --tone-text-muted: #445b6c;
-  --tone-border: #bdd2df;
-  --tone-primary: #006a93;
-  --tone-primary-hover: #005171;
-  --tone-primary-contrast: #f5fbff;
-  --tone-ring: #0f3f85;
-}
-
-.theme-preview[data-theme='earth'] {
-  --tone-bg: #f6f1e8;
-  --tone-bg-accent: #efe2cd;
-  --tone-surface: #fffcf7;
-  --tone-surface-strong: #f5ebdc;
-  --tone-card: #cbb9b0;
-  --tone-text: #322215;
-  --tone-text-muted: #705b47;
-  --tone-border: #d8c6af;
-  --tone-primary: #8f4d22;
-  --tone-primary-hover: #703917;
-  --tone-primary-contrast: #fff7f0;
-  --tone-ring: #315fa9;
-}
-
 .site-footer {
-  border-top: 1px solid var(--tone-border);
-  background: color-mix(in srgb, var(--tone-bg-accent) 45%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--tone-border) 70%, transparent);
+  background: color-mix(in srgb, var(--tone-bg) 75%, transparent);
 }
 
 .site-footer-inner {
@@ -788,10 +718,6 @@ a {
     grid-template-columns: 1fr;
     justify-items: start;
     gap: 0.35rem;
-  }
-
-  .theme-grid {
-    grid-template-columns: 1fr;
   }
 
   .site-footer-inner {

@@ -34,7 +34,7 @@ const { src, class: className, width, height } = Astro.props;
       const src = canvas.dataset.src;
       if (!src) return;
 
-      const instance = new DotLottie({ canvas, src, autoplay: true, loop: true });
+      new DotLottie({ canvas, src, autoplay: true, loop: true });
 
       const applyThemeFilter = () => {
         const isDark = (document.documentElement.dataset.theme ?? '') === 'dark';
@@ -48,12 +48,6 @@ const { src, class: className, width, height } = Astro.props;
         attributes: true,
         attributeFilter: ['data-theme'],
       });
-
-      // `lottie:stop` is dispatched by HowIWork once the code explorer is visible.
-      document.addEventListener('lottie:stop', () => {
-        instance.stop();
-        themeObserver.disconnect();
-      }, { once: true });
     });
   };
 

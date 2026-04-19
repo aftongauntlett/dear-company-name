@@ -4,8 +4,8 @@ import eslintPluginAstro from 'eslint-plugin-astro';
 
 export default tseslint.config(
   js.configs.recommended,
-  ...tseslint.configs.recommended,
-  ...eslintPluginAstro.configs['flat/recommended'],
+  tseslint.configs.recommended,
+  eslintPluginAstro.configs['flat/recommended'],
   {
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],

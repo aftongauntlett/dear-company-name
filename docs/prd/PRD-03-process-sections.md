@@ -99,7 +99,7 @@ Render as a `<ul>` or as a series of styled items (not Card.astro — these are 
 
 - Both sections use the same `section` padding pattern: `padding-block: var(--space-16)` (matching existing template scale).
 - Both use the same max-width container class as the rest of the page.
-- Alternating section backgrounds are fine: one section on `--tone-bg`, next on `--tone-surface` (or vice versa) to give visual rhythm without a full design change.
+- Alternating section backgrounds are handled automatically via `.page-main > section:nth-of-type` in `global.css` (PRD-09). Do **not** set `background-color` on individual section components — the global rule owns that.
 - Headings are `<h2>` — consistent with single H1 in hero.
 - No `<h4>` or deeper nesting in these sections.
 

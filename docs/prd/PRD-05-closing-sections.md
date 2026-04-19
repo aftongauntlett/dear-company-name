@@ -117,7 +117,7 @@ The CTA here should feel like the natural close of a letter:
 
 ### Visual treatment
 
-- This section can have a slightly different background to signal "we're at the end" — use `--tone-surface` instead of `--tone-bg`, or a subtle top border.
+- Section background is handled automatically by the global `nth-of-type` stripe rule in `global.css` (PRD-09). Do **not** set a background on this section manually.
 - Not visually dramatic — the copy is doing the work.
 - The CTA button should have generous margin above it, not crammed against the last line of text.
 

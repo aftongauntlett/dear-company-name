@@ -10,8 +10,8 @@
  *   2. User scrolls to section — IntersectionObserver fires, we flip
  *      content-visibility to `visible`, which triggers browser layout/paint.
  *   3. `requestIdleCallback` fires when the browser goes idle after painting.
- *      Only then do we fade the Lottie out and the explorer in — so the cat
- *      plays for the actual duration of real browser work, not an artificial timer.
+ *      Only then do we fade the spinner out and reveal the explorer — so the
+ *      indicator shows for the actual duration of real browser work.
  */
 
 import CodeExplorer from './CodeExplorer.astro';
@@ -183,10 +183,10 @@ try {
   if (!gate || !placeholder || !content) {
     content?.removeAttribute('aria-hidden');
   } else {
-    // Threshold: show Lottie only if render hasn't finished by this point.
+    // Threshold: show loading indicator only if render hasn't finished by this point.
     // Below ~300ms users don't perceive a delay — no indicator needed.
     // At 300ms they first notice "something is happening" — that's the right
-    // moment for the cat to appear and say "yes, I know, loading."
+    // moment to show the spinner.
     const SLOW_THRESHOLD_MS = 300;
     const FADE_MS = 350;
 
@@ -200,7 +200,7 @@ try {
 
         let didShowLottie = false;
 
-        // If still not done after threshold, reveal the Lottie overlay
+        // If still not done after threshold, reveal the loading spinner
         const slowTimer = setTimeout(() => {
           didShowLottie = true;
           placeholder.hidden = false;
@@ -218,13 +218,12 @@ try {
           content.removeAttribute('aria-hidden');
 
           if (didShowLottie) {
-            // Fade Lottie out, then clean up
+            // Fade spinner out, then clean up
             placeholder.classList.remove('is-visible');
             placeholder.classList.add('is-done');
             setTimeout(() => {
               placeholder.hidden = true;
               placeholder.removeAttribute('role');
-              document.dispatchEvent(new CustomEvent('lottie:stop'));
             }, FADE_MS);
           }
         };
@@ -246,7 +245,6 @@ try {
 <style>
   .howiwork-section {
     padding-block: var(--space-16);
-    background-color: var(--tone-bg);
   }
 
   .section-intro {
@@ -262,9 +260,6 @@ try {
     line-height: 1.65;
   }
 
-  .star-accent {
-    color: var(--tone-primary);
-  }
 
   /* ── Tech stack chip strip ─────────────────────────────────── */
   .stack-strip {

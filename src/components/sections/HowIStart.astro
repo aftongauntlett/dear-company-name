@@ -69,7 +69,6 @@ import { CircleCheckBig, FileCode, Bot, Paintbrush, ShieldCheck, GitMerge } from
 
 <style>
   .howisstart-section {
-    background-color: var(--tone-surface);
     padding-block: var(--space-16);
   }
 
@@ -110,10 +109,6 @@ import { CircleCheckBig, FileCode, Bot, Paintbrush, ShieldCheck, GitMerge } from
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .card-row-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   /* SetupCard hover is self-contained — no overrides needed here */
 
   @media (max-width: 920px) {
@@ -123,8 +118,7 @@ import { CircleCheckBig, FileCode, Bot, Paintbrush, ShieldCheck, GitMerge } from
   }
 
   @media (max-width: 680px) {
-    .card-row-3,
-    .card-row-2 {
+    .card-row-3 {
       grid-template-columns: 1fr;
     }
   }

@@ -1,0 +1,52 @@
+---
+import Icon from '../ui/Icon.astro';
+import { FingerprintPattern } from '@lucide/astro';
+---
+
+<section id="about" class="about-section fade-up" aria-labelledby="about-heading">
+  <div class="container">
+    <div class="section-intro">
+      <h2 id="about-heading" class="about-heading">
+        <Icon icon={FingerprintPattern} size={28} aria-hidden="true" class="about-icon" />
+        A bit about me
+      </h2>
+    </div>
+    <p class="about-body">
+      I'm a frontend engineer with six years of experience, no CS degree, and a background that
+      goes through nursing, paralegal work, and a photo lab before landing in tech. I started with
+      a bootcamp in 2020 and spent four years at Booz Allen Hamilton before going independent.
+      I think like a designer and build like an engineer.
+    </p>
+  </div>
+</section>
+
+<style>
+  .about-section {
+    padding-block: var(--space-16);
+  }
+
+  .about-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    justify-content: center;
+  }
+
+  .about-icon {
+    color: var(--tone-text-muted);
+  }
+
+  .section-intro {
+    margin-block-end: var(--space-8);
+    text-align: center;
+  }
+
+  .about-body {
+    max-width: 62ch;
+    margin-inline: auto;
+    font-size: 1.2rem;
+    line-height: 1.75;
+    color: var(--tone-text);
+    text-align: center;
+  }
+</style>

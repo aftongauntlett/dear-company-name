@@ -120,7 +120,6 @@ import { Globe, FileText, Phone, Mail, MapPin, ExternalLink } from '@lucide/astr
 <style>
   .lookingfor-section {
     padding-block: var(--space-16);
-    background-color: var(--tone-bg);
   }
 
   .lookingfor-section h2 {
@@ -210,15 +209,19 @@ import { Globe, FileText, Phone, Mail, MapPin, ExternalLink } from '@lucide/astr
   .chip-external-indicator {
     display: inline-flex;
     align-items: center;
+    max-width: 0;
+    overflow: hidden;
     opacity: 0;
     transform: translateY(1px);
     transition:
+      max-width 140ms ease,
       opacity 140ms ease,
       transform 140ms ease;
   }
 
   .chip-link[target='_blank']:hover .chip-external-indicator,
   .chip-link[target='_blank']:focus-visible .chip-external-indicator {
+    max-width: 1rem;
     opacity: 0.95;
     transform: translateY(0);
   }
