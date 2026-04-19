@@ -12,7 +12,7 @@ When someone visits `https://yoursite.com/for/Stripe`, a small inline script rea
 - The typewriter animation: types "Stripe" after the placeholder gag
 - The browser tab title: **Dear Stripe — Afton Gauntlett**
 
-The script then immediately replaces the URL with `/` via `history.replaceState` — so the recipient's address bar shows a clean URL with no query params or path hints.
+The script then immediately normalises the URL to `/for/CompanyName` via `history.replaceState` — so the recipient's address bar always shows the canonical shareable form regardless of how they arrived (whether via `/for/` path or a legacy `?to=` link).
 
 Without a recognisable name in the URL, the page redirects to a 404 — this is intentional. The site only makes sense as a personalised link, so an unaddressed visit gets a friendly error page with a contact link instead of a generic version.
 
@@ -73,7 +73,7 @@ Send the raw `/for/` link directly. You won't know if they clicked, but you also
 ## Suggested workflow per application
 
 1. Build the link: `https://yoursite.com/for/CompanyName`
-2. Test it in an incognito window — confirm the headline and tab title update correctly, and that the URL cleans to `/` after load
+2. Test it in an incognito window — confirm the headline and tab title update correctly, and that the URL stays as `/for/CompanyName` (shareable/copyable)
 3. (Optional) Wrap it in a short link for click tracking
 4. Send it
 
