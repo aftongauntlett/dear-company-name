@@ -61,19 +61,24 @@ const PLACEHOLDER_NAME = 'Company';
 
       {/*
         Inline patch script: runs synchronously before the bundled animation script fires.
-        1. Reads ?to= param, saves to sessionStorage, strips param from URL (clean URL for recipient).
-        2. On refresh (no param), falls back to sessionStorage.
+        1. Reads company name from either /for/:company (Vercel rewrite) or ?to= param (legacy).
+           Saves to sessionStorage, then normalises the URL to /for/:company (canonical, shareable form).
+        2. On refresh (no param/path), falls back to sessionStorage.
         3. If neither has a value, redirects to /404.
         Uses .textContent (not .innerHTML) — safe from XSS.
       */}
       <script is:inline>
         (function () {
           const params = new URLSearchParams(window.location.search);
-          let company = params.get('to');
+          // Support both ?to=Company and /for/Company (Vercel rewrite)
+          const pathMatch = window.location.pathname.match(/^\/for\/(.+)/);
+          let company = params.get('to') || (pathMatch ? decodeURIComponent(pathMatch[1]) : null);
 
           if (company) {
             // Save to sessionStorage so a page refresh still works.
             sessionStorage.setItem('dear-to', company);
+            // Normalise to /for/:company — hides ?to= hint, keeps URL shareable/copyable.
+            history.replaceState(null, '', '/for/' + encodeURIComponent(company));
           } else {
             // No param — check sessionStorage (covers the refresh case).
             company = sessionStorage.getItem('dear-to');
