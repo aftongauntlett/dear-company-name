@@ -2,7 +2,7 @@
 import { APPLICANT } from '../../config/site';
 import BrandIcon from '../ui/BrandIcon.astro';
 import Icon from '../ui/Icon.astro';
-import { FileText, Mail, ArrowUp } from '@lucide/astro';
+import { FileText, Mail, ArrowUp, Globe } from '@lucide/astro';
 
 const year = new Date().getFullYear();
 ---
@@ -39,6 +39,18 @@ const year = new Date().getFullYear();
             title="LinkedIn"
           >
             <BrandIcon name="linkedin" size={18} />
+          </a>
+        </li>
+        <li>
+          <a
+            href={APPLICANT.website}
+            class="footer-icon-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Portfolio website"
+            title="Portfolio"
+          >
+            <Icon icon={Globe} size={18} />
           </a>
         </li>
         <li>
