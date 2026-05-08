@@ -1,5 +1,5 @@
 {
-  "rewrites": [
-    { "source": "/for/:company", "destination": "/?to=:company" }
+  "redirects": [
+    { "source": "/for/:company", "destination": "/?to=:company", "permanent": false }
   ]
 }
