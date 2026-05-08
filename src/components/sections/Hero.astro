@@ -64,7 +64,7 @@ const PLACEHOLDER_NAME = 'Company';
       </p>
 
       <div class="hero-cta">
-        <Button href="#start">Learn more</Button>
+        <Button href="#how-i-work">Learn more</Button>
         <Button href="#looking-for" variant="outline">Let's talk</Button>
       </div>
     </div>
@@ -312,6 +312,8 @@ const PLACEHOLDER_NAME = 'Company';
 
 <script>
   import { initializeCompanyTargeting } from '../../utils/companyTargeting';
+  import { initializeHeroPhotoEasterEgg } from '../../utils/heroPhotoEasterEgg';
+  import { initializeHeroTypewriter } from '../../utils/heroTypewriter';
 
   const company = initializeCompanyTargeting({
     window,
@@ -323,62 +325,7 @@ const PLACEHOLDER_NAME = 'Company';
   const targetEl = document.querySelector<HTMLElement>('.typewriter-target');
 
   if (company && section && targetEl) {
-    const placeholder = targetEl.dataset.placeholder ?? 'Company';
-    const finalTarget = targetEl.dataset.target ?? '';
-
-    const markDone = (): void => {
-      section.classList.add('hero--done');
-    };
-
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      // CSS handles this: overlay is hidden, real H1 is shown statically.
-      // No JS needed — just don't start the animation.
-    } else {
-      const TYPE_SPEED = 70; // ms per character (typing)
-      const ERASE_SPEED = 45; // ms per character (backspacing — slightly faster)
-      const INITIAL_DELAY = 500; // ms before we start typing the joke name
-      const PAUSE_ON_JOKE = 1400; // ms to hold "Your Company" before erasing
-
-      const typeChars = (text: string, onDone: () => void): void => {
-        let i = 0;
-        const tick = (): void => {
-          if (i < text.length) {
-            targetEl.textContent = text.slice(0, ++i);
-            setTimeout(tick, TYPE_SPEED);
-          } else {
-            onDone();
-          }
-        };
-        tick();
-      };
-
-      const eraseChars = (onDone: () => void): void => {
-        const tick = (): void => {
-          const current = targetEl.textContent ?? '';
-          if (current.length > 0) {
-            targetEl.textContent = current.slice(0, -1);
-            setTimeout(tick, ERASE_SPEED);
-          } else {
-            onDone();
-          }
-        };
-        tick();
-      };
-
-      // Sequence: wait → type joke → pause → erase → type real name → done
-      setTimeout(() => {
-        typeChars(placeholder, () => {
-          setTimeout(() => {
-            eraseChars(() => {
-              // Brief gap between erasing and re-typing feels natural
-              setTimeout(() => {
-                typeChars(finalTarget, markDone);
-              }, 200);
-            });
-          }, PAUSE_ON_JOKE);
-        });
-      }, INITIAL_DELAY);
-    }
+    initializeHeroTypewriter({ window, section, targetEl });
   }
 
   // ── Photo easter egg ─────────────────────────────────────────────
@@ -389,122 +336,8 @@ const PLACEHOLDER_NAME = 'Company';
   if (
     imgWrap instanceof HTMLElement &&
     imgContainer instanceof HTMLElement &&
-    captionEl instanceof HTMLElement &&
-    !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    captionEl instanceof HTMLElement
   ) {
-    const PRO_CAPTION =
-      'This is my super professional headshot that AI glamourized. Click the image 3 times to get a glimpse of my personality.';
-    const LITTLE_CAPTION = "Still silly, just more professional now!";
-    const TYPE_SPEED = 40;   // ms per char — typing
-    const ERASE_SPEED = 18;  // ms per char — erasing (faster feels right)
-    const EASTER_EGG_DURATION = 20_000; // ms before fading back to pro
-
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    let isEasterEggActive = false;
-    let isHovering = false;
-    let clickCount = 0;
-    let clickResetTimer: ReturnType<typeof setTimeout> | null = null;
-    let fadeBackTimer: ReturnType<typeof setTimeout> | null = null;
-
-    const stopTimer = (): void => {
-      if (timer !== null) { clearTimeout(timer); timer = null; }
-    };
-
-    const typeText = (targetText: string, onDone?: () => void): void => {
-      captionEl.classList.add('is-active');
-      const tick = (): void => {
-        const cur = captionEl.textContent ?? '';
-        if (cur.length < targetText.length) {
-          captionEl.textContent = targetText.slice(0, cur.length + 1);
-          timer = setTimeout(tick, TYPE_SPEED);
-        } else {
-          onDone?.();
-        }
-      };
-      tick();
-    };
-
-    const eraseText = (onDone?: () => void): void => {
-      captionEl.classList.add('is-active');
-      const tick = (): void => {
-        const cur = captionEl.textContent ?? '';
-        if (cur.length > 0) {
-          captionEl.textContent = cur.slice(0, -1);
-          timer = setTimeout(tick, ERASE_SPEED);
-        } else {
-          captionEl.classList.remove('is-active');
-          onDone?.();
-        }
-      };
-      tick();
-    };
-
-    imgWrap.addEventListener('mouseenter', () => {
-      isHovering = true;
-      if (isEasterEggActive) return;
-      stopTimer();
-      // If residual text doesn't match the start of PRO_CAPTION, clear it first
-      const cur = captionEl.textContent ?? '';
-      if (cur.length > 0 && !PRO_CAPTION.startsWith(cur)) {
-        captionEl.textContent = '';
-      }
-      typeText(PRO_CAPTION);
-    });
-
-    imgWrap.addEventListener('mouseleave', () => {
-      isHovering = false;
-      if (isEasterEggActive) return;
-      stopTimer();
-      eraseText();
-    });
-
-    const returnToPro = (): void => {
-      if (fadeBackTimer !== null) { clearTimeout(fadeBackTimer); fadeBackTimer = null; }
-      imgContainer.classList.remove('is-little-afton');
-      setTimeout(() => {
-        stopTimer();
-        eraseText(() => {
-          isEasterEggActive = false;
-          if (isHovering) typeText(PRO_CAPTION);
-        });
-      }, 800);
-    };
-
-    imgWrap.addEventListener('click', () => {
-      // While little-afton is showing, triple-click returns to pro immediately
-      if (isEasterEggActive) {
-        clickCount++;
-        if (clickResetTimer !== null) clearTimeout(clickResetTimer);
-        clickResetTimer = setTimeout(() => { clickCount = 0; }, 2000);
-        if (clickCount >= 3) {
-          clickCount = 0;
-          if (clickResetTimer !== null) { clearTimeout(clickResetTimer); clickResetTimer = null; }
-          returnToPro();
-        }
-        return;
-      }
-
-      clickCount++;
-      if (clickResetTimer !== null) clearTimeout(clickResetTimer);
-      clickResetTimer = setTimeout(() => { clickCount = 0; }, 2000);
-
-      if (clickCount >= 3) {
-        clickCount = 0;
-        if (clickResetTimer !== null) { clearTimeout(clickResetTimer); clickResetTimer = null; }
-        isEasterEggActive = true;
-        stopTimer();
-
-        // Swap to little Afton
-        imgContainer.classList.add('is-little-afton');
-
-        // Type easter-egg caption
-        captionEl.textContent = '';
-        typeText(LITTLE_CAPTION);
-
-        // Schedule auto fade back after timeout
-        if (fadeBackTimer !== null) clearTimeout(fadeBackTimer);
-        fadeBackTimer = setTimeout(returnToPro, EASTER_EGG_DURATION);
-      }
-    });
+    initializeHeroPhotoEasterEgg({ window, imgWrap, imgContainer, captionEl });
   }
 </script>

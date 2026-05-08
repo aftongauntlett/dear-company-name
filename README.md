@@ -1,18 +1,19 @@
 # dear-company-name
 
-Personal application microsite for Afton Gauntlett.
+An interactive job application microsite that replaces the Loom video ask.
+Built with Astro. Each visit is personalized to a company via the URL (`/for/CompanyName`), with a live code explorer that pulls the repo itself at build time so hiring managers can browse the source as part of the experience.
 
 - Live: [hire.aftongauntlett.com](https://hire.aftongauntlett.com/for/Github)
 - Personal site: [aftongauntlett.com](https://www.aftongauntlett.com/)
 - Stack: Astro + TypeScript (fully static, no backend, no CMS)
 
-## Personalize Per Company
+## Personalized Per Company
 
 Use one deployed build and change the target company at runtime.
 
 - Preferred link format: `/for/CompanyName`
 - Legacy format still works: `?to=CompanyName`
-- Example: `https://hire.aftongauntlett.com/for/Stripe`
+- Example: `https://hire.aftongauntlett.com/for/Github`
 
 In production, visits without a company target redirect to `/404`.
 
@@ -40,5 +41,3 @@ npm run precommit:check
 - Fetches repo files at build time via GitHub API
 - Renders syntax-highlighted code with Astro's built-in `Code` component
 - Ships as static output (no runtime fetches for code files)
-
-Optional: set `GITHUB_TOKEN` in CI/build env to increase GitHub API rate limits.
