@@ -1,52 +1,44 @@
 # dear-company-name
 
-My personal application microsite — a single-page scrolling site I send to companies instead of a Loom video. More about me at [aftongauntlett.com](https://www.aftongauntlett.com/).
+Personal application microsite for Afton Gauntlett.
 
-Built with Astro. Fully static, no backend, no CMS.
+- Live: [hire.aftongauntlett.com](https://hire.aftongauntlett.com/for/Github)
+- Personal site: [aftongauntlett.com](https://www.aftongauntlett.com/)
+- Stack: Astro + TypeScript (fully static, no backend, no CMS)
 
-## Targeting a Company
+## Personalize Per Company
 
-The company name is set at runtime via `?to=CompanyName` in the URL. No rebuild needed to target a new company.
+Use one deployed build and change the target company at runtime.
 
-The fallback in `src/config/site.ts` defaults to `'your team'` and is never shown in production.
+- Preferred link format: `/for/CompanyName`
+- Legacy format still works: `?to=CompanyName`
+- Example: `https://hire.aftongauntlett.com/for/Stripe`
 
-## Local Setup
+In production, visits without a company target redirect to `/404`.
+
+## Run Locally
+
+Requires Node `>=22.12.0`.
 
 ```sh
 npm install
-npm run dev
 npm run hooks:install
+npm run dev
 ```
 
-## Checks
+## Quality Checks
 
 ```sh
-npm run typecheck
-npm run lint
-npm run test
-npm run build
 npm run validate
+npm run precommit:check
 ```
 
-A pre-commit hook runs `npm run precommit:check` (typecheck + lint + tests) on every commit. Reinstall after cloning with `npm run hooks:install`.
+`precommit:check` includes typecheck, lint, tests, and knip.
 
-## Structure
+## Code Explorer (How I Work)
 
-```text
-src/
-  components/
-    layout/    # Navbar, Footer, ThemePicker
-    sections/  # Page sections (Hero, HowIWork, etc.)
-    ui/        # Reusable primitives (Button, Card, Icon, etc.)
-  config/      # site.ts, codeViews.ts
-  layouts/     # BaseLayout
-  styles/      # global.css — all design tokens
-  utils/       # github.ts + theme.ts
-docs/          # Brief, standards, PRDs, WCAG checklist
-```
+- Fetches repo files at build time via GitHub API
+- Renders syntax-highlighted code with Astro's built-in `Code` component
+- Ships as static output (no runtime fetches for code files)
 
-## Code Explorer
-
-The site fetches this repo's source at build time via the GitHub API and renders it using Astro's built-in `<Code />` component — no network calls at runtime.
-
-Optional: set `GITHUB_TOKEN` in your build environment to avoid the unauthenticated rate limit (60 req/hr).
+Optional: set `GITHUB_TOKEN` in CI/build env to increase GitHub API rate limits.

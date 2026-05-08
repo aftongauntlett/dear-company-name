@@ -9,6 +9,8 @@ export const APPLICANT = {
   resume: 'https://aftongauntlett.github.io/resume/',
 } as const;
 
+export const SITE_URL = 'https://hire.aftongauntlett.com' as const;
+
 export const COMPANY = {
   // Build-time placeholder — never shown. Visits without ?to= redirect to /404.
   // The actual company name is set at runtime via ?to=CompanyName in the URL.

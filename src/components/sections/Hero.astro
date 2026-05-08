@@ -59,55 +59,6 @@ const PLACEHOLDER_NAME = 'Company';
           data-placeholder={PLACEHOLDER_NAME}></span><span class="hero-bracket">]</span>,
       </p>
 
-      {/*
-        Inline patch script: runs synchronously before the bundled animation script fires.
-        1. Reads company name from either /for/:company (Vercel rewrite) or ?to= param (legacy).
-           Saves to sessionStorage, then normalises the URL to /for/:company (canonical, shareable form).
-        2. On refresh (no param/path), falls back to sessionStorage.
-        3. If neither has a value, redirects to /404.
-        Uses .textContent (not .innerHTML) — safe from XSS.
-      */}
-      <script is:inline>
-        (function () {
-          const params = new URLSearchParams(window.location.search);
-          // Support both ?to=Company and /for/Company (Vercel rewrite)
-          const pathMatch = window.location.pathname.match(/^\/for\/(.+)/);
-          let company = params.get('to') || (pathMatch ? decodeURIComponent(pathMatch[1]) : null);
-
-          if (company) {
-            // Save to sessionStorage so a page refresh still works.
-            sessionStorage.setItem('dear-to', company);
-            // Normalise to /for/:company — hides ?to= hint, keeps URL shareable/copyable.
-            history.replaceState(null, '', '/for/' + encodeURIComponent(company));
-          } else {
-            // No param — check sessionStorage (covers the refresh case).
-            company = sessionStorage.getItem('dear-to');
-          }
-
-          // Still nothing — not a personalised link, send to 404.
-          // On localhost, skip the redirect and use a dev placeholder instead.
-          if (!company) {
-            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-              company = 'Local Dev';
-            } else {
-              window.location.replace('/404');
-              return;
-            }
-          }
-
-          // Patch the accessible h1 (screen-reader source of truth)
-          const headline = document.querySelector('.hero-headline');
-          if (headline) headline.textContent = 'Dear ' + company + ',';
-
-          // Patch data-target so the typewriter animation types the right name
-          const typewriter = document.querySelector('[data-target]');
-          if (typewriter) typewriter.setAttribute('data-target', company);
-
-          // Patch the page title
-          document.title = 'Dear ' + company + ' \u2014 Afton Gauntlett';
-        })();
-      </script>
-
       <p class="hero-subhead">
         I built this instead of recording a video. I hope this gives you a better sense of who I am and what I can bring to your team.
       </p>
@@ -360,10 +311,18 @@ const PLACEHOLDER_NAME = 'Company';
 </style>
 
 <script>
+  import { initializeCompanyTargeting } from '../../utils/companyTargeting';
+
+  const company = initializeCompanyTargeting({
+    window,
+    document,
+    applicantName: 'Afton Gauntlett',
+  });
+
   const section = document.querySelector<HTMLElement>('.hero');
   const targetEl = document.querySelector<HTMLElement>('.typewriter-target');
 
-  if (section && targetEl) {
+  if (company && section && targetEl) {
     const placeholder = targetEl.dataset.placeholder ?? 'Company';
     const finalTarget = targetEl.dataset.target ?? '';
 
