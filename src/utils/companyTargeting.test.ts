@@ -59,6 +59,22 @@ describe('company targeting URL helpers', () => {
       storedCompany: null,
       hostname: 'localhost',
     })).toBe('Local Dev');
+
+    // Old Vercel redirect passed path segments as ?to= values (with underscores)
+    expect(resolveCompanyName({
+      pathname: '/',
+      search: '?to=Example_Company',
+      storedCompany: null,
+      hostname: 'hire.aftongauntlett.com',
+    })).toBe('Example Company');
+
+    // Underscore-encoded name cached in sessionStorage from old redirect
+    expect(resolveCompanyName({
+      pathname: '/',
+      search: '',
+      storedCompany: 'Example_Company',
+      hostname: 'hire.aftongauntlett.com',
+    })).toBe('Example Company');
   });
 });
 

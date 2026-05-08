@@ -88,7 +88,7 @@ function getCompanyFromQuery(search: string): string | null {
     return null;
   }
 
-  const normalized = normalizeCompanyName(rawCompany);
+  const normalized = normalizeCompanyName(rawCompany.replace(/_/g, ' '));
   return normalized.length > 0 ? normalized : null;
 }
 
@@ -104,7 +104,7 @@ export function resolveCompanyName(input: ResolveCompanyNameInput): string | nul
   }
 
   if (input.storedCompany) {
-    const fromStorage = normalizeCompanyName(input.storedCompany);
+    const fromStorage = normalizeCompanyName(input.storedCompany.replace(/_/g, ' '));
     if (fromStorage.length > 0) {
       return fromStorage;
     }
