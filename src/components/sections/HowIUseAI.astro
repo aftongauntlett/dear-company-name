@@ -1,6 +1,6 @@
 ---
-import PrincipleRow from '../ui/PrincipleRow.astro';
-import { FileCode, Bot, GitMerge, ShieldCheck, Layers } from '@lucide/astro';
+import SetupCard from '../ui/SetupCard.astro';
+import { FileCode, Bot, GitMerge, ShieldCheck, Layers, Wrench } from '@lucide/astro';
 ---
 
 <section id="ai" class="ai-section fade-up" aria-labelledby="ai-heading">
@@ -13,37 +13,38 @@ import { FileCode, Bot, GitMerge, ShieldCheck, Layers } from '@lucide/astro';
       </p>
     </div>
 
-    <dl class="principles-list">
+    <div class="card-row card-row-3">
 
-      <PrincipleRow term="The agent rules live in the repo" icon={Layers}>
-        Agent constraints — reuse existing components, use design tokens, enforce WCAG,
-        never hard-code colors — are written into <code>.github/copilot-instructions.md</code>
-        and component APIs. The AI works within the system, not around it.
-      </PrincipleRow>
+      <SetupCard title="The agent rules live in the repo" icon={Layers}>
+        <p>Reuse existing components, create design tokens, enforce WCAG. <code>.github/copilot-instructions.md</code>
+        and component APIs. The AI works within the system, not around it.</p>
+      </SetupCard>
 
-      <PrincipleRow term="Structured workflows, not ad-hoc prompts" icon={GitMerge}>
-        Spec → generate → agent review → validate (typecheck, lint, tests,
-        build) → human review. Same sequence every time. Predictable output is the point.
-      </PrincipleRow>
+      <SetupCard title="Structured workflows" icon={GitMerge}>
+        <p>Spec → generate → agent review → validate (typecheck, lint, tests,
+        build) → human review. Same sequence every time. Predictable output is the point.</p>
+      </SetupCard>
 
-      <PrincipleRow term="PRDs before prompts" icon={FileCode}>
-        Every feature chunk starts with a written spec: scope, constraints, component
-        reuse rules, acceptance criteria. The agent works from a document, not a vibe. This is
-        why AI-generated code in this project matches the design system instead of working around
-        it.
-      </PrincipleRow>
+      <SetupCard title="PRDs before prompts" icon={FileCode}>
+        <p>Every feature chunk starts with a written spec: scope, constraints, component
+        reuse rules, acceptance criteria. The agent works from a document, not a vibe.</p>
+      </SetupCard>
 
-      <PrincipleRow term="Multiple agents, one task" icon={Bot}>
-        I run agents in parallel on different sub-tasks: one generating, one reviewing the
-        contract, one checking accessibility. I treat them as a pipeline with distinct roles.
-      </PrincipleRow>
+      <SetupCard title="Multiple agents, one task" icon={Bot}>
+        <p>I run agents in parallel on different sub-tasks: one generating, one reviewing the
+        contract, one checking accessibility. I treat them as a pipeline with distinct roles.</p>
+      </SetupCard>
 
-      <PrincipleRow term="AI reviews first, I review after" icon={ShieldCheck}>
-        Before I look at generated code, the agent reviews its own output against the spec. My
-        pass is the senior-engineer layer: architecture, edge cases, things the agent can't "see".
-      </PrincipleRow>
+      <SetupCard title="AI reviews first, I review after" icon={ShieldCheck}>
+        <p>Before I look at generated code, the agent reviews its own output against the spec. My
+        pass is the senior-engineer layer: architecture, edge cases, things the agent can't "see".</p>
+      </SetupCard>
 
-    </dl>
+      <SetupCard title="I pick the right tool for the task" icon={Wrench}>
+        <p>Claude for planning and designing, ChatGPT for logic and debugging. I use Copilot Pro+ for model access so I'm always working with current frontier models.</p>
+      </SetupCard>
+
+    </div>
   </div>
 </section>
 
@@ -66,19 +67,25 @@ import { FileCode, Bot, GitMerge, ShieldCheck, Layers } from '@lucide/astro';
     margin: 0;
   }
 
-  .principles-list {
-    margin: 0;
-    padding: 0;
+  .card-row {
     display: grid;
     gap: var(--space-4);
+    align-items: stretch;
   }
 
-  .principles-list :global(code) {
-    font-family: var(--font-mono);
-    font-size: 0.875em;
-    color: var(--tone-primary-hover);
-    background: color-mix(in srgb, var(--tone-primary) 12%, transparent);
-    border-radius: 0.25rem;
-    padding: 0.1em 0.35em;
+  .card-row-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 920px) {
+    .card-row-3 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 680px) {
+    .card-row-3 {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

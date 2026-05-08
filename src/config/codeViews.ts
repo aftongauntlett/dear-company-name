@@ -87,7 +87,7 @@ export const HIGHLIGHTED_FILES: Array<{ path: string; note: string }> = [
     note: 'This section. <code>content-visibility: hidden</code> defers paint until the section enters the viewport, then <code>requestIdleCallback</code> detects when the browser is actually idle — so the spinner shows for the real duration of browser work, not a fake timer.',
   },
   {
-    path: 'docs/prd/PRD-08-runtime-company-name.md',
-    note: 'A PRD written before a single line of implementation. The security section — why <code>.textContent</code> instead of <code>.innerHTML</code>, why inline not deferred — shows the kind of reasoning that usually only surfaces in code review, not planning docs.',
+    path: 'src/utils/companyTargeting.ts',
+    note: 'One param, four fallback sources: <code>?to=</code> query param → <code>/for/</code> path segment → sessionStorage → localhost sentinel. Dependency injection throughout means every resolution path and DOM patch is unit-tested with no globals required.',
   },
 ];

@@ -25,7 +25,9 @@ import { Globe, FileText, Phone, Mail, MapPin, ExternalLink } from '@lucide/astr
             defaults, not debt to pay down later.
           </p>
         </div>
+      </div>
 
+      <div class="lookingfor-col-right">
         <div class="contact-header">
           <h3 class="videonote-heading">Reach me directly</h3>
           <div class="videonote-rule" aria-hidden="true"></div>
@@ -91,27 +93,6 @@ import { Globe, FileText, Phone, Mail, MapPin, ExternalLink } from '@lucide/astr
         </ul>
       </div>
 
-      <div class="videonote-card">
-        <div class="videonote-card-header">
-          <p class="videonote-eyebrow">About the video ask</p>
-        </div>
-        <div class="videonote-card-body">
-        <p>
-          I don't perform well talking to myself on camera. I perform better in actual
-          conversations.
-        </p>
-        <p>
-          If you want to see how I think, let's get on a call and I'll walk you through
-          anything here live. I'll bring the same preparation I brought to building this, and
-          you'll get a much better read on whether we'd work well together than a screen
-          recording would.
-        </p>
-        <p>
-          The same goes for live whiteboard and algorithmic interviews. I don't have a CS degree, and live-coding under observation doesn't reflect how I actually think through problems. Take-home exercises give you a real sample of my work.
-        </p>
-        </div>
-      </div>
-
     </div>
 
   </div>
@@ -139,6 +120,12 @@ import { Globe, FileText, Phone, Mail, MapPin, ExternalLink } from '@lucide/astr
     gap: var(--space-8);
   }
 
+  .lookingfor-col-right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
   .lookingfor-body {
     grid-column: 1 / -1;
   }
@@ -155,10 +142,6 @@ import { Globe, FileText, Phone, Mail, MapPin, ExternalLink } from '@lucide/astr
     line-height: 1.75;
     color: var(--tone-text);
     margin: 0;
-  }
-
-  .contact-header {
-    margin-block-start: auto;
   }
 
   .contact-header .videonote-heading {
@@ -231,7 +214,7 @@ import { Globe, FileText, Phone, Mail, MapPin, ExternalLink } from '@lucide/astr
     white-space: normal;
   }
 
-  /* ── Video note column ──────────────────────────────────────── */
+  /* ── Video note / contact header ─────────────────────────── */
 
   .videonote-rule {
     border-top: 1px solid var(--tone-border);
@@ -243,59 +226,6 @@ import { Globe, FileText, Phone, Mail, MapPin, ExternalLink } from '@lucide/astr
     font-weight: 600;
     color: var(--tone-text-muted);
     margin: 0;
-  }
-
-  .videonote-card {
-    border: 1px solid var(--tone-border);
-    border-radius: var(--radius-lg);
-    background: var(--tone-bg);
-    box-shadow: var(--shadow-surface);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: border-color 180ms ease;
-  }
-
-  .videonote-card:hover {
-    border-color: color-mix(in srgb, var(--tone-primary) 40%, var(--tone-border));
-  }
-
-  .videonote-card-header {
-    padding: var(--space-4) var(--space-8);
-    background: var(--tone-card-header);
-    border-bottom: 1px solid var(--tone-border);
-  }
-
-  .videonote-card-body {
-    padding: var(--space-8);
-    display: grid;
-    gap: var(--space-6);
-    flex: 1;
-    background: var(--tone-card);
-  }
-
-  .videonote-eyebrow {
-    font-family: var(--font-display);
-    font-size: clamp(1rem, 1.3vw, 1.125rem);
-    font-weight: 600;
-    color: var(--tone-text);
-    margin: 0;
-  }
-
-  .videonote-card-body p {
-    line-height: 1.75;
-    color: var(--tone-text-muted);
-    margin: 0;
-  }
-
-  .videonote-signoff {
-    font-size: 0.925rem;
-    color: var(--tone-text-muted) !important;
-    font-style: normal;
-  }
-
-  .videonote-signoff cite {
-    font-style: italic;
   }
 
   @media (max-width: 720px) {
@@ -313,7 +243,6 @@ import { Globe, FileText, Phone, Mail, MapPin, ExternalLink } from '@lucide/astr
 
     .contact-header {
       text-align: center;
-      margin-block-start: 0;
     }
 
     .contact-chips {
