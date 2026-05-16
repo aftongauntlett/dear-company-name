@@ -1,6 +1,6 @@
 export const APPLICANT = {
   name: 'Afton Gauntlett',
-  title: 'Senior Frontend Developer',
+  title: 'Senior Software Engineer',
   email: 'hello@aftongauntlett.com',
   phone: '(571) 249-1952' as string,
   website: 'https://www.aftongauntlett.com/',
